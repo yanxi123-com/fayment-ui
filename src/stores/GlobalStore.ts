@@ -12,6 +12,7 @@ export interface BaseFieldSchema {
   type: "text" | "textarea" | "number" | "boolean" | "datetime" | "image";
   key: string;
   title: string;
+  placeholder?: string;
   defaultValue?: string;
 }
 

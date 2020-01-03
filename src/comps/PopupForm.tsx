@@ -81,6 +81,7 @@ function PopupForm() {
                 onChange={e => {
                   setData(field.key, e.currentTarget.value);
                 }}
+                placeholder={field.placeholder}
               />
             </Form.Item>
           );

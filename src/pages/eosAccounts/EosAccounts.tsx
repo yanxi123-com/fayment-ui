@@ -1,17 +1,20 @@
-import { Button, Col, Icon, Row, List as AntList, Divider } from "antd";
+import { Button, Col, Divider, Icon, List as AntList, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise, showInfo, showError } from "comps/popup";
+import { confirmPromise, showError, showInfo } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { List } from "immutable";
 import React, { useEffect, useState } from "react";
+import Clipboard from "react-clipboard.js";
 import { BaseFieldSchema } from "stores/GlobalStore";
 import localStorage from "stores/local";
-import Clipboard from "react-clipboard.js";
+import { getAccountInfo } from "lib/eos";
 
-import css from "./Category.module.scss";
+import css from "./EosAccounts.module.scss";
 
-interface Category {
+let actionClicked = false;
+
+interface Group {
   title: string;
   accounts: Array<string>;
 }
@@ -30,23 +33,68 @@ export function formatEosAmount(num: number, digits: number = 4): string {
 }
 
 export default function() {
-  const [categories, setCategoriesOri] = useState<Array<Category>>([]);
+  const [groups, setGroupsOri] = useState<Array<Group>>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [accountMap, setAccountMap] = useState<AccountMap>({});
+  const [accounts, setAccounts] = useState<Array<string>>([]);
 
-  const setCategories = (categories: Array<Category>) => {
-    setCategoriesOri(categories);
-    localStorage.set("savedAssetsGroups", categories);
+  const setGroups = (groups: Array<Group>) => {
+    setGroupsOri(groups);
+    localStorage.set("savedAssetsGroups", groups);
   };
 
   useEffect(() => {
-    const categories = localStorage.get("savedAssetsGroups");
-    if (categories != null) {
-      setCategories(categories);
+    const groups: Array<Group> = localStorage.get("savedAssetsGroups");
+    if (groups != null) {
+      setGroups(groups);
+      if (groups.length > 0) {
+        setAccounts(groups[0].accounts);
+      }
     } else {
-      setCategories([{ title: "我的资产", accounts: [] }]);
+      setGroups([{ title: "我的资产", accounts: [] }]);
     }
   }, []);
+
+  useEffect(() => {
+    // 获取账号链上信息
+    Promise.all(
+      accounts.map(account => getAccountInfo(account).catch(() => null))
+    ).then(infos => {
+      infos.forEach(info => {
+        if (!info) {
+          return;
+        }
+        const balance1 = info.core_liquid_balance
+          ? parseEosAmount(info.core_liquid_balance)
+          : 0;
+        const balance2 = info.voter_info
+          ? (info.voter_info && info.voter_info.staked) / 10000
+          : 0;
+        const balance3 = info.refund_request
+          ? parseEosAmount(info.refund_request.net_amount) +
+            parseEosAmount(info.refund_request.cpu_amount)
+          : 0;
+        const total = balance1 + balance2 + balance3;
+        const accountInfo = { balance1, balance2, balance3, total };
+
+        setAccountMap(old => {
+          const newAccountMap = {
+            ...old,
+            [info.account_name]: accountInfo
+          };
+          return deepClone(newAccountMap);
+        });
+      });
+    });
+  }, [accounts]);
+
+  function parseEosAmount(str: string) {
+    return Number(str.split(" ")[0]);
+  }
+
+  function deepClone(obj: any) {
+    return JSON.parse(JSON.stringify(obj));
+  }
 
   function addCate() {
     const fields: Array<BaseFieldSchema> = [
@@ -61,8 +109,8 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        setCategories(
-          List(categories)
+        setGroups(
+          List(groups)
             .push({ title: data.title, accounts: [] })
             .toJS()
         );
@@ -79,18 +127,20 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        if (!categories) {
+        if (!groups) {
           return;
         }
 
-        setCategories(
-          List(categories)
+        const newAccounts = data.account.split(",");
+        setGroups(
+          List(groups)
             .updateIn([selectedIndex, "accounts"], list => {
-              list.push(data.account);
+              list.push(...newAccounts);
               return list;
             })
             .toJS()
         );
+        setAccounts(newAccounts);
       }
     });
   }
@@ -101,7 +151,7 @@ export default function() {
         type: "text",
         key: "title",
         title: "分组名",
-        defaultValue: categories[index].title
+        defaultValue: groups[index].title
       }
     ];
     openPopupForm({
@@ -109,11 +159,11 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        if (!categories) {
+        if (!groups) {
           return;
         }
-        setCategories(
-          List(categories)
+        setGroups(
+          List(groups)
             .setIn([index, "title"], data.title)
             .toJS()
         );
@@ -127,11 +177,7 @@ export default function() {
         type: "text",
         key: "account",
         title: "EOS 账号",
-        defaultValue: List(categories).getIn([
-          groupIndex,
-          "accounts",
-          accountIndex
-        ])
+        defaultValue: List(groups).getIn([groupIndex, "accounts", accountIndex])
       }
     ];
     openPopupForm({
@@ -139,24 +185,34 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        setCategories(
-          List(categories)
+        const account = data.account;
+        setGroups(
+          List(groups)
             .setIn([groupIndex, "accounts", accountIndex], data.account)
             .toJS()
         );
+        setAccounts([account]);
       }
     });
   }
+
+  function reloadAccounts() {
+    setAccounts([]);
+    setTimeout(() => {
+      setAccounts(groups[selectedIndex].accounts);
+    });
+  }
+
   function deleteCate(index: number, parentIndex?: number) {
     const keyPath = parentIndex == null ? [] : [parentIndex, "accounts"];
     const name =
       parentIndex == null
-        ? `分组 [${categories[index].title}] `
-        : `账号 [${categories[parentIndex].accounts[index]}] `;
+        ? `分组 [${groups[index].title}] `
+        : `账号 [${groups[parentIndex].accounts[index]}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then(confirm => {
       if (confirm) {
-        setCategories(
-          List(categories)
+        setGroups(
+          List(groups)
             .deleteIn([...keyPath, index])
             .toJS() as any
         );
@@ -178,7 +234,8 @@ export default function() {
     return a.toJS();
   }
 
-  function moveCate(
+  // parentIndex 为空表示修改的是分组，否则修改的是账号
+  function moveItem(
     direction: "up" | "down",
     index: number,
     parentIndex?: number
@@ -187,23 +244,32 @@ export default function() {
     if (otherIndex < 0) {
       return;
     }
-    if (parentIndex == null && otherIndex >= categories.length) {
+    if (parentIndex == null && otherIndex >= groups.length) {
       return;
     }
     if (
       parentIndex != null &&
-      otherIndex >= categories[parentIndex].accounts.length
+      otherIndex >= groups[parentIndex].accounts.length
     ) {
       return;
     }
-    console.log(index, otherIndex);
+
+    if (parentIndex == null) {
+      // 是否选中跟随移动
+      if (otherIndex === selectedIndex) {
+        setSelectedIndex(index);
+      } else if (index === selectedIndex) {
+        setSelectedIndex(otherIndex);
+      }
+    }
+
     const keyPath = parentIndex == null ? [] : [parentIndex, "accounts"];
-    setCategories(
-      switchObject(categories, [...keyPath, index], [...keyPath, otherIndex])
+    setGroups(
+      switchObject(groups, [...keyPath, index], [...keyPath, otherIndex])
     );
   }
 
-  if (categories == null) {
+  if (groups == null) {
     return <Loading />;
   }
 
@@ -211,8 +277,8 @@ export default function() {
   let sum2 = 0;
   let sum3 = 0;
   let sumTotal = 0;
-  if (categories[selectedIndex] != null) {
-    categories[selectedIndex].accounts.forEach(account => {
+  if (groups[selectedIndex] != null) {
+    groups[selectedIndex].accounts.forEach(account => {
       sum1 += accountMap[account] ? accountMap[account].balance1 : 0;
       sum2 += accountMap[account] ? accountMap[account].balance2 : 0;
       sum3 += accountMap[account] ? accountMap[account].balance3 : 0;
@@ -235,32 +301,61 @@ export default function() {
               </div>
             }
             bordered
-            dataSource={categories}
+            dataSource={groups}
             renderItem={(item, i) => (
               <AntList.Item
                 actions={[
-                  <Icon type="edit" onClick={() => updateGroup(i)} />,
-                  <Icon type="up" onClick={() => moveCate("up", i)} />,
-                  <Icon type="down" onClick={() => moveCate("down", i)} />,
-                  <Icon type="delete" onClick={() => deleteCate(i)} />
+                  <Icon
+                    type="edit"
+                    className={css.icon}
+                    onClick={() => {
+                      actionClicked = true;
+                      updateGroup(i);
+                    }}
+                  />,
+                  <Icon
+                    type="up"
+                    className={css.icon}
+                    onClick={() => {
+                      actionClicked = true;
+                      moveItem("up", i);
+                    }}
+                  />,
+                  <Icon
+                    type="down"
+                    className={css.icon}
+                    onClick={() => {
+                      actionClicked = true;
+                      moveItem("down", i);
+                    }}
+                  />,
+                  <Icon
+                    type="delete"
+                    className={css.icon}
+                    onClick={() => {
+                      actionClicked = true;
+                      deleteCate(i);
+                    }}
+                  />
                 ]}
+                onClick={() => {
+                  if (actionClicked) {
+                    actionClicked = false;
+                    return;
+                  }
+
+                  setSelectedIndex(i);
+                  setAccounts(groups[i].accounts);
+                }}
+                className={cx(i === selectedIndex && css.active)}
               >
-                <Button
-                  type="link"
-                  className={cx(
-                    css.level1Title,
-                    i === selectedIndex && css.active
-                  )}
-                  onClick={() => setSelectedIndex(i)}
-                >
-                  {item.title}
-                </Button>
+                <div className={css.level1Title}>{item.title}</div>
               </AntList.Item>
             )}
           />
         </Col>
         <Col span={17}>
-          {categories[selectedIndex] != null && (
+          {groups[selectedIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">
@@ -269,7 +364,7 @@ export default function() {
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
                         <th>
-                          账号
+                          EOS 账号
                           <Button type="link" onClick={() => addAccount()}>
                             <Icon type="plus" />
                           </Button>
@@ -278,11 +373,16 @@ export default function() {
                         <th>质押</th>
                         <th>赎回中</th>
                         <th>总额度</th>
-                        <th style={{ textAlign: "right" }}>操作</th>
+                        <th style={{ textAlign: "right" }}>
+                          操作
+                          <Button type="link" onClick={() => reloadAccounts()}>
+                            <Icon type="reload" />
+                          </Button>
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="ant-table-tbody">
-                      {categories[selectedIndex].accounts.map((account, i) => {
+                      {groups[selectedIndex].accounts.map((account, i) => {
                         const info = accountMap[account] || {
                           balance1: 0,
                           balance2: 0,
@@ -295,6 +395,7 @@ export default function() {
                             <td>
                               <a
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 href={`https://bloks.io/account/${account}`}
                               >
                                 {account}
@@ -309,26 +410,30 @@ export default function() {
                             <td style={{ textAlign: "right" }}>
                               <Icon
                                 type="edit"
+                                className={css.icon}
                                 onClick={() => updateAccount(selectedIndex, i)}
                               />
                               <Divider type="vertical" />
 
                               <Icon
                                 type="up"
-                                onClick={() => moveCate("up", i, selectedIndex)}
+                                className={css.icon}
+                                onClick={() => moveItem("up", i, selectedIndex)}
                               />
                               <Divider type="vertical" />
 
                               <Icon
                                 type="down"
+                                className={css.icon}
                                 onClick={() =>
-                                  moveCate("down", i, selectedIndex)
+                                  moveItem("down", i, selectedIndex)
                                 }
                               />
                               <Divider type="vertical" />
 
                               <Icon
                                 type="delete"
+                                className={css.icon}
                                 onClick={() => deleteCate(i, selectedIndex)}
                               />
                             </td>
@@ -341,7 +446,7 @@ export default function() {
                         <th>汇总</th>
                         <th>
                           <Clipboard
-                            data-clipboard-text={categories[
+                            data-clipboard-text={groups[
                               selectedIndex
                             ].accounts.join(",")}
                             component="span"

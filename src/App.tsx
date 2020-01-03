@@ -7,7 +7,7 @@ import Header from "comps/header/Header";
 import PopupForm from "comps/PopupForm";
 import Sider from "comps/sider/Sider";
 import { observer } from "mobx-react-lite";
-import EosAccounts from "pages/eosAccounts/Category";
+import EosAccounts from "pages/eosAccounts/EosAccounts";
 import React from "react";
 import {
   BrowserRouter as Router,
