@@ -120,7 +120,12 @@ export default function() {
 
   function addAccount() {
     const fields: Array<BaseFieldSchema> = [
-      { type: "text", key: "account", title: "EOS 账号" }
+      {
+        type: "text",
+        key: "account",
+        title: "EOS 账号",
+        placeholder: "EOS 账户（可以一次填入多个，用逗号分隔）"
+      }
     ];
     openPopupForm({
       title: "添加 EOS 账号",
@@ -300,7 +305,6 @@ export default function() {
                 </Button>
               </div>
             }
-            bordered
             dataSource={groups}
             renderItem={(item, i) => (
               <AntList.Item
@@ -347,7 +351,10 @@ export default function() {
                   setSelectedIndex(i);
                   setAccounts(groups[i].accounts);
                 }}
-                className={cx(i === selectedIndex && css.active)}
+                className={cx(
+                  i === selectedIndex && css.active,
+                  i === selectedIndex - 1 && css.preActive
+                )}
               >
                 <div className={css.level1Title}>{item.title}</div>
               </AntList.Item>

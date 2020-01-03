@@ -13,7 +13,7 @@ function SiderComp(props: Props) {
   const { history, location } = props;
 
   function handleClick(e: any) {
-    history.push(`/${e.key}`);
+    history.push(`/${e.key}/`);
   }
 
   const current = location.pathname.split("/")[1];

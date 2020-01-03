@@ -5,16 +5,24 @@
     background-color: #fafafa;
   }
 
-  :global(.ant-list-bordered .ant-list-header) {
+  :global(.ant-list-header) {
     margin: 0;
     padding: 5px 15px;
     font-weight: 500;
     font-size: 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
 
-  :global(.ant-list-bordered .ant-list-item) {
-    padding: 11px 10px;
+  :global(.ant-list-item) {
+    padding: 10px 10px;
     justify-content: space-between;
+    &:last-child {
+      border-bottom: 1px solid #e8e8e8;
+    }
+    &.preActive {
+      border-bottom: 0;
+    }
   }
 
   :global(.ant-table) {
@@ -29,19 +37,14 @@
 
 .active,
 .active:focus {
-  background-color: #007bff;
+  background-color: #e8eaed;
   padding: 3px 15px;
   line-height: 100%;
   .level1Title {
-    color: white;
+    font-weight: 600;
   }
-  .icon {
-    font-size: 12px;
-    color: #ccc;
-  }
-  :global(.ant-list-item-action-split) {
-    background-color: darken($color: #007bff, $amount: 10);
-  }
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
 }
 
 .level1Title {

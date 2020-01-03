@@ -31,10 +31,10 @@ const App: React.FC = () => {
             }}
           >
             <Switch>
-              <Route exact path="/eos-accounts" component={EosAccounts} />
+              <Route exact path="/eos-accounts/" component={EosAccounts} />
 
               <Route>
-                <Redirect to="/eos-accounts" />
+                <Redirect to="/eos-accounts/" />
               </Route>
             </Switch>
           </Layout.Content>
