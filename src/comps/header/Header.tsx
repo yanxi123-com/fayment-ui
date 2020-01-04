@@ -8,9 +8,9 @@ import logo from "./fayment.gif";
 function Component() {
   return (
     <Layout.Header id="header">
-      <Link className="left" to="/">
+      <a href="https://fayment.com/">
         <img src={logo} style={{ width: 143, height: 58 }} alt="Fayment" />
-      </Link>
+      </a>
 
       <div className="right"></div>
     </Layout.Header>
