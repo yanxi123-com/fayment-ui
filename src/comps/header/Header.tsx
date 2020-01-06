@@ -1,6 +1,5 @@
 import React from "react";
 import { Layout } from "antd";
-import { Link } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import "./Header.scss";
 import logo from "./fayment.gif";

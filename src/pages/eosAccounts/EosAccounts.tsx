@@ -28,8 +28,20 @@ type AccountMap = {
   };
 };
 
-export function formatEosAmount(num: number, digits: number = 4): string {
+function formatEosAmount(num: number, digits: number = 4): string {
   return num.toFixed(digits).replace(/([.]?0+)$/, "");
+}
+
+function uniqStrs(strs: string[]): string[] {
+  const strMap: { [key: string]: boolean } = {};
+  const result: string[] = [];
+  strs.forEach(str => {
+    if (strMap[str] == null) {
+      strMap[str] = true;
+      result.push(str);
+    }
+  });
+  return result;
 }
 
 export default function() {
@@ -39,6 +51,11 @@ export default function() {
   const [accounts, setAccounts] = useState<Array<string>>([]);
 
   const setGroups = (groups: Array<Group>) => {
+    // 去重
+    groups.forEach(group => {
+      group.accounts = uniqStrs(group.accounts);
+    });
+
     setGroupsOri(groups);
     localStorage.set("savedAssetsGroups", groups);
   };
