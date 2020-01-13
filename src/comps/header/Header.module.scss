@@ -1,4 +1,4 @@
-#header {
+.header {
   margin-bottom: 25px;
   position: relative;
   z-index: 10;
@@ -9,7 +9,11 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
+
+  .cfms {
+    height: 64px;
+  }
 
   a.left {
     font-size: 16px;

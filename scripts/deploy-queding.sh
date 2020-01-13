@@ -9,5 +9,7 @@ cp index.html 404.html
 
 printf "queding.com\n" > CNAME
 
+git commit -am 'update cname'
+
 git remote add queding git@github.com:yanxi-me/eos-asset.git
 git push -f queding master
