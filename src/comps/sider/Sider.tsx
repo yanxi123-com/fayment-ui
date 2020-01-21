@@ -37,9 +37,10 @@ function SiderComp(props: Props) {
           <div style={{ lineHeight: 1.5, textAlign: "center" }}>
             微信扫一扫
             <br />
-            关注公众号
-            <br />
-            财富秘书
+            关注&nbsp;
+            <span style={{ fontWeight: 600, color: "#6a9fb5", fontSize: 16 }}>
+              阎说
+            </span>
           </div>
         </div>
       </Menu>
