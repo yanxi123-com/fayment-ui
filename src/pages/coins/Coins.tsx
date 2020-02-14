@@ -5,16 +5,17 @@ import { confirmPromise, showError, showInfo } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { List } from "immutable";
 import React, { useEffect, useState } from "react";
-import Clipboard from "react-clipboard.js";
 import { BaseFieldSchema } from "stores/GlobalStore";
 import localStorage from "stores/local";
-import { getAccountInfo } from "lib/eos";
 
 import css from "./Coins.module.scss";
+
+const validCoins = ["BTC", "EOS", "ETH", "USD"];
 
 let actionClicked = false;
 
 interface CoinInfo {
+  title: string;
   sym: string;
   balance: number;
 }
@@ -36,19 +37,18 @@ type CoinMap = {
   [sym: string]: CoinMapValue;
 };
 
-function formatEosAmount(num: number, digits: number = 4): string {
-  return num.toFixed(digits).replace(/([.]?0+)$/, "");
-}
-
-function uniqCoin(coins: CoinInfo[]): CoinInfo[] {
-  const strMap: { [key: string]: boolean } = {};
+// title 和 sym 都相同为相同
+function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
   const result: CoinInfo[] = [];
-  coins.forEach(coin => {
-    if (strMap[coin.sym] == null) {
-      strMap[coin.sym] = true;
+  const strMap: { [key: string]: boolean } = {};
+  for (let i = 0; i < coins.length; i++) {
+    const coin = coins[i];
+    const key = `${coin.title},${coin.sym}`;
+    if (strMap[key] == null) {
+      strMap[key] = true;
       result.push(coin);
     }
-  });
+  }
   return result;
 }
 
@@ -61,7 +61,7 @@ export default function() {
   const setGroups = (groups: Array<Group>) => {
     // 去重
     groups.forEach(group => {
-      group.coins = uniqCoin(group.coins);
+      group.coins = uniqCoins(group.coins);
     });
 
     setGroupsOri(groups);
@@ -86,10 +86,6 @@ export default function() {
 
   function parseEosAmount(str: string) {
     return Number(str.split(" ")[0]);
-  }
-
-  function deepClone(obj: any) {
-    return JSON.parse(JSON.stringify(obj));
   }
 
   function addCate() {
@@ -118,6 +114,13 @@ export default function() {
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
+        key: "title",
+        title: "账户",
+        placeholder: "请填写账户名称",
+        defaultValue: "默认"
+      },
+      {
+        type: "text",
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH"
@@ -131,7 +134,7 @@ export default function() {
       }
     ];
     openPopupForm({
-      title: "添加币种",
+      title: "添加账户",
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
@@ -139,13 +142,26 @@ export default function() {
           return;
         }
 
+        const sym = ((data.sym as string) || "").toUpperCase();
+        const balance = isNaN(data.balance) ? 0 : data.balance;
+        const title = data.title || "默认";
+
+        if (validCoins.indexOf(sym) == -1) {
+          return;
+        }
+
         const newCoin: CoinInfo = {
-          sym: data.sym,
-          balance: data.balance
+          title,
+          sym,
+          balance
         };
         const newGroups: Group[] = List(groups)
-          .updateIn([selectedIndex, "coins"], list => list.push(newCoin))
+          .updateIn([selectedIndex, "coins"], list => {
+            list.push(newCoin);
+            return list;
+          })
           .toJS();
+
         setGroups(newGroups);
         setCoins(newGroups[selectedIndex].coins);
       }
@@ -180,6 +196,18 @@ export default function() {
 
   function updateCoin(groupIndex: number, coinIndex: number) {
     const fields: Array<BaseFieldSchema> = [
+      {
+        type: "text",
+        key: "title",
+        title: "账户",
+        placeholder: "请填写账户名称",
+        defaultValue: List(groups).getIn([
+          groupIndex,
+          "coins",
+          coinIndex,
+          "title"
+        ])
+      },
       {
         type: "text",
         key: "sym",
@@ -230,7 +258,7 @@ export default function() {
   }
 
   function deleteCate(index: number, parentIndex?: number) {
-    const keyPath = parentIndex == null ? [] : [parentIndex, "accounts"];
+    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
     const name =
       parentIndex == null
         ? `分组 [${groups[index].title}] `
@@ -286,7 +314,7 @@ export default function() {
       }
     }
 
-    const keyPath = parentIndex == null ? [] : [parentIndex, "accounts"];
+    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
     setGroups(
       switchObject(groups, [...keyPath, index], [...keyPath, otherIndex])
     );
@@ -389,11 +417,12 @@ export default function() {
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
                         <th>
-                          币种
+                          账户名
                           <Button type="link" onClick={() => addCoin()}>
                             <Icon type="plus" />
                           </Button>
                         </th>
+                        <th>币种</th>
                         <th>价格</th>
                         <th>数量</th>
                         <th>价值</th>
@@ -417,6 +446,7 @@ export default function() {
                         return (
                           <tr key={i}>
                             <td>{i + 1}</td>
+                            <td>{coin.title}</td>
                             <td>{coin.sym}</td>
                             <td>
                               {info.btcPrice} BTC
@@ -466,6 +496,7 @@ export default function() {
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>汇总</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>

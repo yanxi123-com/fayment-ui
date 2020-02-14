@@ -153,6 +153,10 @@ export default function() {
           return;
         }
 
+        if (!data.account) {
+          return;
+        }
+
         const newAccounts = data.account.split(",");
         setGroups(
           List(groups)
