@@ -8,6 +8,7 @@ import PopupForm from "comps/PopupForm";
 import Sider from "comps/sider/Sider";
 import { observer } from "mobx-react-lite";
 import EosAccounts from "pages/eosAccounts/EosAccounts";
+import Coins from "pages/coins/Coins";
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -32,6 +33,7 @@ const App: React.FC = () => {
           >
             <Switch>
               <Route exact path="/eos-accounts/" component={EosAccounts} />
+              <Route exact path="/coins/" component={Coins} />
 
               <Route>
                 <Redirect to="/eos-accounts/" />

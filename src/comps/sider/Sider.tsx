@@ -27,11 +27,14 @@ function SiderComp(props: Props) {
         selectedKeys={[current]}
         onClick={handleClick}
       >
-        <Menu.Item key="eos-accounts" style={{ fontWeight: 600 }}>
-          EOS 多账号统计
-        </Menu.Item>
+        <Menu.Item key="eos-accounts">EOS 多账号统计</Menu.Item>
+        <Menu.Item key="coins">多币种统计</Menu.Item>
         <div
-          style={{ margin: 15, border: "1px solid #CCC", padding: "15px 15px" }}
+          style={{
+            margin: "30px 15px",
+            border: "1px solid #CCC",
+            padding: "15px 15px"
+          }}
         >
           <img alt="" src={qrcode} style={{ width: "100%" }} />
           <div style={{ lineHeight: 1.5, textAlign: "center" }}>
