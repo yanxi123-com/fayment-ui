@@ -10,7 +10,7 @@ import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
 
-const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB"];
+const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 let actionClicked = false;
 
@@ -46,6 +46,7 @@ export default function() {
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [btcPrice, setBtcPrice] = useState<number>();
   const [baesCoin, setBaseCoin] = useState("BTC");
+  const [cnyRate, setCnyRate] = useState(0);
 
   const setGroups = (groups: Array<Group>) => {
     // 去重
@@ -95,6 +96,18 @@ export default function() {
       });
       setPricesByBTC(newPriceMap);
     });
+
+    fetch(
+      "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/rate",
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    ).then(async res => {
+      const result = await res.json();
+      setCnyRate(result.rate);
+    });
   }
 
   function parseCoinSym(sym: string | undefined): string | undefined {
@@ -126,6 +139,10 @@ export default function() {
 
     if (sym === "USD" && btcPrice) {
       return 1 / btcPrice;
+    }
+
+    if (sym === "CNY" && btcPrice && cnyRate) {
+      return 1 / btcPrice / cnyRate;
     }
 
     return undefined;
