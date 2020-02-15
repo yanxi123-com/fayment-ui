@@ -70,7 +70,7 @@ export default function() {
     fetchPrices();
     const interval = setInterval(() => {
       fetchPrices();
-    }, 1000);
+    }, 1000 * 10);
     return () => clearInterval(interval);
   }, []);
 
