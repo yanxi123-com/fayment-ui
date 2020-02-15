@@ -503,7 +503,19 @@ export default function() {
                           <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{coin.title}</td>
-                            <td>{coin.sym}</td>
+                            <td>
+                              <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={`https://www.binance.com/cn/trade/${
+                                  coin.sym === "BTC"
+                                    ? "BTC_USDT"
+                                    : coin.sym + "_BTC"
+                                }`}
+                              >
+                                {coin.sym}
+                              </a>
+                            </td>
                             <td>
                               {priceByBaseCoin &&
                                 `${priceByBaseCoin.toPrecision(5)} ${baesCoin}`}
