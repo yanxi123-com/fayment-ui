@@ -41,7 +41,10 @@ function PopupForm() {
 
   function submit() {
     if (schema) {
-      Promise.resolve(schema.onSubmit(formData))
+      Promise.resolve()
+        .then(() => {
+          schema.onSubmit(formData);
+        })
         .then(close)
         .catch(showError);
     }

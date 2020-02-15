@@ -36,7 +36,7 @@ const App: React.FC = () => {
               <Route exact path="/coins/" component={Coins} />
 
               <Route>
-                <Redirect to="/eos-accounts/" />
+                <Redirect to="/coins/" />
               </Route>
             </Switch>
           </Layout.Content>

@@ -27,6 +27,9 @@
 
   :global(.ant-table) {
     font-size: 16px;
+    table.coins td {
+      font-size: 14px;
+    }
   }
 
   :global(.ant-table-thead > tr > th),

@@ -10,8 +10,6 @@ function Component() {
       <a href="/">
         <img src={logo} style={{ width: 130 }} alt="Fayment" />
       </a>
-
-      <div className="right"></div>
     </Layout.Header>
   );
 }

@@ -1,7 +1,7 @@
-import { Button, Col, Divider, Icon, List as AntList, Row } from "antd";
+import { Button, Col, Divider, Icon, List as AntList, Row, Radio } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise, showError, showInfo } from "comps/popup";
+import { confirmPromise } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { List } from "immutable";
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
 
-const validCoins = ["BTC", "EOS", "ETH", "USD"];
+const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB"];
 
 let actionClicked = false;
 
@@ -24,18 +24,6 @@ interface Group {
   title: string;
   coins: Array<CoinInfo>;
 }
-
-interface CoinMapValue {
-  balance: number;
-
-  eosPrice: number;
-  usdPrice: number;
-  btcPrice: number;
-}
-
-type CoinMap = {
-  [sym: string]: CoinMapValue;
-};
 
 // title 和 sym 都相同为相同
 function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
@@ -55,8 +43,9 @@ function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
 export default function() {
   const [groups, setGroupsOri] = useState<Array<Group>>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [coinMap, setCoinMap] = useState<CoinMap>({});
-  const [coins, setCoins] = useState<Array<CoinInfo>>([]);
+  const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
+  const [btcPrice, setBtcPrice] = useState<number>();
+  const [baesCoin, setBaseCoin] = useState("BTC");
 
   const setGroups = (groups: Array<Group>) => {
     // 去重
@@ -72,20 +61,85 @@ export default function() {
     const groups: Array<Group> = localStorage.get("savedCoinsGroups");
     if (groups != null) {
       setGroups(groups);
-      if (groups.length > 0) {
-        setCoins(groups[0].coins);
-      }
     } else {
       setGroups([{ title: "我的资产", coins: [] }]);
     }
   }, []);
 
   useEffect(() => {
-    // 获取代币价格信息
-  }, [coins]);
+    fetchPrices();
+    const interval = setInterval(() => {
+      fetchPrices();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  function parseEosAmount(str: string) {
-    return Number(str.split(" ")[0]);
+  function fetchPrices() {
+    fetch(
+      "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/price",
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    ).then(async res => {
+      const all = await res.json();
+      const newPriceMap: { [sym: string]: number } = {};
+      all.forEach(({ symbol, price }: { symbol: string; price: string }) => {
+        // symbol: "ETHBTC", price: "0.02733700"
+        if (symbol.match(/BTC$/)) {
+          newPriceMap[symbol.replace(/BTC$/, "")] = parseFloat(price);
+        } else if (symbol === "BTCUSDT") {
+          setBtcPrice(parseFloat(price));
+        }
+      });
+      setPricesByBTC(newPriceMap);
+    });
+  }
+
+  function parseCoinSym(sym: string | undefined): string | undefined {
+    if (sym == null) {
+      return undefined;
+    }
+    sym = sym.toUpperCase();
+    if (sym.indexOf("USD") > -1) {
+      return "USD";
+    }
+    if (sym === "BTC") {
+      return "BTC";
+    }
+    if (pricesByBTC[sym]) {
+      return sym;
+    }
+    return undefined;
+  }
+
+  function getPriceByBTC(sym: string): number | undefined {
+    let priceByBTC = pricesByBTC[sym];
+    if (priceByBTC) {
+      return priceByBTC;
+    }
+
+    if (sym === "BTC") {
+      return 1;
+    }
+
+    if (sym === "USD" && btcPrice) {
+      return 1 / btcPrice;
+    }
+
+    return undefined;
+  }
+
+  function getBaseCoinPrice(coin: CoinInfo): number | undefined {
+    const coinPriceByBTC = getPriceByBTC(coin.sym);
+    const baseCoinPriceByBTC = getPriceByBTC(baesCoin);
+
+    if (coinPriceByBTC == null || baseCoinPriceByBTC == null) {
+      return undefined;
+    }
+
+    return coinPriceByBTC / baseCoinPriceByBTC;
   }
 
   function addCate() {
@@ -142,13 +196,14 @@ export default function() {
           return;
         }
 
-        const sym = ((data.sym as string) || "").toUpperCase();
+        const sym = parseCoinSym(data.sym);
+        if (sym == null) {
+          // sym 不符合要求
+          throw new Error("不支持此币种");
+        }
+
         const balance = isNaN(data.balance) ? 0 : data.balance;
         const title = data.title || "默认";
-
-        if (validCoins.indexOf(sym) == -1) {
-          return;
-        }
 
         const newCoin: CoinInfo = {
           title,
@@ -163,7 +218,6 @@ export default function() {
           .toJS();
 
         setGroups(newGroups);
-        setCoins(newGroups[selectedIndex].coins);
       }
     });
   }
@@ -240,21 +294,18 @@ export default function() {
       onSubmit: (data: { [key: string]: any }) => {
         const newGroups: Group[] = List(groups)
           .setIn([groupIndex, "coins", coinIndex], {
+            title: data.title,
             sym: data.sym,
             balance: data.balance
           })
           .toJS();
         setGroups(newGroups);
-        setCoins(newGroups[selectedIndex].coins);
       }
     });
   }
 
   function reloadCoins() {
-    setCoins([]);
-    setTimeout(() => {
-      setCoins(groups[selectedIndex].coins);
-    });
+    setTimeout(() => fetchPrices());
   }
 
   function deleteCate(index: number, parentIndex?: number) {
@@ -324,19 +375,7 @@ export default function() {
     return <Loading />;
   }
 
-  //   let sum1 = 0;
-  //   let sum2 = 0;
-  //   let sum3 = 0;
-  //   let sumTotal = 0;
-  //   if (groups[selectedIndex] != null) {
-  //     groups[selectedIndex].accounts.forEach(account => {
-  //       sum1 += accountMap[account] ? accountMap[account].balance1 : 0;
-  //       sum2 += accountMap[account] ? accountMap[account].balance2 : 0;
-  //       sum3 += accountMap[account] ? accountMap[account].balance3 : 0;
-  //     });
-  //     sumTotal += sum1 + sum2 + sum3;
-  //   }
-
+  let totalAmountByBaseCoin: number = 0;
   return (
     <div className={css.container}>
       <Row>
@@ -395,7 +434,6 @@ export default function() {
                   }
 
                   setSelectedIndex(i);
-                  setCoins(groups[i].coins);
                 }}
                 className={cx(
                   i === selectedIndex && css.active,
@@ -408,16 +446,31 @@ export default function() {
           />
         </Col>
         <Col span={17}>
+          <div style={{ marginBottom: 20 }}>
+            计价单位: &nbsp;
+            <Radio.Group
+              onChange={e => {
+                setBaseCoin(e.target.value);
+              }}
+              defaultValue="BTC"
+            >
+              {baseCoins.map(coin => (
+                <Radio.Button key={coin} value={coin}>
+                  {coin}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          </div>
           {groups[selectedIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">
-                  <table className="table">
+                  <table className={cx("table", css.coins)}>
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
                         <th>
-                          账户名
+                          账户
                           <Button type="link" onClick={() => addCoin()}>
                             <Icon type="plus" />
                           </Button>
@@ -425,7 +478,7 @@ export default function() {
                         <th>币种</th>
                         <th>价格</th>
                         <th>数量</th>
-                        <th>价值</th>
+                        <th>总金额</th>
                         <th style={{ textAlign: "right" }}>
                           操作
                           <Button type="link" onClick={() => reloadCoins()}>
@@ -436,29 +489,34 @@ export default function() {
                     </thead>
                     <tbody className="ant-table-tbody">
                       {groups[selectedIndex].coins.map((coin, i) => {
-                        const info: CoinMapValue = coinMap[coin.sym] || {
-                          balance: coin.balance,
+                        const priceByBaseCoin = getBaseCoinPrice(coin);
+                        const amountByBaseCoin =
+                          priceByBaseCoin != null
+                            ? priceByBaseCoin * coin.balance
+                            : undefined;
 
-                          eosPrice: 0,
-                          btcPrice: 0,
-                          usdPrice: 0
-                        };
+                        if (amountByBaseCoin != null) {
+                          totalAmountByBaseCoin += amountByBaseCoin;
+                        }
+
                         return (
                           <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{coin.title}</td>
                             <td>{coin.sym}</td>
                             <td>
-                              {info.btcPrice} BTC
-                              <br />
-                              {info.eosPrice} EOS
-                              <br />
-                              {info.usdPrice} USD
+                              {priceByBaseCoin &&
+                                `${priceByBaseCoin.toPrecision(5)} ${baesCoin}`}
                             </td>
                             <td>
-                              {info.balance} {coin.sym}
+                              {coin.balance} {coin.sym}
                             </td>
-                            <td></td>
+                            <td>
+                              {amountByBaseCoin &&
+                                `${amountByBaseCoin.toPrecision(
+                                  5
+                                )} ${baesCoin}`}
+                            </td>
                             <td style={{ textAlign: "right" }}>
                               <Icon
                                 type="edit"
@@ -500,7 +558,12 @@ export default function() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th></th>
+                        <th>
+                          {totalAmountByBaseCoin &&
+                            `${totalAmountByBaseCoin.toPrecision(
+                              5
+                            )} ${baesCoin}`}
+                        </th>
                         <th></th>
                       </tr>
                     </thead>

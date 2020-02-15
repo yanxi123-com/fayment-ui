@@ -27,8 +27,8 @@ function SiderComp(props: Props) {
         selectedKeys={[current]}
         onClick={handleClick}
       >
-        <Menu.Item key="eos-accounts">EOS 多账号统计</Menu.Item>
         <Menu.Item key="coins">多币种统计</Menu.Item>
+        <Menu.Item key="eos-accounts">EOS 多账号统计</Menu.Item>
         <div
           style={{
             margin: "30px 15px",
