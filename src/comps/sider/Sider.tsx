@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, Layout } from "antd";
 import qrcode from "./qrcode_cfms.jpg";
+import { trackPageview } from "lib/gtag";
 
 import { withRouter, RouteComponentProps } from "react-router-dom";
 
@@ -14,7 +15,9 @@ function SiderComp(props: Props) {
   const { history, location } = props;
 
   function handleClick(e: any) {
-    history.push(`/${e.key}/`);
+    const path = `/${e.key}/`;
+    trackPageview(path);
+    history.push(path);
   }
 
   const current = location.pathname.split("/")[1];

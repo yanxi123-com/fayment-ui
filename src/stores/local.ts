@@ -1,6 +1,9 @@
+import { trackEvent } from "lib/gtag";
+
 const localStore = {
   set(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
+    trackEvent("save_local", { event_label: key });
   },
   get(key: string): any {
     const value = localStorage.getItem(key);

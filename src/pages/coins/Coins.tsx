@@ -7,6 +7,7 @@ import { List } from "immutable";
 import React, { useEffect, useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 import localStorage from "stores/local";
+import { trackEvent } from "lib/gtag";
 
 import css from "./Coins.module.scss";
 
@@ -76,6 +77,7 @@ export default function() {
   }, []);
 
   function fetchPrices() {
+    trackEvent("fetch_prices");
     fetch(
       "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/price",
       {

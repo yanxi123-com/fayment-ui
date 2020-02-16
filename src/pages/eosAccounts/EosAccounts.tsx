@@ -9,6 +9,7 @@ import Clipboard from "react-clipboard.js";
 import { BaseFieldSchema } from "stores/GlobalStore";
 import localStorage from "stores/local";
 import { getAccountInfo } from "lib/eos";
+import { trackEvent } from "lib/gtag";
 
 import css from "./EosAccounts.module.scss";
 
@@ -74,6 +75,7 @@ export default function() {
 
   useEffect(() => {
     // 获取账号链上信息
+    trackEvent("fetch_eos_accounts");
     Promise.all(
       accounts.map(account => getAccountInfo(account).catch(() => null))
     ).then(infos => {
