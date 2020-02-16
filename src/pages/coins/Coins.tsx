@@ -4,10 +4,12 @@ import { Loading } from "comps/loading/Loading";
 import { confirmPromise } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { List } from "immutable";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 import localStorage from "stores/local";
 import { trackEvent } from "lib/gtag";
+import { EChartOption } from "echarts";
+import ReactEcharts from "echarts-for-react";
 
 import css from "./Coins.module.scss";
 
@@ -68,15 +70,7 @@ export default function() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(() => {
-      fetchPrices();
-    }, 1000 * 10);
-    return () => clearInterval(interval);
-  }, []);
-
-  function fetchPrices() {
+  const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
     fetch(
       "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/price",
@@ -110,6 +104,82 @@ export default function() {
       const result = await res.json();
       setCnyRate(result.rate);
     });
+  }, []);
+
+  useEffect(() => {
+    fetchPrices();
+    const interval = setInterval(() => {
+      fetchPrices();
+    }, 1000 * 10);
+    return () => clearInterval(interval);
+  }, [fetchPrices]);
+
+  function computeChartOpt(): EChartOption | undefined {
+    if (groups[selectedIndex] == null) {
+      return;
+    }
+
+    // 合并币种数据
+    const coinMap: { [sym: string]: number } = {};
+
+    groups[selectedIndex].coins.forEach(coin => {
+      const priceByBaseCoin = getBaseCoinPrice(coin);
+      const amountByBaseCoin =
+        priceByBaseCoin != null ? priceByBaseCoin * coin.balance : undefined;
+
+      if (amountByBaseCoin) {
+        if (coinMap[coin.sym] == null) {
+          coinMap[coin.sym] = amountByBaseCoin;
+        } else {
+          coinMap[coin.sym] += amountByBaseCoin;
+        }
+      }
+    });
+
+    const coins = Object.keys(coinMap).sort((a, b) =>
+      coinMap[a] - coinMap[b] < 0 ? 1 : -1
+    );
+
+    if (coins.length <= 1) {
+      return;
+    }
+
+    return {
+      title: {
+        text: "持仓统计（按币种）",
+        // subtext: "Fayment.com",
+        left: "center"
+      },
+      tooltip: {
+        trigger: "item",
+        formatter: `{a} <br/>{b} 持仓: {c} ${baesCoin} ({d}%)`
+      },
+      legend: {
+        bottom: 10,
+        left: "center",
+        data: coins
+      },
+      series: [
+        {
+          name: "持仓数据",
+          type: "pie",
+          radius: "65%",
+          center: ["50%", "50%"],
+          selectedMode: "single",
+          data: coins.map(coin => ({
+            value: coinMap[coin],
+            name: coin
+          })),
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)"
+            }
+          }
+        }
+      ]
+    };
   }
 
   function parseCoinSym(sym: string | undefined): string | undefined {
@@ -394,6 +464,7 @@ export default function() {
     return <Loading />;
   }
 
+  const chartOpt = computeChartOpt();
   let totalAmountByBaseCoin: number = 0;
   return (
     <div className={css.container}>
@@ -603,6 +674,8 @@ export default function() {
               </div>
             </div>
           )}
+
+          {chartOpt && <ReactEcharts className={css.chart} option={chartOpt} />}
         </Col>
       </Row>
     </div>
