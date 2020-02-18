@@ -47,9 +47,7 @@ export default function() {
   const [groups, setGroupsOri] = useState<Array<Group>>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
-  const [btcPrice, setBtcPrice] = useState<number>();
   const [baesCoin, setBaseCoin] = useState("BTC");
-  const [cnyRate, setCnyRate] = useState(0);
 
   const setGroups = (groups: Array<Group>) => {
     // 去重
@@ -73,36 +71,9 @@ export default function() {
   const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
     fetch(
-      "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/price",
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
+      "https://jqjh6by9td.execute-api.ap-northeast-1.amazonaws.com/?name=listPricesByBTC"
     ).then(async res => {
-      const all = await res.json();
-      const newPriceMap: { [sym: string]: number } = {};
-      all.forEach(({ symbol, price }: { symbol: string; price: string }) => {
-        // symbol: "ETHBTC", price: "0.02733700"
-        if (symbol.match(/BTC$/)) {
-          newPriceMap[symbol.replace(/BTC$/, "")] = parseFloat(price);
-        } else if (symbol === "BTCUSDT") {
-          setBtcPrice(parseFloat(price));
-        }
-      });
-      setPricesByBTC(newPriceMap);
-    });
-
-    fetch(
-      "https://7hes1mxv2g.execute-api.ap-northeast-1.amazonaws.com/prod/rate",
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-    ).then(async res => {
-      const result = await res.json();
-      setCnyRate(result.rate);
+      setPricesByBTC(await res.json());
     });
   }, []);
 
@@ -203,18 +174,6 @@ export default function() {
     let priceByBTC = pricesByBTC[sym];
     if (priceByBTC) {
       return priceByBTC;
-    }
-
-    if (sym === "BTC") {
-      return 1;
-    }
-
-    if (sym === "USD" && btcPrice) {
-      return 1 / btcPrice;
-    }
-
-    if (sym === "CNY" && btcPrice && cnyRate) {
-      return 1 / btcPrice / cnyRate;
     }
 
     return undefined;
