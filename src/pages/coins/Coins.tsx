@@ -1,15 +1,16 @@
-import { Button, Col, Divider, Icon, List as AntList, Row, Radio } from "antd";
+import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise } from "comps/popup";
+import { confirmPromise, showError } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
-import { List } from "immutable";
-import React, { useEffect, useState, useCallback } from "react";
-import { BaseFieldSchema } from "stores/GlobalStore";
-import localStorage from "stores/local";
-import { trackEvent } from "lib/gtag";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { List } from "immutable";
+import { httpGet } from "lib/apiClient";
+import { trackEvent } from "lib/gtag";
+import React, { useCallback, useEffect, useState } from "react";
+import { BaseFieldSchema } from "stores/GlobalStore";
+import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
 
@@ -70,11 +71,11 @@ export default function() {
 
   const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
-    fetch(
-      "https://jqjh6by9td.execute-api.ap-northeast-1.amazonaws.com/?name=listPricesByBTC"
-    ).then(async res => {
-      setPricesByBTC(await res.json());
-    });
+    httpGet("listPricesByBTC")
+      .then(data => {
+        setPricesByBTC(data);
+      })
+      .catch(showError);
   }, []);
 
   useEffect(() => {
@@ -250,7 +251,7 @@ export default function() {
           throw new Error("不支持此币种");
         }
 
-        const balance = isNaN(data.balance) ? 0 : data.balance;
+        const balance = isNaN(data.balance) ? 0 : parseFloat(data.balance);
         const title = data.title || "默认";
 
         const newCoin: CoinInfo = {
@@ -340,11 +341,12 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
+        const balance = isNaN(data.balance) ? 0 : parseFloat(data.balance);
         const newGroups: Group[] = List(groups)
           .setIn([groupIndex, "coins", coinIndex], {
             title: data.title,
             sym: data.sym,
-            balance: data.balance
+            balance
           })
           .toJS();
         setGroups(newGroups);

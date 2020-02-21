@@ -1,12 +1,8 @@
 interface Config {
-  rpcService: string;
+  apiGateway: string;
 }
 
 const configModule: Config =
-  process.env.NODE_ENV === "development"
-    ? require("./dev")
-    : process.env.REACT_APP_STAGE === "beta"
-    ? require("./beta")
-    : require("./prod");
+  process.env.NODE_ENV === "development" ? require("./dev") : require("./prod");
 
 export default configModule;
