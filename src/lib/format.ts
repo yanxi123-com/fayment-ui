@@ -14,7 +14,7 @@ export function formatDateFriendly(date: number | string | Date) {
   if (seconds < 60 * 5) {
     // 5分钟内
     return "刚刚";
-  } else if (seconds < 60 * 60 && seconds >= 60 * 10) {
+  } else if (seconds < 60 * 60 && seconds >= 60 * 5) {
     //超过十分钟少于1小时
     const s = Math.floor(seconds / 60);
     return s + "分钟前";

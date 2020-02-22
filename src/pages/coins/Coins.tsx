@@ -64,7 +64,7 @@ function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
 
 function Component() {
   const globalStore = useContext(globalContext);
-  const [groups, setGroupsOri] = useState<Array<Group>>([]);
+  const [groups, setGroupsOri] = useState<Array<Group>>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [baesCoin, setBaseCoin] = useState("BTC");
@@ -138,7 +138,11 @@ function Component() {
         setGroups(groups, version);
       })
       .catch(showError);
-  }, [setGroups]);
+
+    return () => {
+      globalStore.currentGroupsVersion = undefined;
+    };
+  }, [setGroups, globalStore]);
 
   useEffect(() => {
     // 更新到云端
@@ -191,7 +195,7 @@ function Component() {
   }, [fetchPrices]);
 
   function computeChartOpt(): EChartOption | undefined {
-    if (groups[selectedIndex] == null) {
+    if (!groups || groups[selectedIndex] == null) {
       return;
     }
 
@@ -296,6 +300,9 @@ function Component() {
   }
 
   function addCate() {
+    if (!groups) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -376,6 +383,9 @@ function Component() {
   }
 
   function updateGroup(index: number) {
+    if (!groups) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -402,6 +412,9 @@ function Component() {
   }
 
   function updateCoin(groupIndex: number, coinIndex: number) {
+    if (!groups) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -463,6 +476,9 @@ function Component() {
   }
 
   function deleteCate(index: number, parentIndex?: number) {
+    if (!groups) {
+      return;
+    }
     const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
     const name =
       parentIndex == null
@@ -499,6 +515,9 @@ function Component() {
     index: number,
     parentIndex?: number
   ) {
+    if (!groups) {
+      return;
+    }
     const otherIndex = direction === "up" ? index - 1 : index + 1;
     if (otherIndex < 0) {
       return;
@@ -531,6 +550,7 @@ function Component() {
 
   const chartOpt = computeChartOpt();
   let totalAmountByBaseCoin: number = 0;
+
   return (
     <div className={css.container}>
       <Row>
