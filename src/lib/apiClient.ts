@@ -1,6 +1,7 @@
 import config from "config";
 import querystring from "querystring";
 import { globalStore } from "stores/GlobalStore";
+import { AppError } from "./error";
 
 function getHeaders(): HeadersInit {
   const token = globalStore.user && globalStore.user.token;
@@ -36,10 +37,10 @@ export async function httpGet(
   if (resBody.success) {
     return resBody.data;
   }
-  throw new Error(resBody.errorMsg);
+  throw new AppError([resBody.errorCode, resBody.errorMsg]);
 }
 
-export async function httpPost(name: string, body: { [key: string]: string }) {
+export async function httpPost(name: string, body: { [key: string]: any }) {
   const resBody = await fetch(getUrl(name), {
     method: "post",
     body: JSON.stringify(body),

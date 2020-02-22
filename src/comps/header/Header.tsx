@@ -108,6 +108,7 @@ export function register() {
 
 function Component(props: Props) {
   const globalStore = useContext(globalContext);
+  const { user, currentGroupsVersion } = globalStore;
 
   return (
     <Layout.Header className={css.header}>
@@ -119,10 +120,18 @@ function Component(props: Props) {
           {getCurrentTitle(props.location) || "区块链资产统计"}
         </div>
         <div className={css.tips}>
-          {globalStore.user && (
+          {user && currentGroupsVersion && (
             <>
-              <Icon type="check" /> 上次同步时间:&nbsp;
-              {formatDateFriendly(new Date("2020-02-20T13:30:12"))}
+              {currentGroupsVersion.currentVersion ===
+                currentGroupsVersion.cloudVersion &&
+                currentGroupsVersion.cloudUpdatedAt && (
+                  <>
+                    <Icon type="check" /> 上次同步时间:&nbsp;
+                    {formatDateFriendly(currentGroupsVersion.cloudUpdatedAt)}
+                  </>
+                )}
+              {currentGroupsVersion.currentVersion !==
+                currentGroupsVersion.cloudVersion && "正在同步到云端..."}
             </>
           )}
         </div>
@@ -143,7 +152,13 @@ function Component(props: Props) {
         {globalStore.user && (
           <>
             <b>{globalStore.user.email}</b>
-            <Button type="link" onClick={() => globalStore.logout()}>
+            <Button
+              type="link"
+              onClick={() => {
+                window.location.reload();
+                globalStore.logout();
+              }}
+            >
               退出
             </Button>
           </>

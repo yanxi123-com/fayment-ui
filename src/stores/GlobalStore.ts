@@ -23,6 +23,13 @@ export interface BaseFieldSchema {
   defaultValue?: string;
 }
 
+export interface UserDataVersion {
+  currentVersion: number; // 当前版本，进入页面时，version 设为 1，每次修改 version + 1
+  uploadingVersion?: number; // 正在上传的
+  cloudVersion?: number; // 云上数据版本，上传完成后更新
+  cloudUpdatedAt?: Date;
+}
+
 export interface FormSchema {
   title?: string;
   width?: number;
@@ -34,6 +41,7 @@ export interface FormSchema {
 export class GlobalStore {
   user: User | undefined;
   popupFormSchema: FormSchema | undefined;
+  currentGroupsVersion: UserDataVersion | undefined;
 
   constructor() {
     this.user = local.get("user");
@@ -59,7 +67,8 @@ export class GlobalStore {
 
 decorate(GlobalStore, {
   user: observable,
-  popupFormSchema: observable
+  popupFormSchema: observable,
+  currentGroupsVersion: observable
 });
 
 export const globalStore = new GlobalStore();

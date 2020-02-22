@@ -1,4 +1,8 @@
-export function formatDateFriendly(date: number | Date) {
+export function formatDateFriendly(date: number | string | Date) {
+  if (typeof date === "string") {
+    date = new Date();
+  }
+
   if (date instanceof Date) {
     date = date.getTime();
   }
