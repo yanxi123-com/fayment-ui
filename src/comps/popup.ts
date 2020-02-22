@@ -40,3 +40,7 @@ export function showError(err: string | Error) {
 export function showInfo(msg: string) {
   return message.info(msg);
 }
+
+export function showWarn(msg: string) {
+  return message.warn(msg);
+}

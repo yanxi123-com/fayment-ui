@@ -11,9 +11,24 @@
   flex-direction: row;
   justify-content: space-between;
 
+  .left {
+    display: flex;
+    flex-direction: row;
+    .title {
+      margin-left: 10px;
+      font-size: 18px;
+      font-weight: 400;
+      font-family: "Microsoft YaHei", Verdana, sans-serif;
+    }
+    .tips {
+      margin-left: 30px;
+      color: gray;
+    }
+  }
+
   .right {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
     button {
       font-size: 16px;
       // padding: 0;

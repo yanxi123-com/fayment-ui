@@ -1,4 +1,13 @@
-import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
+import {
+  Button,
+  Col,
+  Divider,
+  Icon,
+  List as AntList,
+  Modal,
+  Radio,
+  Row
+} from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -8,13 +17,18 @@ import ReactEcharts from "echarts-for-react";
 import { List } from "immutable";
 import { httpGet } from "lib/apiClient";
 import { trackEvent } from "lib/gtag";
-import React, { useCallback, useEffect, useState } from "react";
-import { BaseFieldSchema } from "stores/GlobalStore";
+import { observer } from "mobx-react-lite";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { register } from "comps/header/Header";
+import { BaseFieldSchema, globalContext } from "stores/GlobalStore";
 import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
+
+const LOCAL_KEY_OLD = "savedCoinsGroups";
+const USER_DATA_KEY = "coinGroups";
 
 let actionClicked = false;
 
@@ -44,30 +58,50 @@ function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
   return result;
 }
 
-export default function() {
+function Component() {
+  const globalStore = useContext(globalContext);
   const [groups, setGroupsOri] = useState<Array<Group>>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [baesCoin, setBaseCoin] = useState("BTC");
 
-  const setGroups = (groups: Array<Group>) => {
-    // 去重
-    groups.forEach(group => {
-      group.coins = uniqCoins(group.coins);
-    });
+  const setGroups = useCallback(
+    (groups: Array<Group>, isAuto?: boolean) => {
+      // 去重
+      groups.forEach(group => {
+        group.coins = uniqCoins(group.coins);
+      });
 
-    setGroupsOri(groups);
-    localStorage.set("savedCoinsGroups", groups);
-  };
+      if (!isAuto && !globalStore.user) {
+        Modal.warn({
+          title: "清先登录",
+          content: `登录后可同步数据到云端`,
+          onOk() {
+            register();
+          }
+        });
+        return;
+      }
+
+      setGroupsOri(groups);
+      localStorage.set(USER_DATA_KEY, groups);
+    },
+    [globalStore.user]
+  );
 
   useEffect(() => {
-    const groups: Array<Group> = localStorage.get("savedCoinsGroups");
+    // 初始化内容
+    httpGet("getUserData", { key: USER_DATA_KEY }).then(data => {
+      // data.
+    });
+    const oldGroups: Array<Group> = localStorage.get(LOCAL_KEY_OLD);
+    const groups = oldGroups;
     if (groups != null) {
-      setGroups(groups);
+      setGroups(groups, true);
     } else {
-      setGroups([{ title: "我的资产", coins: [] }]);
+      setGroups([{ title: "我的资产", coins: [] }], true);
     }
-  }, []);
+  }, [setGroups]);
 
   const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
@@ -642,3 +676,5 @@ export default function() {
     </div>
   );
 }
+
+export default observer(Component);

@@ -2,6 +2,7 @@ import React from "react";
 import { Menu, Layout } from "antd";
 import qrcode from "./qrcode_cfms.jpg";
 import { trackPageview } from "lib/gtag";
+import { Location } from "history";
 
 import { withRouter, RouteComponentProps } from "react-router-dom";
 
@@ -10,6 +11,19 @@ const { Sider } = Layout;
 export default withRouter(SiderComp);
 
 interface Props extends RouteComponentProps {}
+
+const keyTitleMap: { [key: string]: string } = {
+  coins: "多币种统计",
+  "eos-accounts": "EOS 多账号统计"
+};
+
+function getCurrentKey(location: Location) {
+  return location.pathname.split("/")[1];
+}
+
+export function getCurrentTitle(location: Location) {
+  return keyTitleMap[getCurrentKey(location)];
+}
 
 function SiderComp(props: Props) {
   const { history, location } = props;
@@ -20,18 +34,18 @@ function SiderComp(props: Props) {
     history.push(path);
   }
 
-  const current = location.pathname.split("/")[1];
-
   return (
     <Sider width={160} style={{ background: "#fff", minHeight: 500 }}>
       <Menu
         mode="inline"
         style={{ height: "100%", borderRight: 0 }}
-        selectedKeys={[current]}
+        selectedKeys={[getCurrentKey(location)]}
         onClick={handleClick}
       >
-        <Menu.Item key="coins">多币种统计</Menu.Item>
-        <Menu.Item key="eos-accounts">EOS 多账号统计</Menu.Item>
+        {Object.keys(keyTitleMap).map(key => (
+          <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+        ))}
+
         <div
           style={{
             margin: "30px 15px",
