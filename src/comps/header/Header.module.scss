@@ -9,9 +9,14 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
 
-  .cfms {
-    height: 60px;
+  .right {
+    font-size: 16px;
+    font-weight: 500;
+    button {
+      font-size: 16px;
+      // padding: 0;
+    }
   }
 }

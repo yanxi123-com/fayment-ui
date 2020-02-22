@@ -43,7 +43,7 @@ function PopupForm() {
     if (schema) {
       Promise.resolve()
         .then(() => {
-          schema.onSubmit(formData);
+          return schema.onSubmit(formData);
         })
         .then(close)
         .catch(showError);
@@ -81,6 +81,7 @@ function PopupForm() {
             >
               <Input
                 value={formData[field.key]}
+                type={field.type}
                 onChange={e => {
                   setData(field.key, e.currentTarget.value);
                 }}

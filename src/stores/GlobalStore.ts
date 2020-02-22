@@ -3,13 +3,20 @@ import { decorate, observable } from "mobx";
 import local from "./local";
 import { Metadata } from "grpc-web";
 
-interface AdminUser {
-  uid: string;
+interface User {
+  email: string;
   token: string;
 }
 
 export interface BaseFieldSchema {
-  type: "text" | "textarea" | "number" | "boolean" | "datetime" | "image";
+  type:
+    | "text"
+    | "password"
+    | "textarea"
+    | "number"
+    | "boolean"
+    | "datetime"
+    | "image";
   key: string;
   title: string;
   placeholder?: string;
@@ -25,24 +32,24 @@ export interface FormSchema {
 }
 
 export class GlobalStore {
-  user: AdminUser | undefined;
+  user: User | undefined;
   popupFormSchema: FormSchema | undefined;
 
   constructor() {
-    this.user = local.get("adminUser");
+    this.user = local.get("user");
   }
 
-  setLoginInfo = (uid: string, token: string) => {
-    this.user = { uid, token };
-    local.set("adminUser", {
-      uid,
+  setLoginInfo = (email: string, token: string) => {
+    this.user = { email, token };
+    local.set("user", {
+      email,
       token
     });
   };
 
   logout = () => {
     this.user = undefined;
-    local.remove("adminUser");
+    local.remove("user");
   };
 
   setPopupFormSchema(s: FormSchema | undefined) {
