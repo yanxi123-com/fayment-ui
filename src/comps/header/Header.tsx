@@ -12,8 +12,8 @@ import {
 import { httpPost } from "lib/apiClient";
 import { getCurrentTitle } from "comps/sider/Sider";
 import { withRouter, RouteComponentProps } from "react-router";
-import { formatDateFriendly } from "lib/format";
 import { Link } from "react-router-dom";
+import FriendlyDate from "../FriendlyDate";
 
 interface Props extends RouteComponentProps {}
 
@@ -127,7 +127,7 @@ function Component(props: Props) {
                 currentGroupsVersion.cloudUpdatedAt && (
                   <>
                     <Icon type="check" /> 上次同步时间:&nbsp;
-                    {formatDateFriendly(currentGroupsVersion.cloudUpdatedAt)}
+                    <FriendlyDate date={currentGroupsVersion.cloudUpdatedAt} />
                   </>
                 )}
               {currentGroupsVersion.currentVersion !==
