@@ -49,16 +49,16 @@ export class GlobalStore {
   }
 
   setLoginInfo = (email: string, token: string) => {
-    this.user = { email, token };
     local.set("user", {
       email,
       token
     });
+    window.location.reload();
   };
 
   logout = () => {
-    this.user = undefined;
     local.remove("user");
+    window.location.reload();
   };
 
   setPopupFormSchema(s: FormSchema | undefined) {

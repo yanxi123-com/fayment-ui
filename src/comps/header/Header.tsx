@@ -19,7 +19,6 @@ interface Props extends RouteComponentProps {}
 
 function afterLogin(email: string, token: string) {
   globalStore.setLoginInfo(email, token);
-  window.location.reload();
 }
 
 export function login() {
@@ -173,7 +172,6 @@ function Component(props: Props) {
             <Button
               type="link"
               onClick={() => {
-                window.location.reload();
                 globalStore.logout();
               }}
             >
