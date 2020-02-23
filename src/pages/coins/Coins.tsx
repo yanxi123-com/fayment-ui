@@ -217,7 +217,8 @@ function Component() {
         defaultValue: "默认"
       },
       {
-        type: "text",
+        type: "enum",
+        enumValues: Object.keys(pricesByBTC),
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH"
@@ -312,7 +313,8 @@ function Component() {
         ])
       },
       {
-        type: "text",
+        type: "enum",
+        enumValues: Object.keys(pricesByBTC),
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH",
@@ -529,9 +531,11 @@ function Component() {
                         <th>序号</th>
                         <th>
                           账户
-                          <Button type="link" onClick={() => addCoin()}>
-                            <Icon type="plus" />
-                          </Button>
+                          {Object.keys(pricesByBTC).length > 0 && (
+                            <Button type="link" onClick={() => addCoin()}>
+                              <Icon type="plus" />
+                            </Button>
+                          )}
                         </th>
                         <th>币种</th>
                         <th>价格</th>

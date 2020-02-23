@@ -1,7 +1,7 @@
 /**
  * 通用 popup form 方案
  */
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, AutoComplete } from "antd";
 import { observer } from "mobx-react-lite";
 import React, { useContext, useEffect, useState } from "react";
 import { FormSchema, globalContext, globalStore } from "stores/GlobalStore";
@@ -79,14 +79,27 @@ function PopupForm() {
               label={field.title}
               style={{ marginBottom: 10 }}
             >
-              <Input
-                value={formData[field.key]}
-                type={field.type}
-                onChange={e => {
-                  setData(field.key, e.currentTarget.value);
-                }}
-                placeholder={field.placeholder}
-              />
+              {field.type === "enum" && (
+                <AutoComplete
+                  value={formData[field.key]}
+                  onChange={value => {
+                    setData(field.key, value);
+                  }}
+                  dataSource={field.enumValues}
+                  placeholder={field.placeholder}
+                  filterOption
+                ></AutoComplete>
+              )}
+              {field.type !== "enum" && (
+                <Input
+                  value={formData[field.key]}
+                  type={field.type}
+                  onChange={e => {
+                    setData(field.key, e.currentTarget.value);
+                  }}
+                  placeholder={field.placeholder}
+                />
+              )}
             </Form.Item>
           );
         })}

@@ -16,11 +16,13 @@ export interface BaseFieldSchema {
     | "number"
     | "boolean"
     | "datetime"
-    | "image";
+    | "image"
+    | "enum";
   key: string;
   title: string;
   placeholder?: string;
   defaultValue?: string;
+  enumValues?: string[];
 }
 
 export interface UserDataVersion {
