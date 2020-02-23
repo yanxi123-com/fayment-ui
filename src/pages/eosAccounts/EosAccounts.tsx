@@ -3,13 +3,13 @@ import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError, showInfo } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
+import { useUserData } from "hooks/userData";
 import { List } from "immutable";
-import React, { useEffect, useState } from "react";
-import Clipboard from "react-clipboard.js";
-import { BaseFieldSchema } from "stores/GlobalStore";
-import localStorage from "stores/local";
 import { getAccountInfo } from "lib/eos";
 import { trackEvent } from "lib/gtag";
+import React, { useEffect, useState, useCallback } from "react";
+import Clipboard from "react-clipboard.js";
+import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./EosAccounts.module.scss";
 
@@ -45,37 +45,27 @@ function uniqStrs(strs: string[]): string[] {
   return result;
 }
 
+const useUserDataOpts = {
+  oldLocalKey: "savedAssetsGroups",
+  dataKey: "eosGroups",
+  defaultGroups: [{ title: "我的资产", accounts: [] }],
+  uniqGroupInfo: (group: Group) => {
+    group.accounts = uniqStrs(group.accounts);
+  }
+};
+
 export default function() {
-  const [groups, setGroupsOri] = useState<Array<Group>>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [accountMap, setAccountMap] = useState<AccountMap>({});
-  const [accounts, setAccounts] = useState<Array<string>>([]);
+  const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
-  const setGroups = (groups: Array<Group>) => {
-    // 去重
-    groups.forEach(group => {
-      group.accounts = uniqStrs(group.accounts);
-    });
-
-    setGroupsOri(groups);
-    localStorage.set("savedAssetsGroups", groups);
-  };
-
-  useEffect(() => {
-    const groups: Array<Group> = localStorage.get("savedAssetsGroups");
-    if (groups != null) {
-      setGroups(groups);
-      if (groups.length > 0) {
-        setAccounts(groups[0].accounts);
-      }
-    } else {
-      setGroups([{ title: "我的资产", accounts: [] }]);
+  const fetchAccounts = useCallback(() => {
+    if (groups == null) {
+      return;
     }
-  }, []);
-
-  useEffect(() => {
     // 获取账号链上信息
     trackEvent("fetch_eos_accounts");
+    const accounts = groups[selectedIndex].accounts;
     Promise.all(
       accounts.map(account => getAccountInfo(account).catch(() => null))
     ).then(infos => {
@@ -105,7 +95,11 @@ export default function() {
         });
       });
     });
-  }, [accounts]);
+  }, [groups, selectedIndex]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   function parseEosAmount(str: string) {
     return Number(str.split(" ")[0]);
@@ -116,6 +110,9 @@ export default function() {
   }
 
   function addCate() {
+    if (groups == null) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -168,12 +165,14 @@ export default function() {
             })
             .toJS()
         );
-        setAccounts(newAccounts);
       }
     });
   }
 
   function updateGroup(index: number) {
+    if (groups == null) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -200,6 +199,9 @@ export default function() {
   }
 
   function updateAccount(groupIndex: number, accountIndex: number) {
+    if (groups == null) {
+      return;
+    }
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
@@ -213,25 +215,23 @@ export default function() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        const account = data.account;
         setGroups(
           List(groups)
             .setIn([groupIndex, "accounts", accountIndex], data.account)
             .toJS()
         );
-        setAccounts([account]);
       }
     });
   }
 
   function reloadAccounts() {
-    setAccounts([]);
-    setTimeout(() => {
-      setAccounts(groups[selectedIndex].accounts);
-    });
+    fetchAccounts();
   }
 
   function deleteCate(index: number, parentIndex?: number) {
+    if (groups == null) {
+      return;
+    }
     const keyPath = parentIndex == null ? [] : [parentIndex, "accounts"];
     const name =
       parentIndex == null
@@ -268,6 +268,9 @@ export default function() {
     index: number,
     parentIndex?: number
   ) {
+    if (groups == null) {
+      return;
+    }
     const otherIndex = direction === "up" ? index - 1 : index + 1;
     if (otherIndex < 0) {
       return;
@@ -372,7 +375,6 @@ export default function() {
                   }
 
                   setSelectedIndex(i);
-                  setAccounts(groups[i].accounts);
                 }}
                 className={cx(
                   i === selectedIndex && css.active,

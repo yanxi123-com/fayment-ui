@@ -5,6 +5,7 @@ import { httpGet, httpPost } from "lib/apiClient";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { globalContext, UserDataVersion } from "stores/GlobalStore";
 import localStorage from "stores/local";
+import { AppError } from "lib/error";
 
 interface UserDataOpts<Group> {
   oldLocalKey: string;
@@ -58,7 +59,13 @@ export function useUserData<Group>(
     // 初始化内容
     let groups: Array<Group>;
     let version: UserDataVersion;
-    httpGet("getUserData", { key: opts.dataKey })
+    Promise.resolve()
+      .then(() => {
+        if (!globalStore.user) {
+          throw new AppError(["REQUIRE_LOGIN", "请先登录"]);
+        }
+        return httpGet("getUserData", { key: opts.dataKey });
+      })
       .then(data => {
         groups = data.value;
         version = {
