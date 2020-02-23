@@ -98,6 +98,7 @@ function PopupForm() {
           <Button onClick={close}>取消</Button>
         </Form.Item>
       </Form>
+      {schema.extraNode}
     </Modal>
   );
 }

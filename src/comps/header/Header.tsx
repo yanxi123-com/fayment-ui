@@ -55,7 +55,16 @@ export function login() {
       }).then(({ token }) => {
         afterLogin(email, token);
       });
-    }
+    },
+    extraNode: (
+      <>
+        <div className={css.extra}>
+          <Button type="link" onClick={() => register()}>
+            没有注册过? 10 秒快速注册
+          </Button>
+        </div>
+      </>
+    )
   });
 }
 
@@ -102,7 +111,16 @@ export function register() {
       }).then(({ token }) => {
         afterLogin(email, token);
       });
-    }
+    },
+    extraNode: (
+      <>
+        <div className={css.extra}>
+          <Button type="link" onClick={() => login()}>
+            已经注册过，直接登录
+          </Button>
+        </div>
+      </>
+    )
   });
 }
 

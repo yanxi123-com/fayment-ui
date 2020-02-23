@@ -36,6 +36,7 @@ export interface FormSchema {
   labelSpan?: number;
   fields: Array<BaseFieldSchema>;
   onSubmit: (value: { [key: string]: any }) => void | Promise<void>;
+  extraNode?: React.ReactNode;
 }
 
 export class GlobalStore {
