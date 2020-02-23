@@ -34,6 +34,9 @@ export async function loading<T>(
 
 export function showError(err: string | Error) {
   const msg: string = typeof err === "string" ? err : err.message;
+  if (!msg) {
+    return;
+  }
   return message.error(msg);
 }
 

@@ -19,6 +19,16 @@ interface UserDataHookResult<Group> {
   setGroups: (groups: Array<Group>, initVersion?: UserDataVersion) => void;
 }
 
+function promptLogin() {
+  Modal.warn({
+    title: "请先登录",
+    content: `登录后可同步数据到云端`,
+    onOk() {
+      register();
+    }
+  });
+}
+
 export function useUserData<Group>(
   opts: UserDataOpts<Group>
 ): UserDataHookResult<Group> {
@@ -34,13 +44,7 @@ export function useUserData<Group>(
 
       if (!initVersion && !globalStore.user) {
         // 通过 UI 更新，并且没有登录
-        Modal.warn({
-          title: "清先登录",
-          content: `登录后可同步数据到云端`,
-          onOk() {
-            register();
-          }
-        });
+        promptLogin();
         return;
       }
 
@@ -62,6 +66,7 @@ export function useUserData<Group>(
     Promise.resolve()
       .then(() => {
         if (!globalStore.user) {
+          promptLogin();
           throw new AppError(["REQUIRE_LOGIN", "请先登录"]);
         }
         return httpGet("getUserData", { key: opts.dataKey });
@@ -77,12 +82,12 @@ export function useUserData<Group>(
       .catch(e => {
         if (e.code === "REQUIRE_LOGIN" || e.code === "NoSuchKey") {
           // 未登录，或者无云上数据
-          groups = localStorage.get(opts.dataKey);
-          if (groups == null) {
-            groups = localStorage.get(opts.oldLocalKey);
-          }
-          if (groups == null) {
+          const localGroups = localStorage.get(opts.dataKey);
+          const oldLocalGroups = localStorage.get(opts.oldLocalKey);
+          if (localGroups && !globalStore.user) {
             groups = opts.defaultGroups;
+          } else {
+            groups = localGroups || oldLocalGroups || opts.defaultGroups;
           }
           version = {
             currentVersion: 1
