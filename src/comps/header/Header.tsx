@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Layout, Button, Icon } from "antd";
+import { Layout, Button, Icon, Tooltip } from "antd";
 import { observer } from "mobx-react-lite";
 import css from "./Header.module.scss";
 import logo from "./fayment2.gif";
@@ -142,10 +142,18 @@ function Component(props: Props) {
               {currentGroupsVersion.currentVersion ===
                 currentGroupsVersion.cloudVersion &&
                 currentGroupsVersion.cloudUpdatedAt && (
-                  <>
-                    <Icon type="check" /> 上次同步时间:&nbsp;
-                    <FriendlyDate date={currentGroupsVersion.cloudUpdatedAt} />
-                  </>
+                  <Tooltip
+                    placement="bottom"
+                    title="所有修改都会自动保存到云端"
+                  >
+                    <Icon type="check" style={{ marginRight: 5 }} />
+                    <span className={css.text}>
+                      上次修改时间:&nbsp;
+                      <FriendlyDate
+                        date={currentGroupsVersion.cloudUpdatedAt}
+                      />
+                    </span>
+                  </Tooltip>
                 )}
               {currentGroupsVersion.currentVersion !==
                 currentGroupsVersion.cloudVersion && "正在同步到云端..."}
