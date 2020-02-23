@@ -1,13 +1,4 @@
-import {
-  Button,
-  Col,
-  Divider,
-  Icon,
-  List as AntList,
-  Modal,
-  Radio,
-  Row
-} from "antd";
+import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -15,24 +6,16 @@ import { openPopupForm } from "comps/PopupForm";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { List } from "immutable";
-import { httpGet, httpPost } from "lib/apiClient";
+import { httpGet } from "lib/apiClient";
 import { trackEvent } from "lib/gtag";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { register } from "comps/header/Header";
-import {
-  BaseFieldSchema,
-  globalContext,
-  UserDataVersion
-} from "stores/GlobalStore";
-import localStorage from "stores/local";
+import React, { useCallback, useEffect, useState } from "react";
+import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
+import { useUserData } from "hooks/userData";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
-
-const LOCAL_KEY_OLD = "savedCoinsGroups";
-const USER_DATA_KEY = "coinGroups";
 
 let actionClicked = false;
 
@@ -62,120 +45,20 @@ function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
   return result;
 }
 
+const useUserDataOpts = {
+  oldLocalKey: "savedCoinsGroups",
+  dataKey: "coinGroups",
+  defaultGroups: [{ title: "我的资产", coins: [] }],
+  uniqGroupInfo: (group: Group) => {
+    group.coins = uniqCoins(group.coins);
+  }
+};
+
 function Component() {
-  const globalStore = useContext(globalContext);
-  const [groups, setGroupsOri] = useState<Array<Group>>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [baesCoin, setBaseCoin] = useState("BTC");
-  console.log(
-    "globalStore.coinGroupsVersion",
-    globalStore.currentGroupsVersion &&
-      globalStore.currentGroupsVersion.currentVersion
-  );
-
-  const setGroups = useCallback(
-    (groups: Array<Group>, initVersion?: UserDataVersion) => {
-      // 去重
-      groups.forEach(group => {
-        group.coins = uniqCoins(group.coins);
-      });
-
-      if (!initVersion && !globalStore.user) {
-        // 通过 UI 更新，并且没有登录
-        Modal.warn({
-          title: "清先登录",
-          content: `登录后可同步数据到云端`,
-          onOk() {
-            register();
-          }
-        });
-        return;
-      }
-
-      setGroupsOri(groups);
-      localStorage.set(USER_DATA_KEY, groups);
-      if (initVersion) {
-        globalStore.currentGroupsVersion = initVersion;
-      } else if (globalStore.currentGroupsVersion) {
-        globalStore.currentGroupsVersion.currentVersion++;
-      }
-    },
-    [globalStore]
-  );
-
-  useEffect(() => {
-    // 初始化内容
-    let groups: Array<Group>;
-    let version: UserDataVersion;
-    httpGet("getUserData", { key: USER_DATA_KEY })
-      .then(data => {
-        groups = data.value;
-        version = {
-          currentVersion: 1,
-          cloudVersion: 1,
-          cloudUpdatedAt: new Date(data.updatedAt)
-        };
-      })
-      .catch(e => {
-        if (e.code === "REQUIRE_LOGIN" || e.code === "NoSuchKey") {
-          // 未登录，或者无云上数据
-          groups = localStorage.get(USER_DATA_KEY);
-          if (groups == null) {
-            groups = localStorage.get(LOCAL_KEY_OLD);
-          }
-          if (groups == null) {
-            groups = [{ title: "我的资产", coins: [] }];
-          }
-          version = {
-            currentVersion: 1
-          };
-        } else {
-          throw e;
-        }
-      })
-      .then(() => {
-        setGroups(groups, version);
-      })
-      .catch(showError);
-
-    return () => {
-      globalStore.currentGroupsVersion = undefined;
-    };
-  }, [setGroups, globalStore]);
-
-  useEffect(() => {
-    // 更新到云端
-    console.log("update groups");
-    const { user, currentGroupsVersion: version } = globalStore;
-    console.log(version && version.currentVersion);
-    if (!version || !version.currentVersion) {
-      // 未初始化完成
-      return;
-    }
-    console.log("===", version.currentVersion, groups);
-    if (
-      version &&
-      user &&
-      (version.cloudVersion == null ||
-        version.cloudVersion < version.currentVersion)
-    ) {
-      if (version.uploadingVersion != null) {
-        return;
-      }
-      version.uploadingVersion = version.currentVersion;
-      httpPost("saveUserData", {
-        key: "coinGroups",
-        data: groups
-      })
-        .then(data => {
-          version.cloudVersion = version.uploadingVersion;
-          version.uploadingVersion = undefined;
-          version.cloudUpdatedAt = new Date(data.updatedAt);
-        })
-        .catch(showError);
-    }
-  }, [globalStore, groups]);
+  const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
   const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
