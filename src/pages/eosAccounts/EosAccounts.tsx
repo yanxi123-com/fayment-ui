@@ -7,7 +7,8 @@ import { useUserData } from "hooks/userData";
 import { List } from "immutable";
 import { getAccountInfo } from "lib/eos";
 import { trackEvent } from "lib/gtag";
-import React, { useEffect, useState, useCallback } from "react";
+import { uniqStrs } from "lib/util/array";
+import React, { useCallback, useEffect, useState } from "react";
 import Clipboard from "react-clipboard.js";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
@@ -31,18 +32,6 @@ type AccountMap = {
 
 function formatEosAmount(num: number, digits: number = 4): string {
   return num.toFixed(digits).replace(/([.]?0+)$/, "");
-}
-
-function uniqStrs(strs: string[]): string[] {
-  const strMap: { [key: string]: boolean } = {};
-  const result: string[] = [];
-  strs.forEach(str => {
-    if (strMap[str] == null) {
-      strMap[str] = true;
-      result.push(str);
-    }
-  });
-  return result;
 }
 
 const useUserDataOpts = {

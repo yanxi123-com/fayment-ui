@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { formatDateFriendly } from "lib/format";
+import { formatDateFriendly } from "lib/util/format";
 
 interface Props {
   date: number | string | Date | undefined;

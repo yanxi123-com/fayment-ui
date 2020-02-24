@@ -14,6 +14,7 @@ import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
 import { useUserData } from "hooks/userData";
+import { uniqStrs } from "lib/util/array";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -207,10 +208,19 @@ function Component() {
     });
   }
 
+  function getAccountNameEnum(): string[] {
+    if (groups == null) {
+      return [];
+    }
+    const keys = groups[selectedIndex].coins.map(c => c.title);
+    return uniqStrs(keys);
+  }
+
   function addCoin() {
     const fields: Array<BaseFieldSchema> = [
       {
-        type: "text",
+        type: "enum",
+        enumValues: getAccountNameEnum(),
         key: "title",
         title: "账户",
         placeholder: "请填写账户名称",
