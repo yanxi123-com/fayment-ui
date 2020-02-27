@@ -1,14 +1,8 @@
-export function formatDateFriendly(date: number | string | Date) {
-  if (typeof date === "string") {
-    date = new Date();
-  }
-
-  if (date instanceof Date) {
-    date = date.getTime();
-  }
+export function formatDateFriendly(d: number | string | Date) {
+  const date: Date = d instanceof Date ? d : new Date(d);
 
   const now = new Date();
-  const seconds = (now.getTime() - date) / 1000;
+  const seconds = (now.getTime() - date.getTime()) / 1000;
 
   //存储转换值
   if (seconds < 60 * 5) {
@@ -28,6 +22,8 @@ export function formatDateFriendly(date: number | string | Date) {
     return s + "天前";
   } else {
     //超过3天
-    return now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
+    return (
+      date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate()
+    );
   }
 }
