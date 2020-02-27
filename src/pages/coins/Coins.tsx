@@ -1,20 +1,21 @@
 import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
+import Search from "antd/lib/input/Search";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { useUserData } from "hooks/userData";
 import { List } from "immutable";
 import { httpGet } from "lib/apiClient";
 import { trackEvent } from "lib/gtag";
+import { uniqStrs } from "lib/util/array";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
-import { useUserData } from "hooks/userData";
-import { uniqStrs } from "lib/util/array";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -59,6 +60,7 @@ function Component() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [baesCoin, setBaseCoin] = useState("BTC");
+  const [filerText, setFilterText] = useState("");
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
   const fetchPrices = useCallback(() => {
@@ -530,6 +532,11 @@ function Component() {
                 </Radio.Button>
               ))}
             </Radio.Group>
+            <Search
+              style={{ marginLeft: 30, width: 200 }}
+              placeholder="过滤"
+              onChange={e => setFilterText(e.currentTarget.value)}
+            />
           </div>
           {groups[selectedIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
@@ -551,7 +558,7 @@ function Component() {
                         <th>价格</th>
                         <th>数量</th>
                         <th>总金额</th>
-                        <th style={{ textAlign: "right" }}>
+                        <th style={{ textAlign: "center" }}>
                           操作
                           <Button type="link" onClick={() => reloadCoins()}>
                             <Icon type="reload" />
@@ -569,6 +576,17 @@ function Component() {
 
                         if (amountByBaseCoin != null) {
                           totalAmountByBaseCoin += amountByBaseCoin;
+                        }
+
+                        if (filerText) {
+                          const word = filerText.toUpperCase();
+                          const { title, sym } = coin;
+                          if (
+                            title.toUpperCase().indexOf(word) === -1 &&
+                            sym.indexOf(word) === -1
+                          ) {
+                            return null;
+                          }
                         }
 
                         return (
@@ -601,7 +619,7 @@ function Component() {
                                   5
                                 )} ${baesCoin}`}
                             </td>
-                            <td style={{ textAlign: "right" }}>
+                            <td style={{ width: 150, textAlign: "center" }}>
                               <Icon
                                 type="edit"
                                 className={css.icon}
@@ -609,21 +627,27 @@ function Component() {
                               />
                               <Divider type="vertical" />
 
-                              <Icon
-                                type="up"
-                                className={css.icon}
-                                onClick={() => moveItem("up", i, selectedIndex)}
-                              />
-                              <Divider type="vertical" />
+                              {filerText === "" && (
+                                <>
+                                  <Icon
+                                    type="up"
+                                    className={css.icon}
+                                    onClick={() =>
+                                      moveItem("up", i, selectedIndex)
+                                    }
+                                  />
+                                  <Divider type="vertical" />
 
-                              <Icon
-                                type="down"
-                                className={css.icon}
-                                onClick={() =>
-                                  moveItem("down", i, selectedIndex)
-                                }
-                              />
-                              <Divider type="vertical" />
+                                  <Icon
+                                    type="down"
+                                    className={css.icon}
+                                    onClick={() =>
+                                      moveItem("down", i, selectedIndex)
+                                    }
+                                  />
+                                  <Divider type="vertical" />
+                                </>
+                              )}
 
                               <Icon
                                 type="delete"
