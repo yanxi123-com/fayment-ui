@@ -20,6 +20,7 @@ import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
+import { getBaseSym } from "./priceUtil";
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
@@ -338,7 +339,8 @@ function Component() {
                         <th>卖出</th>
                         <th>交易价格</th>
                         <th>最新价格</th>
-                        <th>盈亏</th>
+                        <th>盈亏数量</th>
+                        <th>盈亏额度</th>
                         <th style={{ textAlign: "center" }}>
                           操作
                           <Button type="link" onClick={refreshPrice}>
@@ -370,8 +372,69 @@ function Component() {
                         }
 
                         // 计算交易价格
+                        const [buyAmount, buySym] = parseQuantity(buy);
+                        const [sellAmount, sellSym] = parseQuantity(sell);
+                        const baseSym = getBaseSym(
+                          pricesByBTC,
+                          buySym,
+                          sellSym
+                        );
+                        let tradePrice: number;
+                        if (baseSym === buySym) {
+                          // 做空: btc(sell) -> usd(buy)
+                          tradePrice = buyAmount / sellAmount;
+                        } else {
+                          // 做多: usd(sell) -> btc(buy)
+                          tradePrice = sellAmount / buyAmount;
+                        }
 
                         // 计算最新价格
+                        let currentPrice: number | undefined;
+                        const buySymPrice = pricesByBTC[buySym];
+                        const sellSymPrice = pricesByBTC[sellSym];
+                        if (buySymPrice && sellSymPrice) {
+                          if (baseSym === buySym) {
+                            // 做空: btc(sell) -> usd(buy)
+                            currentPrice = sellSymPrice / buySymPrice;
+                          } else {
+                            // 做多: usd(sell) -> btc(buy)
+                            currentPrice = buySymPrice / sellSymPrice;
+                          }
+                        }
+
+                        // 计算盈亏比例
+                        let earnPercent: number | undefined;
+                        if (tradePrice && currentPrice) {
+                          if (baseSym === buySym) {
+                            // 做空: btc(sell) -> usd(buy)
+                            currentPrice = sellSymPrice / buySymPrice;
+
+                            // 做空盈亏计算
+                            earnPercent =
+                              ((tradePrice - currentPrice) / currentPrice) *
+                              100;
+                          } else {
+                            // 做多: usd(sell) -> btc(buy)
+                            currentPrice = buySymPrice / sellSymPrice;
+                            earnPercent =
+                              ((currentPrice - tradePrice) / tradePrice) * 100;
+                          }
+                        }
+
+                        // 盈亏数量
+                        let earnBaseSymAmount: number | undefined;
+                        if (tradePrice && currentPrice) {
+                          if (baseSym === buySym) {
+                            // 做空: btc(sell) -> usd(buy)
+                            earnBaseSymAmount =
+                              tradePrice * sellAmount -
+                              currentPrice * sellAmount;
+                          } else {
+                            // 做多: usd(sell) -> btc(buy)
+                            earnBaseSymAmount =
+                              currentPrice * buyAmount - tradePrice * buyAmount;
+                          }
+                        }
 
                         return (
                           <tr key={i}>
@@ -381,9 +444,56 @@ function Component() {
                             </td>
                             <td>{trade.buy}</td>
                             <td>{trade.sell}</td>
-                            <td>$price1</td>
-                            <td>$price2</td>
-                            <td>盈亏</td>
+                            <td>
+                              {tradePrice.toPrecision(4)} {baseSym}
+                            </td>
+                            <td>
+                              {currentPrice && (
+                                <>
+                                  {currentPrice.toPrecision(4)} {baseSym}
+                                </>
+                              )}
+                            </td>
+                            <td>
+                              {tradeDate != null && (
+                                <span
+                                  className={cx(
+                                    earnPercent && earnPercent > 0 && css.earn,
+                                    earnPercent && earnPercent < 0 && css.lose
+                                  )}
+                                >
+                                  {earnPercent && `${earnPercent.toFixed(2)}%`}
+                                </span>
+                              )}
+                              {tradeDate == null && (
+                                <>
+                                  {earnPercent &&
+                                    earnPercent > 0 &&
+                                    "等待机会..."}
+
+                                  {earnPercent &&
+                                    earnPercent < 0 &&
+                                    "**可交易**"}
+                                </>
+                              )}
+                            </td>
+                            <td>
+                              {tradeDate && (
+                                <span
+                                  className={cx(
+                                    earnPercent && earnPercent > 0 && css.earn,
+                                    earnPercent && earnPercent < 0 && css.lose
+                                  )}
+                                >
+                                  {earnBaseSymAmount && (
+                                    <>
+                                      {earnBaseSymAmount.toPrecision(4)}{" "}
+                                      {baseSym}
+                                    </>
+                                  )}
+                                </span>
+                              )}
+                            </td>
                             <td style={{ width: 150, textAlign: "center" }}>
                               <EditOutlined
                                 className={css.icon}
@@ -432,3 +542,8 @@ function Component() {
 }
 
 export default observer(Component);
+
+function parseQuantity(str: string): [number, string] {
+  const ary = str.split(/\s+/);
+  return [parseFloat(ary[0]), ary[1]];
+}

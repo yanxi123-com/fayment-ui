@@ -2,6 +2,7 @@ import { AutoComplete, Button, DatePicker, Form, Modal, Radio } from "antd";
 import moment, { Moment } from "moment";
 import React, { useState, useEffect } from "react";
 import { showError } from "comps/popup";
+import { getBaseSym } from "./priceUtil";
 
 export interface TradeInfo {
   tradeDate: string | undefined; // 如果空表示交易计划，非空表示已成交
@@ -17,8 +18,6 @@ const formItemLayout = {
 const tailFormItemLayout = {
   wrapperCol: { span: 20, offset: 4 }
 };
-
-const symOrder = ["USD", "BTC", "ETH", "BNB", "HT", "EOS"];
 
 function parseAmount(str: string): [number, string] {
   str = str.toUpperCase();
@@ -95,48 +94,6 @@ export function TradeForm(props: Props) {
       .map(a => ({ value: `${numPart} ${a}` }));
   }
 
-  function compareSym(s1: string, s2: string) {
-    // 法币优先
-    if (s1.indexOf("USD") > -1) {
-      return -1;
-    }
-
-    if (s2.indexOf("USD") > -1) {
-      return 1;
-    }
-
-    // 按照 symOrder 的顺序
-    const s1order = symOrder.indexOf(s1);
-    const s2order = symOrder.indexOf(s2);
-    if (s1order > -1 && s2order > -1) {
-      return s1order - s2order;
-    }
-    if (s1order > -1) {
-      return -1;
-    }
-    if (s2order > -1) {
-      return 1;
-    }
-
-    // 按照价格
-    const s1price = symPriceMap[s1];
-    const s2price = symPriceMap[s2];
-    if (s1price && s2price) {
-      return symPriceMap[s2] - symPriceMap[s1];
-    }
-    if (s1price) {
-      return -1;
-    }
-    if (s2price) {
-      return 1;
-    }
-    return 0;
-  }
-
-  function getBaseSym(...syms: string[]) {
-    return syms.sort(compareSym)[0];
-  }
-
   function computePrice(): string | undefined {
     const [num1, sym1] = parseAmount(inputBuy);
     const [num2, sym2] = parseAmount(inputSell);
@@ -144,7 +101,7 @@ export function TradeForm(props: Props) {
       return;
     }
 
-    const baseSym = getBaseSym(sym1, sym2);
+    const baseSym = getBaseSym(symPriceMap, sym1, sym2);
 
     if (baseSym === sym1) {
       return `${(num1 / num2).toPrecision(5)} ${sym1}/${sym2}`;

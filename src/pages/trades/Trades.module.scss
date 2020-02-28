@@ -67,3 +67,26 @@
   margin: 30px 100px 0 0;
   height: 500px !important;
 }
+
+.earn {
+  color: #00b45a;
+  font-size: 16px;
+  font-weight: 500;
+  &::before {
+    content: "+";
+  }
+  &.small {
+    font-size: 14px;
+    font-weight: normal;
+  }
+}
+
+.lose {
+  color: rgb(234, 0, 112);
+  font-size: 16px;
+  font-weight: 500;
+  &.small {
+    font-size: 14px;
+    font-weight: normal;
+  }
+}
