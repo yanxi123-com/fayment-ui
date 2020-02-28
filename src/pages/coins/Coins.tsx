@@ -1,29 +1,28 @@
+import {
+  DeleteOutlined,
+  DownOutlined,
+  EditOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  UpOutlined
+} from "@ant-design/icons";
 import { Button, Col, Divider, List as AntList, Radio, Row } from "antd";
 import Search from "antd/lib/input/Search";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise, showError } from "comps/popup";
+import { confirmPromise } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { usePrices } from "hooks/usePrices";
 import { useUserData } from "hooks/userData";
 import { List } from "immutable";
-import { httpGet } from "lib/apiClient";
-import { trackEvent } from "lib/gtag";
 import { uniqStrs } from "lib/util/array";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
-import {
-  PlusOutlined,
-  EditOutlined,
-  UpOutlined,
-  DownOutlined,
-  DeleteOutlined,
-  ReloadOutlined
-} from "@ant-design/icons";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -66,27 +65,15 @@ const useUserDataOpts = {
 
 function Component() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
-  const [baesCoin, setBaseCoin] = useState("BTC");
   const [filerText, setFilterText] = useState("");
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
-
-  const fetchPrices = useCallback(() => {
-    trackEvent("fetch_prices");
-    httpGet("listPricesByBTC")
-      .then(data => {
-        setPricesByBTC(data);
-      })
-      .catch(showError);
-  }, []);
-
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(() => {
-      fetchPrices();
-    }, 1000 * 10);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  const {
+    refreshPrice,
+    pricesByBTC,
+    getBaseCoinPrice,
+    baesCoin,
+    setBaseCoin
+  } = usePrices();
 
   function computeChartOpt(): EChartOption | undefined {
     if (!groups || groups[selectedIndex] == null) {
@@ -97,7 +84,7 @@ function Component() {
     const coinMap: { [sym: string]: number } = {};
 
     groups[selectedIndex].coins.forEach(coin => {
-      const priceByBaseCoin = getBaseCoinPrice(coin);
+      const priceByBaseCoin = getBaseCoinPrice(coin.sym);
       const amountByBaseCoin =
         priceByBaseCoin != null ? priceByBaseCoin * coin.balance : undefined;
 
@@ -164,33 +151,10 @@ function Component() {
     if (sym.indexOf("USD") > -1) {
       return "USD";
     }
-    if (sym === "BTC") {
-      return "BTC";
-    }
     if (pricesByBTC[sym]) {
       return sym;
     }
     return undefined;
-  }
-
-  function getPriceByBTC(sym: string): number | undefined {
-    let priceByBTC = pricesByBTC[sym];
-    if (priceByBTC) {
-      return priceByBTC;
-    }
-
-    return undefined;
-  }
-
-  function getBaseCoinPrice(coin: CoinInfo): number | undefined {
-    const coinPriceByBTC = getPriceByBTC(coin.sym);
-    const baseCoinPriceByBTC = getPriceByBTC(baesCoin);
-
-    if (coinPriceByBTC == null || baseCoinPriceByBTC == null) {
-      return undefined;
-    }
-
-    return coinPriceByBTC / baseCoinPriceByBTC;
   }
 
   function addCate() {
@@ -560,7 +524,7 @@ function Component() {
                         <th>总金额</th>
                         <th style={{ textAlign: "center" }}>
                           操作
-                          <Button type="link" onClick={() => fetchPrices()}>
+                          <Button type="link" onClick={refreshPrice}>
                             <ReloadOutlined />
                           </Button>
                         </th>
@@ -568,7 +532,7 @@ function Component() {
                     </thead>
                     <tbody className="ant-table-tbody">
                       {groups[selectedIndex].coins.map((coin, i) => {
-                        const priceByBaseCoin = getBaseCoinPrice(coin);
+                        const priceByBaseCoin = getBaseCoinPrice(coin.sym);
                         const amountByBaseCoin =
                           priceByBaseCoin != null
                             ? priceByBaseCoin * coin.balance

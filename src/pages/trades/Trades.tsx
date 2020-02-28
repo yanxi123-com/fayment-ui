@@ -1,27 +1,26 @@
+import {
+  DeleteOutlined,
+  DownOutlined,
+  EditOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  UpOutlined
+} from "@ant-design/icons";
 import { Button, Col, Divider, List as AntList, Radio, Row } from "antd";
 import Search from "antd/lib/input/Search";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise, showError } from "comps/popup";
+import { confirmPromise } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
+import { usePrices } from "hooks/usePrices";
 import { useUserData } from "hooks/userData";
 import { List } from "immutable";
-import { httpGet } from "lib/apiClient";
-import { trackEvent } from "lib/gtag";
 import { formatDate } from "lib/util/format";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
-import {
-  PlusOutlined,
-  EditOutlined,
-  UpOutlined,
-  DownOutlined,
-  DeleteOutlined,
-  ReloadOutlined
-} from "@ant-design/icons";
 
-import { TradeInfo, TradeForm } from "./tradeForm";
+import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
@@ -50,28 +49,10 @@ interface ModalInfo {
 
 function Component() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
-  const [baesCoin, setBaseCoin] = useState("BTC");
   const [filerText, setFilterText] = useState("");
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
-
-  const fetchPrices = useCallback(() => {
-    trackEvent("fetch_prices");
-    httpGet("listPricesByBTC")
-      .then(data => {
-        setPricesByBTC(data);
-      })
-      .catch(showError);
-  }, []);
-
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(() => {
-      fetchPrices();
-    }, 1000 * 10);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  const { refreshPrice, pricesByBTC, setBaseCoin } = usePrices();
 
   function addTrade() {
     if (!groups) {
@@ -111,43 +92,6 @@ function Component() {
         setModalInfo({});
       }
     });
-  }
-
-  function parseCoinSym(sym: string | undefined): string | undefined {
-    if (sym == null) {
-      return undefined;
-    }
-    sym = sym.toUpperCase();
-    if (sym.indexOf("USD") > -1) {
-      return "USD";
-    }
-    if (sym === "BTC") {
-      return "BTC";
-    }
-    if (pricesByBTC[sym]) {
-      return sym;
-    }
-    return undefined;
-  }
-
-  function getPriceByBTC(sym: string): number | undefined {
-    let priceByBTC = pricesByBTC[sym];
-    if (priceByBTC) {
-      return priceByBTC;
-    }
-
-    return undefined;
-  }
-
-  function getBaseCoinPrice(sym: string): number | undefined {
-    const coinPriceByBTC = getPriceByBTC(sym);
-    const baseCoinPriceByBTC = getPriceByBTC(baesCoin);
-
-    if (coinPriceByBTC == null || baseCoinPriceByBTC == null) {
-      return undefined;
-    }
-
-    return coinPriceByBTC / baseCoinPriceByBTC;
   }
 
   function addCate() {
@@ -397,7 +341,7 @@ function Component() {
                         <th>盈亏</th>
                         <th style={{ textAlign: "center" }}>
                           操作
-                          <Button type="link" onClick={() => fetchPrices()}>
+                          <Button type="link" onClick={refreshPrice}>
                             <ReloadOutlined />
                           </Button>
                         </th>
