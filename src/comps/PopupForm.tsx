@@ -79,18 +79,20 @@ function PopupForm() {
               label={field.title}
               style={{ marginBottom: 10 }}
             >
-              {field.type === "enum" && (
+              {field.type === "enum" ? (
                 <AutoComplete
                   value={formData[field.key]}
-                  onChange={value => {
+                  onChange={(value: string) => {
                     setData(field.key, value);
                   }}
                   dataSource={field.enumValues}
                   placeholder={field.placeholder}
                   filterOption
                 ></AutoComplete>
+              ) : (
+                <></>
               )}
-              {field.type !== "enum" && (
+              {field.type !== "enum" ? (
                 <Input
                   value={formData[field.key]}
                   type={field.type}
@@ -99,6 +101,8 @@ function PopupForm() {
                   }}
                   placeholder={field.placeholder}
                 />
+              ) : (
+                <></>
               )}
             </Form.Item>
           );

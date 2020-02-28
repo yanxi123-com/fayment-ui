@@ -14,7 +14,7 @@ interface Props extends RouteComponentProps {}
 
 const keyTitleMap: { [key: string]: string } = {
   coins: "多币种统计",
-  trades: "交易记录＆计划",
+  trades: "交易监控＆计划",
   "eos-accounts": "EOS 多账号统计"
 };
 

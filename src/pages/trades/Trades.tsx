@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
+import { Button, Col, Divider, List as AntList, Radio, Row } from "antd";
 import Search from "antd/lib/input/Search";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
@@ -8,23 +8,25 @@ import { useUserData } from "hooks/userData";
 import { List } from "immutable";
 import { httpGet } from "lib/apiClient";
 import { trackEvent } from "lib/gtag";
+import { formatDate } from "lib/util/format";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
+import {
+  PlusOutlined,
+  EditOutlined,
+  UpOutlined,
+  DownOutlined,
+  DeleteOutlined,
+  ReloadOutlined
+} from "@ant-design/icons";
 
+import { TradeInfo, TradeForm } from "./tradeForm";
 import css from "./Trades.module.scss";
-import { addTrade, updateTrade } from "./tradeForm";
-import { formatDate } from "lib/util/format";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 let actionClicked = false;
-
-interface TradeInfo {
-  tradeDate: Date | undefined; // 如果空表示交易计划，非空表示已成交
-  buy: string; // 100 EOS
-  sell: string; // 1000 USD
-}
 
 interface Group {
   title: string;
@@ -35,17 +37,23 @@ const useUserDataOpts = {
   oldLocalKey: "notSuppoted",
   dataKey: "tradeGroups",
   defaultGroups: [
-    { title: "交易记录", trades: [] },
+    { title: "交易监控", trades: [] },
     { title: "交易计划", trades: [] }
   ],
   uniqGroupInfo: (group: Group) => {}
 };
+
+interface ModalInfo {
+  trade?: TradeInfo;
+  onSubmit?: (trade: TradeInfo) => void;
+}
 
 function Component() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
   const [baesCoin, setBaseCoin] = useState("BTC");
   const [filerText, setFilterText] = useState("");
+  const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
   const fetchPrices = useCallback(() => {
@@ -64,6 +72,46 @@ function Component() {
     }, 1000 * 10);
     return () => clearInterval(interval);
   }, [fetchPrices]);
+
+  function addTrade() {
+    if (!groups) {
+      return;
+    }
+    setModalInfo({
+      onSubmit: trade => {
+        const newGroups: Group[] = List(groups)
+          .updateIn([selectedIndex, "trades"], list => {
+            list.push(trade);
+            return list;
+          })
+          .toJS();
+        setGroups(newGroups);
+        setModalInfo({});
+      }
+    });
+  }
+
+  function updateTrade(groupIndex: number, tradeIndex: number) {
+    if (!groups) {
+      return;
+    }
+    const trade: TradeInfo = List(groups).getIn([
+      groupIndex,
+      "trades",
+      tradeIndex
+    ]);
+    console.log(trade);
+    setModalInfo({
+      trade: trade,
+      onSubmit: trade => {
+        const newGroups: Group[] = List(groups)
+          .setIn([groupIndex, "trades", tradeIndex], trade)
+          .toJS();
+        setGroups(newGroups);
+        setModalInfo({});
+      }
+    });
+  }
 
   function parseCoinSym(sym: string | undefined): string | undefined {
     if (sym == null) {
@@ -160,7 +208,7 @@ function Component() {
     if (!groups) {
       return;
     }
-    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
+    const keyPath = parentIndex == null ? [] : [parentIndex, "trades"];
     const name =
       parentIndex == null ? `分组 [${groups[index].title}] ` : `此交易`;
     confirmPromise("请确认", `确实要删除${name}吗？`).then(confirm => {
@@ -220,7 +268,7 @@ function Component() {
       }
     }
 
-    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
+    const keyPath = parentIndex == null ? [] : [parentIndex, "trades"];
     setGroups(
       switchObject(groups, [...keyPath, index], [...keyPath, otherIndex])
     );
@@ -232,6 +280,14 @@ function Component() {
 
   return (
     <div className={css.container}>
+      {modalInfo.onSubmit && (
+        <TradeForm
+          trade={modalInfo.trade}
+          symPriceMap={pricesByBTC}
+          onSubmit={modalInfo.onSubmit}
+          onCancel={() => setModalInfo({})}
+        />
+      )}
       <Row>
         <Col span={6}>
           <AntList
@@ -240,7 +296,7 @@ function Component() {
               <div style={{ margin: 0, padding: 0 }}>
                 分组列表
                 <Button type="link" onClick={() => addCate()}>
-                  <Icon type="plus" />
+                  <PlusOutlined />
                 </Button>
               </div>
             }
@@ -248,32 +304,28 @@ function Component() {
             renderItem={(item, i) => (
               <AntList.Item
                 actions={[
-                  <Icon
-                    type="edit"
+                  <EditOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       updateGroup(i);
                     }}
                   />,
-                  <Icon
-                    type="up"
+                  <UpOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("up", i);
                     }}
                   />,
-                  <Icon
-                    type="down"
+                  <DownOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("down", i);
                     }}
                   />,
-                  <Icon
-                    type="delete"
+                  <DeleteOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
@@ -304,7 +356,7 @@ function Component() {
             {Object.keys(pricesByBTC).length > 0 && (
               <Button
                 onClick={() => addTrade()}
-                icon="plus"
+                icon={<PlusOutlined />}
                 style={{ marginRight: 30 }}
               >
                 添加记录
@@ -346,7 +398,7 @@ function Component() {
                         <th style={{ textAlign: "center" }}>
                           操作
                           <Button type="link" onClick={() => fetchPrices()}>
-                            <Icon type="reload" />
+                            <ReloadOutlined />
                           </Button>
                         </th>
                       </tr>
@@ -373,18 +425,23 @@ function Component() {
                           }
                         }
 
+                        // 计算交易价格
+
+                        // 计算最新价格
+
                         return (
                           <tr key={i}>
                             <td>{i + 1}</td>
-                            <td>{formatDate(tradeDate)}</td>
+                            <td>
+                              {tradeDate ? formatDate(tradeDate) : "交易计划"}
+                            </td>
                             <td>{trade.buy}</td>
                             <td>{trade.sell}</td>
                             <td>$price1</td>
                             <td>$price2</td>
                             <td>盈亏</td>
                             <td style={{ width: 150, textAlign: "center" }}>
-                              <Icon
-                                type="edit"
+                              <EditOutlined
                                 className={css.icon}
                                 onClick={() => updateTrade(selectedIndex, i)}
                               />
@@ -392,8 +449,7 @@ function Component() {
 
                               {filerText === "" && (
                                 <>
-                                  <Icon
-                                    type="up"
+                                  <UpOutlined
                                     className={css.icon}
                                     onClick={() =>
                                       moveItem("up", i, selectedIndex)
@@ -401,8 +457,7 @@ function Component() {
                                   />
                                   <Divider type="vertical" />
 
-                                  <Icon
-                                    type="down"
+                                  <DownOutlined
                                     className={css.icon}
                                     onClick={() =>
                                       moveItem("down", i, selectedIndex)
@@ -412,8 +467,7 @@ function Component() {
                                 </>
                               )}
 
-                              <Icon
-                                type="delete"
+                              <DeleteOutlined
                                 className={css.icon}
                                 onClick={() => deleteCate(i, selectedIndex)}
                               />

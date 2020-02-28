@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Layout, Button, Icon, Tooltip } from "antd";
+import { Layout, Button, Tooltip } from "antd";
 import { observer } from "mobx-react-lite";
 import css from "./Header.module.scss";
 import logo from "./fayment2.gif";
@@ -14,6 +14,7 @@ import { getCurrentTitle } from "comps/sider/Sider";
 import { withRouter, RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 import FriendlyDate from "../FriendlyDate";
+import { CheckOutlined } from "@ant-design/icons";
 
 interface Props extends RouteComponentProps {}
 
@@ -146,7 +147,7 @@ function Component(props: Props) {
                     placement="bottom"
                     title="所有修改都会自动保存到云端"
                   >
-                    <Icon type="check" style={{ marginRight: 5 }} />
+                    <CheckOutlined style={{ marginRight: 5 }} />
                     <span className={css.text}>
                       上次修改时间:&nbsp;
                       <FriendlyDate

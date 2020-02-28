@@ -10,7 +10,7 @@ export default function() {
         多币种统计
       </Link>
       <Link to="/trades" className={css.item}>
-        交易记录＆计划
+        交易监控＆计划
       </Link>
       <Link to="/eos-accounts" className={css.item}>
         EOS 多账号统计

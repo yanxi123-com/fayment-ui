@@ -1,3 +1,5 @@
+import moment, { Moment } from "moment";
+
 export function formatDateFriendly(d: number | string | Date) {
   const date: Date = d instanceof Date ? d : new Date(d);
 
@@ -29,12 +31,12 @@ export function formatDateFriendly(d: number | string | Date) {
   return formatDate(date);
 }
 
-export function formatDate(d: number | string | Date | undefined): string {
+export function formatDate(
+  d: number | string | Date | undefined | Moment
+): string {
   if (d == null) {
     return "";
   }
-  const date: Date = d instanceof Date ? d : new Date(d);
-  return (
-    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
-  );
+
+  return moment(d).format("YYYY-MM-DD");
 }

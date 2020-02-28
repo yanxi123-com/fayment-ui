@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Icon, List as AntList, Row } from "antd";
+import { Button, Col, Divider, List as AntList, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError, showInfo } from "comps/popup";
@@ -13,6 +13,14 @@ import Clipboard from "react-clipboard.js";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./EosAccounts.module.scss";
+import {
+  PlusOutlined,
+  EditOutlined,
+  UpOutlined,
+  DownOutlined,
+  DeleteOutlined,
+  ReloadOutlined
+} from "@ant-design/icons";
 
 let actionClicked = false;
 
@@ -316,7 +324,7 @@ export default function() {
               <div style={{ margin: 0, padding: 0 }}>
                 分组列表
                 <Button type="link" onClick={() => addCate()}>
-                  <Icon type="plus" />
+                  <PlusOutlined />
                 </Button>
               </div>
             }
@@ -324,32 +332,28 @@ export default function() {
             renderItem={(item, i) => (
               <AntList.Item
                 actions={[
-                  <Icon
-                    type="edit"
+                  <EditOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       updateGroup(i);
                     }}
                   />,
-                  <Icon
-                    type="up"
+                  <UpOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("up", i);
                     }}
                   />,
-                  <Icon
-                    type="down"
+                  <DownOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("down", i);
                     }}
                   />,
-                  <Icon
-                    type="delete"
+                  <DeleteOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
@@ -387,7 +391,7 @@ export default function() {
                         <th>
                           EOS 账号
                           <Button type="link" onClick={() => addAccount()}>
-                            <Icon type="plus" />
+                            <PlusOutlined />
                           </Button>
                         </th>
                         <th>可用余额</th>
@@ -397,7 +401,7 @@ export default function() {
                         <th style={{ textAlign: "right" }}>
                           操作
                           <Button type="link" onClick={() => reloadAccounts()}>
-                            <Icon type="reload" />
+                            <ReloadOutlined />
                           </Button>
                         </th>
                       </tr>
@@ -429,22 +433,19 @@ export default function() {
                               {formatEosAmount(info.total)}
                             </td>
                             <td style={{ textAlign: "right" }}>
-                              <Icon
-                                type="edit"
+                              <EditOutlined
                                 className={css.icon}
                                 onClick={() => updateAccount(selectedIndex, i)}
                               />
                               <Divider type="vertical" />
 
-                              <Icon
-                                type="up"
+                              <UpOutlined
                                 className={css.icon}
                                 onClick={() => moveItem("up", i, selectedIndex)}
                               />
                               <Divider type="vertical" />
 
-                              <Icon
-                                type="down"
+                              <DownOutlined
                                 className={css.icon}
                                 onClick={() =>
                                   moveItem("down", i, selectedIndex)
@@ -452,8 +453,7 @@ export default function() {
                               />
                               <Divider type="vertical" />
 
-                              <Icon
-                                type="delete"
+                              <DeleteOutlined
                                 className={css.icon}
                                 onClick={() => deleteCate(i, selectedIndex)}
                               />

@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Icon, List as AntList, Radio, Row } from "antd";
+import { Button, Col, Divider, List as AntList, Radio, Row } from "antd";
 import Search from "antd/lib/input/Search";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
@@ -16,6 +16,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
+import {
+  PlusOutlined,
+  EditOutlined,
+  UpOutlined,
+  DownOutlined,
+  DeleteOutlined,
+  ReloadOutlined
+} from "@ant-design/icons";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -454,7 +462,7 @@ function Component() {
               <div style={{ margin: 0, padding: 0 }}>
                 分组列表
                 <Button type="link" onClick={() => addCate()}>
-                  <Icon type="plus" />
+                  <PlusOutlined />
                 </Button>
               </div>
             }
@@ -462,32 +470,28 @@ function Component() {
             renderItem={(item, i) => (
               <AntList.Item
                 actions={[
-                  <Icon
-                    type="edit"
+                  <EditOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       updateGroup(i);
                     }}
                   />,
-                  <Icon
-                    type="up"
+                  <UpOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("up", i);
                     }}
                   />,
-                  <Icon
-                    type="down"
+                  <DownOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
                       moveItem("down", i);
                     }}
                   />,
-                  <Icon
-                    type="delete"
+                  <DeleteOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
@@ -546,7 +550,7 @@ function Component() {
                           账户
                           {Object.keys(pricesByBTC).length > 0 && (
                             <Button type="link" onClick={() => addCoin()}>
-                              <Icon type="plus" />
+                              <PlusOutlined />
                             </Button>
                           )}
                         </th>
@@ -557,7 +561,7 @@ function Component() {
                         <th style={{ textAlign: "center" }}>
                           操作
                           <Button type="link" onClick={() => fetchPrices()}>
-                            <Icon type="reload" />
+                            <ReloadOutlined />
                           </Button>
                         </th>
                       </tr>
@@ -616,8 +620,7 @@ function Component() {
                                 )} ${baesCoin}`}
                             </td>
                             <td style={{ width: 150, textAlign: "center" }}>
-                              <Icon
-                                type="edit"
+                              <EditOutlined
                                 className={css.icon}
                                 onClick={() => updateCoin(selectedIndex, i)}
                               />
@@ -625,8 +628,7 @@ function Component() {
 
                               {filerText === "" && (
                                 <>
-                                  <Icon
-                                    type="up"
+                                  <UpOutlined
                                     className={css.icon}
                                     onClick={() =>
                                       moveItem("up", i, selectedIndex)
@@ -634,8 +636,7 @@ function Component() {
                                   />
                                   <Divider type="vertical" />
 
-                                  <Icon
-                                    type="down"
+                                  <DownOutlined
                                     className={css.icon}
                                     onClick={() =>
                                       moveItem("down", i, selectedIndex)
@@ -645,8 +646,7 @@ function Component() {
                                 </>
                               )}
 
-                              <Icon
-                                type="delete"
+                              <DeleteOutlined
                                 className={css.icon}
                                 onClick={() => deleteCate(i, selectedIndex)}
                               />
