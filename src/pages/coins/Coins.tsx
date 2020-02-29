@@ -71,7 +71,7 @@ function Component() {
     refreshPrice,
     pricesByBTC,
     getBaseCoinPrice,
-    baesCoin,
+    baseCoin,
     setBaseCoin
   } = usePrices();
 
@@ -113,7 +113,7 @@ function Component() {
       },
       tooltip: {
         trigger: "item",
-        formatter: `{a} <br/>{b} 持仓: {c} ${baesCoin} ({d}%)`
+        formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`
       },
       legend: {
         bottom: 10,
@@ -572,7 +572,7 @@ function Component() {
                             </td>
                             <td>
                               {priceByBaseCoin &&
-                                `${priceByBaseCoin.toPrecision(5)} ${baesCoin}`}
+                                `${priceByBaseCoin.toPrecision(5)} ${baseCoin}`}
                             </td>
                             <td>
                               {coin.balance} {coin.sym}
@@ -581,7 +581,7 @@ function Component() {
                               {amountByBaseCoin &&
                                 `${amountByBaseCoin.toPrecision(
                                   5
-                                )} ${baesCoin}`}
+                                )} ${baseCoin}`}
                             </td>
                             <td style={{ width: 150, textAlign: "center" }}>
                               <EditOutlined
@@ -630,7 +630,7 @@ function Component() {
                           {totalAmountByBaseCoin &&
                             `${totalAmountByBaseCoin.toPrecision(
                               5
-                            )} ${baesCoin}`}
+                            )} ${baseCoin}`}
                         </th>
                         <th></th>
                       </tr>

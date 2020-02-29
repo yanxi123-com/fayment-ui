@@ -24,7 +24,7 @@ import { getBaseSym } from "./priceUtil";
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
-const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
+const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 let actionClicked = false;
 
@@ -36,10 +36,7 @@ interface Group {
 const useUserDataOpts = {
   oldLocalKey: "notSuppoted",
   dataKey: "tradeGroups",
-  defaultGroups: [
-    { title: "交易监控", trades: [] },
-    { title: "交易计划", trades: [] }
-  ],
+  defaultGroups: [{ title: "交易监控", trades: [] }],
   uniqGroupInfo: (group: Group) => {}
 };
 
@@ -53,7 +50,13 @@ function Component() {
   const [filerText, setFilterText] = useState("");
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
-  const { refreshPrice, pricesByBTC, setBaseCoin } = usePrices();
+  const {
+    refreshPrice,
+    pricesByBTC,
+    baseCoin,
+    setBaseCoin,
+    getBaseCoinPrice
+  } = usePrices("自动");
 
   function addTrade() {
     if (!groups) {
@@ -82,7 +85,7 @@ function Component() {
       "trades",
       tradeIndex
     ]);
-    console.log(trade);
+
     setModalInfo({
       trade: trade,
       onSubmit: trade => {
@@ -223,6 +226,8 @@ function Component() {
     return <Loading />;
   }
 
+  let totalAmountByBaseCoin: number = 0;
+
   return (
     <div className={css.container}>
       {modalInfo.onSubmit && (
@@ -312,7 +317,7 @@ function Component() {
               onChange={e => {
                 setBaseCoin(e.target.value);
               }}
-              defaultValue="BTC"
+              defaultValue="自动"
             >
               {baseCoins.map(coin => (
                 <Radio.Button key={coin} value={coin}>
@@ -411,8 +416,7 @@ function Component() {
 
                             // 做空盈亏计算
                             earnPercent =
-                              ((tradePrice - currentPrice) / currentPrice) *
-                              100;
+                              ((tradePrice - currentPrice) / tradePrice) * 100;
                           } else {
                             // 做多: usd(sell) -> btc(buy)
                             currentPrice = buySymPrice / sellSymPrice;
@@ -433,6 +437,17 @@ function Component() {
                             // 做多: usd(sell) -> btc(buy)
                             earnBaseSymAmount =
                               currentPrice * buyAmount - tradePrice * buyAmount;
+                          }
+                        }
+
+                        // 盈亏数据基于 baseCoin
+                        let earnBaseCoinAmount: number | undefined;
+                        if (earnBaseSymAmount) {
+                          const baseSymPrice = getBaseCoinPrice(baseSym);
+                          if (baseSymPrice) {
+                            earnBaseCoinAmount =
+                              earnBaseSymAmount * baseSymPrice;
+                            totalAmountByBaseCoin += earnBaseCoinAmount;
                           }
                         }
 
@@ -485,10 +500,17 @@ function Component() {
                                     earnPercent && earnPercent < 0 && css.lose
                                   )}
                                 >
-                                  {earnBaseSymAmount && (
+                                  {earnBaseSymAmount && baseCoin === "自动" && (
                                     <>
-                                      {earnBaseSymAmount.toPrecision(4)}{" "}
+                                      {earnBaseSymAmount.toPrecision(4)}&nbsp;
                                       {baseSym}
+                                    </>
+                                  )}
+
+                                  {earnBaseCoinAmount && baseCoin !== "自动" && (
+                                    <>
+                                      {earnBaseCoinAmount.toPrecision(4)}&nbsp;
+                                      {baseCoin}
                                     </>
                                   )}
                                 </span>
@@ -530,6 +552,24 @@ function Component() {
                         );
                       })}
                     </tbody>
+                    {totalAmountByBaseCoin ? (
+                      <thead className="ant-table-thead">
+                        <tr className="ant-table-row ant-table-row-level-0">
+                          <th>汇总</th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th>
+                            {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
+                            {baseCoin}
+                          </th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                    ) : null}
                   </table>
                 </div>
               </div>

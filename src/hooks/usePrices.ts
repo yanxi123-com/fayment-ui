@@ -6,13 +6,13 @@ import { useCallback, useEffect, useState } from "react";
 interface PriceHookResult {
   refreshPrice: () => void;
   pricesByBTC: { [sym: string]: number };
-  baesCoin: string;
+  baseCoin: string;
   setBaseCoin: (sym: string) => void;
   getBaseCoinPrice: (sym: string) => number | undefined;
 }
 
-export function usePrices(): PriceHookResult {
-  const [baesCoin, setBaseCoin] = useState("BTC");
+export function usePrices(defaultBaseCoin?: string): PriceHookResult {
+  const [baseCoin, setBaseCoin] = useState(defaultBaseCoin || "BTC");
   const [pricesByBTC, setPricesByBTC] = useState<{ [sym: string]: number }>({});
 
   const fetchPrices = useCallback(() => {
@@ -43,7 +43,7 @@ export function usePrices(): PriceHookResult {
 
   function getBaseCoinPrice(sym: string): number | undefined {
     const coinPriceByBTC = getPriceByBTC(sym);
-    const baseCoinPriceByBTC = getPriceByBTC(baesCoin);
+    const baseCoinPriceByBTC = getPriceByBTC(baseCoin);
 
     if (coinPriceByBTC == null || baseCoinPriceByBTC == null) {
       return undefined;
@@ -55,7 +55,7 @@ export function usePrices(): PriceHookResult {
   return {
     refreshPrice: fetchPrices,
     pricesByBTC,
-    baesCoin,
+    baseCoin,
     setBaseCoin,
     getBaseCoinPrice
   };
