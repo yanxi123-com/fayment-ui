@@ -458,7 +458,6 @@ function Component() {
                           if (baseSymPrice) {
                             totalAmountByUSD +=
                               earnBaseSymAmount * baseSymPrice;
-                            console.log("totalAmountByUSD", totalAmountByUSD);
                           }
                         }
 

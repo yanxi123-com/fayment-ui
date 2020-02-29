@@ -9,8 +9,12 @@ cd build
 
 cp index.html 404.html
 
-mkdir eos-accounts
-cp index.html eos-accounts
+dirs=("eos-accounts" "coins" "trades")
+for dir in ${dirs[@]}
+do
+	mkdir $dir
+    cp index.html $dir
+done
 
 printf "fayment.com\n" > CNAME
 
