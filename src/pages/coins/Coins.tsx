@@ -519,8 +519,8 @@ function Component() {
                           )}
                         </th>
                         <th>币种</th>
-                        <th>价格</th>
                         <th>数量</th>
+                        <th>最新价</th>
                         <th>总金额</th>
                         <th style={{ textAlign: "center" }}>
                           操作
@@ -570,12 +570,10 @@ function Component() {
                                 {coin.sym}
                               </a>
                             </td>
+                            <td>{coin.balance}</td>
                             <td>
                               {priceByBaseCoin &&
                                 `${priceByBaseCoin.toPrecision(5)} ${baseCoin}`}
-                            </td>
-                            <td>
-                              {coin.balance} {coin.sym}
                             </td>
                             <td>
                               {amountByBaseCoin &&

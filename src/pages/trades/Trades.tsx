@@ -343,8 +343,8 @@ function Component() {
                         <th>交易时间</th>
                         <th>买入</th>
                         <th>卖出</th>
-                        <th>交易价格</th>
-                        <th>最新价格</th>
+                        <th>成交价</th>
+                        <th>最新价</th>
                         <th>盈亏数量</th>
                         <th>盈亏额度</th>
                         <th style={{ textAlign: "center" }}>
@@ -469,7 +469,7 @@ function Component() {
                             </td>
                             <td>{trade.buy}</td>
                             <td>{trade.sell}</td>
-                            <td>
+                            <td className={cx(!tradeDate && css.gray)}>
                               {tradePrice.toPrecision(4)} {baseSym}
                             </td>
                             <td>
@@ -494,7 +494,7 @@ function Component() {
                                 <>
                                   {earnPercent &&
                                     earnPercent > 0 &&
-                                    "等待机会..."}
+                                    `距离 ${earnPercent.toFixed(2)}%`}
 
                                   {earnPercent &&
                                     earnPercent < 0 &&
