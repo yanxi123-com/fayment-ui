@@ -26,7 +26,10 @@ function parseAmount(str: string): [number, string] {
 }
 
 function formatAmount(str: string): string {
-  const [n, s] = parseAmount(str);
+  let [n, s] = parseAmount(str);
+  if (s.indexOf("USD") > -1) {
+    s = "USD";
+  }
   return `${n} ${s}`;
 }
 

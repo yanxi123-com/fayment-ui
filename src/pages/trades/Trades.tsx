@@ -37,7 +37,7 @@ const useUserDataOpts = {
   oldLocalKey: "notSuppoted",
   dataKey: "tradeGroups",
   defaultGroups: [{ title: "交易监控", trades: [] }],
-  uniqGroupInfo: (group: Group) => {}
+  uniqGroupInfo: () => {}
 };
 
 interface ModalInfo {
@@ -56,7 +56,7 @@ function Component() {
     baseCoin,
     setBaseCoin,
     getBaseCoinPrice
-  } = usePrices("自动");
+  } = usePrices("USD");
 
   function addTrade() {
     if (!groups) {
@@ -227,6 +227,7 @@ function Component() {
   }
 
   let totalAmountByBaseCoin: number = 0;
+  let totalAmountByUSD: number = 0;
 
   return (
     <div className={css.container}>
@@ -315,7 +316,7 @@ function Component() {
             盈亏计价单位: &nbsp;
             <Radio.Group
               onChange={e => {
-                setBaseCoin(e.target.value);
+                setBaseCoin(e.target.value === "自动" ? "USD" : e.target.value);
               }}
               defaultValue="自动"
             >
@@ -442,12 +443,22 @@ function Component() {
 
                         // 盈亏数据基于 baseCoin
                         let earnBaseCoinAmount: number | undefined;
-                        if (earnBaseSymAmount) {
+                        if (earnBaseSymAmount && tradeDate) {
                           const baseSymPrice = getBaseCoinPrice(baseSym);
                           if (baseSymPrice) {
                             earnBaseCoinAmount =
                               earnBaseSymAmount * baseSymPrice;
                             totalAmountByBaseCoin += earnBaseCoinAmount;
+                          }
+                        }
+
+                        // 盈亏数据基于 USD
+                        if (earnBaseSymAmount && tradeDate) {
+                          const baseSymPrice = getBaseCoinPrice("USD");
+                          if (baseSymPrice) {
+                            totalAmountByUSD +=
+                              earnBaseSymAmount * baseSymPrice;
+                            console.log("totalAmountByUSD", totalAmountByUSD);
                           }
                         }
 
@@ -552,24 +563,32 @@ function Component() {
                         );
                       })}
                     </tbody>
-                    {totalAmountByBaseCoin ? (
-                      <thead className="ant-table-thead">
-                        <tr className="ant-table-row ant-table-row-level-0">
-                          <th>汇总</th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th>
-                            {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
-                            {baseCoin}
-                          </th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                    ) : null}
+
+                    <thead className="ant-table-thead">
+                      <tr className="ant-table-row ant-table-row-level-0">
+                        <th>汇总</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                          {(baseCoin === "自动" && totalAmountByUSD && (
+                            <>{totalAmountByUSD.toPrecision(4)} USD</>
+                          )) ||
+                            null}
+                          {(baseCoin !== "自动" && totalAmountByUSD && (
+                            <>
+                              {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
+                              {baseCoin}
+                            </>
+                          )) ||
+                            null}
+                        </th>
+                        <th></th>
+                      </tr>
+                    </thead>
                   </table>
                 </div>
               </div>
