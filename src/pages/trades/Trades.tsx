@@ -6,8 +6,8 @@ import {
   ReloadOutlined,
   UpOutlined
 } from "@ant-design/icons";
-import { Button, Col, Divider, List as AntList, Radio, Row } from "antd";
-import Search from "antd/lib/input/Search";
+import { Button, Col, Divider, List as AntList, Radio, Row, Input } from "antd";
+
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise } from "comps/popup";
@@ -326,7 +326,7 @@ function Component() {
                 </Radio.Button>
               ))}
             </Radio.Group>
-            <Search
+            <Input.Search
               style={{ marginLeft: 30, width: 200 }}
               placeholder="过滤"
               onChange={e => setFilterText(e.currentTarget.value)}

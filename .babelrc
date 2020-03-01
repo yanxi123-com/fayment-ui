@@ -1,18 +1,3 @@
 {
-  "presets": ["react-app"],
-  "plugins": [
-    [
-      "module-resolver",
-      {
-        "root": ["./src"],
-        "alias": {
-          "comps": "./src/comps",
-          "config": "./src/config",
-          "stores": "./src/stores",
-          "lib": "./src/lib",
-          "proto": "./src/proto"
-        }
-      }
-    ]
-  ]
+  "presets": ["react-app"]
 }
