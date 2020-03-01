@@ -4,7 +4,8 @@ import {
   EditOutlined,
   PlusOutlined,
   ReloadOutlined,
-  UpOutlined
+  UpOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
 import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
@@ -495,10 +496,12 @@ function Component() {
                 </Radio.Button>
               ))}
             </Radio.Group>
-            <Input.Search
+            <Input
+              prefix={<SearchOutlined style={{ color: "gray" }} />}
               style={{ marginLeft: 30, width: 200 }}
               placeholder="过滤"
               onChange={e => setFilterText(e.currentTarget.value)}
+              allowClear
             />
           </div>
           {groups[selectedIndex] != null && (
