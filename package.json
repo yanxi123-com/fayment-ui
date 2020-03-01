@@ -5,7 +5,8 @@
   "scripts": {
     "start": "PORT=3500 node scripts/start.js",
     "build": "GENERATE_SOURCEMAP=false node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "analyze": "ANALYZER=true npm run build"
   },
   "dependencies": {
     "@ant-design/icons": "^4.0.0",
@@ -86,6 +87,7 @@
     "typescript": "3.6.3",
     "url-loader": "2.1.0",
     "webpack": "4.40.2",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.3.1"
