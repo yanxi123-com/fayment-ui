@@ -17,6 +17,7 @@ import {
 import FriendlyDate from "../FriendlyDate";
 import logo from "./fayment2.gif";
 import css from "./Header.module.scss";
+import { parseGrpcError } from "lib/util/grpcUtil";
 
 interface Props extends RouteComponentProps {}
 
@@ -55,9 +56,14 @@ export function login() {
       req.setEmail(email);
       req.setPassword(pwd);
 
-      return userService.login(req).then(res => {
-        afterLogin(res.getEmail(), res.getToken());
-      });
+      return userService
+        .login(req)
+        .then(res => {
+          afterLogin(res.getEmail(), res.getToken());
+        })
+        .catch(e => {
+          throw new Error(parseGrpcError(e).msg);
+        });
     },
     extraNode: (
       <>
@@ -111,9 +117,14 @@ export function register() {
       req.setEmail(email);
       req.setPassword(pwd);
 
-      return userService.register(req).then(res => {
-        afterLogin(res.getEmail(), res.getToken());
-      });
+      return userService
+        .register(req)
+        .then(res => {
+          afterLogin(res.getEmail(), res.getToken());
+        })
+        .catch(e => {
+          throw new Error(parseGrpcError(e).msg);
+        });
     },
     extraNode: (
       <>

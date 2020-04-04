@@ -7,6 +7,7 @@ import { GetUserKvReq } from "proto/user_pb";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getAuthMD, globalContext, UserDataVersion } from "stores/GlobalStore";
 import localStorage from "stores/local";
+import { parseGrpcError } from "lib/util/grpcUtil";
 
 interface UserDataOpts<Group> {
   oldLocalKey: string;
@@ -78,8 +79,8 @@ export function useUserData<Group>(
         };
       })
       .catch(e => {
-        console.log(e);
-        if (e.code === "REQUIRE_LOGIN" || e.code === "NoSuchKey") {
+        const grpcError = parseGrpcError(e);
+        if (grpcError.code === "NOT_FOUND") {
           // 未登录，或者无云上数据
           const localGroups = localStorage.get(opts.dataKey);
           const oldLocalGroups = localStorage.get(opts.oldLocalKey);
@@ -92,14 +93,13 @@ export function useUserData<Group>(
             currentVersion: 1
           };
         } else {
-          throw e;
+          throw new Error(grpcError.msg);
         }
       })
       .then(() => {
         setGroups(groups, version);
       })
       .catch(showError);
-
     return () => {
       globalStore.currentGroupsVersion = undefined;
     };
