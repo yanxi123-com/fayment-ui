@@ -1,11 +1,12 @@
-import { Modal } from "antd";
-import { register } from "comps/header/Header";
+import { login } from "comps/header/Header";
 import { showError } from "comps/popup";
-import { httpGet, httpPost } from "lib/apiClient";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { globalContext, UserDataVersion } from "stores/GlobalStore";
-import localStorage from "stores/local";
+import { httpPost } from "lib/apiClient";
 import { AppError } from "lib/error";
+import { userService } from "lib/grpcClient";
+import { GetUserKvReq } from "proto/user_pb";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { getAuthMD, globalContext, UserDataVersion } from "stores/GlobalStore";
+import localStorage from "stores/local";
 
 interface UserDataOpts<Group> {
   oldLocalKey: string;
@@ -20,13 +21,7 @@ interface UserDataHookResult<Group> {
 }
 
 function promptLogin() {
-  Modal.warn({
-    title: "请先登录",
-    content: `登录后可同步数据到云端`,
-    onOk() {
-      register();
-    }
-  });
+  login();
 }
 
 export function useUserData<Group>(
@@ -69,17 +64,21 @@ export function useUserData<Group>(
           promptLogin();
           throw new AppError(["REQUIRE_LOGIN", "请先登录"]);
         }
-        return httpGet("getUserData", { key: opts.dataKey });
+
+        const req = new GetUserKvReq();
+        req.setKey(opts.dataKey);
+        return userService.getUserKv(req, getAuthMD());
       })
-      .then(data => {
-        groups = data.value;
+      .then(res => {
+        groups = JSON.parse(res.getValue());
         version = {
           currentVersion: 1,
           cloudVersion: 1,
-          cloudUpdatedAt: new Date(data.updatedAt)
+          cloudUpdatedAt: new Date(res.getCreatedat())
         };
       })
       .catch(e => {
+        console.log(e);
         if (e.code === "REQUIRE_LOGIN" || e.code === "NoSuchKey") {
           // 未登录，或者无云上数据
           const localGroups = localStorage.get(opts.dataKey);

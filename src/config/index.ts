@@ -1,5 +1,6 @@
 interface Config {
   apiGateway: string;
+  rpcService: string;
 }
 
 const configModule: Config =

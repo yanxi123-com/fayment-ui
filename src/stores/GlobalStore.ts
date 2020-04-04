@@ -51,6 +51,7 @@ export class GlobalStore {
   }
 
   setLoginInfo = (email: string, token: string) => {
+    this.user = { email, token };
     local.set("user", {
       email,
       token

@@ -1,20 +1,22 @@
-import React, { useContext } from "react";
-import { Layout, Button, Tooltip } from "antd";
-import { observer } from "mobx-react-lite";
-import css from "./Header.module.scss";
-import logo from "./fayment2.gif";
+import { CheckOutlined } from "@ant-design/icons";
+import { Button, Layout, Tooltip } from "antd";
 import { openPopupForm } from "comps/PopupForm";
+import { getCurrentTitle } from "comps/sider/Sider";
+import { userService } from "lib/grpcClient";
+import { observer } from "mobx-react-lite";
+import { LoginReq } from "proto/user_pb";
+import React, { useContext } from "react";
+import { RouteComponentProps, withRouter } from "react-router";
+import { Link } from "react-router-dom";
 import {
   BaseFieldSchema,
   globalContext,
   globalStore
 } from "stores/GlobalStore";
-import { httpPost } from "lib/apiClient";
-import { getCurrentTitle } from "comps/sider/Sider";
-import { withRouter, RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
+
 import FriendlyDate from "../FriendlyDate";
-import { CheckOutlined } from "@ant-design/icons";
+import logo from "./fayment2.gif";
+import css from "./Header.module.scss";
 
 interface Props extends RouteComponentProps {}
 
@@ -49,11 +51,12 @@ export function login() {
         throw new Error("请输入 Email 和密码");
       }
 
-      return httpPost("login", {
-        email: data.email,
-        pwd: data.pwd
-      }).then(({ token }) => {
-        afterLogin(email, token);
+      const req = new LoginReq();
+      req.setEmail(email);
+      req.setPassword(pwd);
+
+      return userService.login(req).then(res => {
+        afterLogin(res.getEmail(), res.getToken());
       });
     },
     extraNode: (
@@ -104,12 +107,12 @@ export function register() {
       if (pwd !== pwd2) {
         throw new Error("两次密码输入不同");
       }
+      const req = new LoginReq();
+      req.setEmail(email);
+      req.setPassword(pwd);
 
-      return httpPost("register", {
-        email: data.email,
-        pwd: data.pwd
-      }).then(({ token }) => {
-        afterLogin(email, token);
+      return userService.register(req).then(res => {
+        afterLogin(res.getEmail(), res.getToken());
       });
     },
     extraNode: (
@@ -147,13 +150,15 @@ function Component(props: Props) {
                     placement="bottom"
                     title="所有修改都会自动保存到云端"
                   >
-                    <CheckOutlined style={{ marginRight: 5 }} />
-                    <span className={css.text}>
-                      上次修改时间:&nbsp;
-                      <FriendlyDate
-                        date={currentGroupsVersion.cloudUpdatedAt}
-                      />
-                    </span>
+                    <>
+                      <CheckOutlined style={{ marginRight: 5 }} />
+                      <span className={css.text}>
+                        上次修改时间:&nbsp;
+                        <FriendlyDate
+                          date={currentGroupsVersion.cloudUpdatedAt}
+                        />
+                      </span>
+                    </>
                   </Tooltip>
                 )}
               {currentGroupsVersion.currentVersion !==

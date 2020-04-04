@@ -37,7 +37,7 @@ export function showError(err: string | Error) {
   if (!msg) {
     return;
   }
-  return message.error(msg);
+  return message.error(decodeURIComponent(msg));
 }
 
 export function showInfo(msg: string) {
