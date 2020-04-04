@@ -15,13 +15,11 @@ pipeline {
         echo '构建完成.'
       }
     }
-    stage('部署') {
+    stage('上传到 COS Bucket') {
       steps {
-        echo '部署中...'
-        sh '''chmod 600 config/deploy_beta_rsa
-rsync -r -e "ssh -i config/deploy_beta_rsa" build/ deploy@112.125.25.82:/home/deploy/beta_enterprise_ui
-'''
-        echo '部署完成'
+        sh "coscmd config -a ${env.COS_SECRET_ID} -s ${env.COS_SECRET_KEY} -b ${env.COS_BUCKET_NAME} -r ${env.COS_BUCKET_REGION}"
+        sh 'coscmd upload -r ./build/ /'
+        echo "上传成功，访问 https://${env.COS_BUCKET_NAME}.cos.${env.COS_BUCKET_REGION}.myqcloud.com/index.html 预览效果"
       }
     }
   }
