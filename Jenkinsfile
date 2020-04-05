@@ -19,7 +19,7 @@ pipeline {
       steps {
         sh "coscmd config -a ${env.COS_SECRET_ID} -s ${env.COS_SECRET_KEY} -b ${env.COS_BUCKET_NAME} -r ${env.COS_BUCKET_REGION}"
         sh 'coscmd upload -r ./build/ /'
-        echo "上传成功，访问 https://${env.COS_BUCKET_NAME}.cos.${env.COS_BUCKET_REGION}.myqcloud.com/index.html 预览效果"
+        echo "上传成功，访问 https://${env.COS_BUCKET_NAME}.cos-website.${env.COS_BUCKET_REGION}.myqcloud.com/ 预览效果"
       }
     }
   }
