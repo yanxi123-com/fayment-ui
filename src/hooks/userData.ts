@@ -3,7 +3,7 @@ import { showError } from "comps/popup";
 import { httpPost } from "lib/apiClient";
 import { AppError } from "lib/error";
 import { userService } from "lib/grpcClient";
-import { GetUserKvReq } from "proto/user_pb";
+import { GetUserKvReq, UserKvDTO } from "proto/user_pb";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getAuthMD, globalContext, UserDataVersion } from "stores/GlobalStore";
 import localStorage from "stores/local";
@@ -124,16 +124,20 @@ export function useUserData<Group>(
         return;
       }
       version.uploadingVersion = version.currentVersion;
-      httpPost("saveUserData", {
-        key: opts.dataKey,
-        data: groups
-      })
-        .then(data => {
+
+      const userKv = new UserKvDTO();
+      userKv.setKey(opts.dataKey);
+      userKv.setValue(JSON.stringify(groups));
+      userService
+        .saveUserKv(userKv, getAuthMD())
+        .then(res => {
           version.cloudVersion = version.uploadingVersion;
           version.uploadingVersion = undefined;
-          version.cloudUpdatedAt = new Date(data.updatedAt);
+          version.cloudUpdatedAt = new Date();
         })
-        .catch(showError);
+        .catch(e => {
+          showError(parseGrpcError(e).msg);
+        });
     }
   }, [globalStore, groups, opts.dataKey]);
 
