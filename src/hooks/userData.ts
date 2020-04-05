@@ -136,9 +136,6 @@ export function useUserData<Group>(
         })
         .catch(handleGrpcError)
         .catch(showError);
-      // .catch(e => {
-      //   showError(parseGrpcError(e));
-      // });
     }
   }, [globalStore, groups, opts.dataKey]);
 
