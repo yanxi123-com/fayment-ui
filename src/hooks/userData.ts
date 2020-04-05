@@ -1,13 +1,12 @@
 import { login } from "comps/header/Header";
 import { showError } from "comps/popup";
-import { httpPost } from "lib/apiClient";
 import { AppError } from "lib/error";
 import { userService } from "lib/grpcClient";
+import { parseGrpcError, handleGrpcError } from "lib/util/grpcUtil";
 import { GetUserKvReq, UserKvDTO } from "proto/user_pb";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getAuthMD, globalContext, UserDataVersion } from "stores/GlobalStore";
 import localStorage from "stores/local";
-import { parseGrpcError } from "lib/util/grpcUtil";
 
 interface UserDataOpts<Group> {
   oldLocalKey: string;
@@ -93,7 +92,7 @@ export function useUserData<Group>(
             currentVersion: 1
           };
         } else {
-          throw new Error(grpcError.msg);
+          throw grpcError;
         }
       })
       .then(() => {
@@ -135,9 +134,11 @@ export function useUserData<Group>(
           version.uploadingVersion = undefined;
           version.cloudUpdatedAt = new Date();
         })
-        .catch(e => {
-          showError(parseGrpcError(e).msg);
-        });
+        .catch(handleGrpcError)
+        .catch(showError);
+      // .catch(e => {
+      //   showError(parseGrpcError(e));
+      // });
     }
   }, [globalStore, groups, opts.dataKey]);
 

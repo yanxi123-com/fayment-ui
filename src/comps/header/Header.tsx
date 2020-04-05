@@ -3,6 +3,7 @@ import { Button, Layout, Tooltip } from "antd";
 import { openPopupForm } from "comps/PopupForm";
 import { getCurrentTitle } from "comps/sider/Sider";
 import { userService } from "lib/grpcClient";
+import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { LoginReq } from "proto/user_pb";
 import React, { useContext } from "react";
@@ -17,7 +18,6 @@ import {
 import FriendlyDate from "../FriendlyDate";
 import logo from "./fayment2.gif";
 import css from "./Header.module.scss";
-import { parseGrpcError } from "lib/util/grpcUtil";
 
 interface Props extends RouteComponentProps {}
 
@@ -61,9 +61,7 @@ export function login() {
         .then(res => {
           afterLogin(res.getEmail(), res.getToken());
         })
-        .catch(e => {
-          throw new Error(parseGrpcError(e).msg);
-        });
+        .catch(handleGrpcError);
     },
     extraNode: (
       <>
@@ -122,9 +120,7 @@ export function register() {
         .then(res => {
           afterLogin(res.getEmail(), res.getToken());
         })
-        .catch(e => {
-          throw new Error(parseGrpcError(e).msg);
-        });
+        .catch(handleGrpcError);
     },
     extraNode: (
       <>
