@@ -3,9 +3,13 @@ import * as grpcWeb from 'grpc-web';
 import * as base_pb from './base_pb';
 
 import {
+  AddGroupReq,
   GetUserKvReq,
+  GroupsDTO,
+  ListGroupsReq,
   LoginReq,
   LoginRes,
+  SwitchGroupReq,
   UserKvDTO} from './user_pb';
 
 export class UserServiceClient {
@@ -41,6 +45,34 @@ export class UserServiceClient {
                response: UserKvDTO) => void
   ): grpcWeb.ClientReadableStream<UserKvDTO>;
 
+  addGroup(
+    request: AddGroupReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  deleteGroup(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listGroups(
+    request: ListGroupsReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: GroupsDTO) => void
+  ): grpcWeb.ClientReadableStream<GroupsDTO>;
+
+  switchGroup(
+    request: SwitchGroupReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
 }
 
 export class UserServicePromiseClient {
@@ -67,6 +99,26 @@ export class UserServicePromiseClient {
     request: GetUserKvReq,
     metadata?: grpcWeb.Metadata
   ): Promise<UserKvDTO>;
+
+  addGroup(
+    request: AddGroupReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  deleteGroup(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listGroups(
+    request: ListGroupsReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<GroupsDTO>;
+
+  switchGroup(
+    request: SwitchGroupReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
 
 }
 

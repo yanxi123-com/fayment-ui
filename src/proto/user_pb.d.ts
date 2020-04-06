@@ -94,3 +94,103 @@ export namespace UserKvDTO {
   }
 }
 
+export class AddGroupReq extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddGroupReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddGroupReq): AddGroupReq.AsObject;
+  static serializeBinaryToWriter(message: AddGroupReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddGroupReq;
+  static deserializeBinaryFromReader(message: AddGroupReq, reader: jspb.BinaryReader): AddGroupReq;
+}
+
+export namespace AddGroupReq {
+  export type AsObject = {
+    name: string,
+  }
+}
+
+export class ListGroupsReq extends jspb.Message {
+  getType(): number;
+  setType(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListGroupsReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ListGroupsReq): ListGroupsReq.AsObject;
+  static serializeBinaryToWriter(message: ListGroupsReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListGroupsReq;
+  static deserializeBinaryFromReader(message: ListGroupsReq, reader: jspb.BinaryReader): ListGroupsReq;
+}
+
+export namespace ListGroupsReq {
+  export type AsObject = {
+    type: number,
+  }
+}
+
+export class GroupDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupDTO): GroupDTO.AsObject;
+  static serializeBinaryToWriter(message: GroupDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupDTO;
+  static deserializeBinaryFromReader(message: GroupDTO, reader: jspb.BinaryReader): GroupDTO;
+}
+
+export namespace GroupDTO {
+  export type AsObject = {
+    id: number,
+    name: string,
+  }
+}
+
+export class GroupsDTO extends jspb.Message {
+  getGroupsList(): Array<GroupDTO>;
+  setGroupsList(value: Array<GroupDTO>): void;
+  clearGroupsList(): void;
+  addGroups(value?: GroupDTO, index?: number): GroupDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsDTO): GroupsDTO.AsObject;
+  static serializeBinaryToWriter(message: GroupsDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsDTO;
+  static deserializeBinaryFromReader(message: GroupsDTO, reader: jspb.BinaryReader): GroupsDTO;
+}
+
+export namespace GroupsDTO {
+  export type AsObject = {
+    groupsList: Array<GroupDTO.AsObject>,
+  }
+}
+
+export class SwitchGroupReq extends jspb.Message {
+  getIdA(): number;
+  setIdA(value: number): void;
+
+  getIdB(): number;
+  setIdB(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SwitchGroupReq.AsObject;
+  static toObject(includeInstance: boolean, msg: SwitchGroupReq): SwitchGroupReq.AsObject;
+  static serializeBinaryToWriter(message: SwitchGroupReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SwitchGroupReq;
+  static deserializeBinaryFromReader(message: SwitchGroupReq, reader: jspb.BinaryReader): SwitchGroupReq;
+}
+
+export namespace SwitchGroupReq {
+  export type AsObject = {
+    idA: number,
+    idB: number,
+  }
+}
+

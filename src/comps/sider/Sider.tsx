@@ -14,8 +14,9 @@ interface Props extends RouteComponentProps {}
 
 const keyTitleMap: { [key: string]: string } = {
   coins: "多币种统计",
+  "coins-old": "旧版多币种统计",
   trades: "交易监控＆计划",
-  "eos-accounts": "EOS 多账号统计"
+  "eos-accounts": "EOS 多账号统计",
 };
 
 function getCurrentKey(location: Location) {
@@ -43,7 +44,7 @@ function SiderComp(props: Props) {
         selectedKeys={[getCurrentKey(location)]}
         onClick={handleClick}
       >
-        {Object.keys(keyTitleMap).map(key => (
+        {Object.keys(keyTitleMap).map((key) => (
           <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
         ))}
 
@@ -51,7 +52,7 @@ function SiderComp(props: Props) {
           style={{
             margin: "30px 15px",
             border: "1px solid #CCC",
-            padding: "15px 15px"
+            padding: "15px 15px",
           }}
         >
           <img alt="" src={qrcode} style={{ width: "100%" }} />

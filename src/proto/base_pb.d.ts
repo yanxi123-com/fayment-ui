@@ -14,31 +14,9 @@ export namespace Empty {
   }
 }
 
-export class Limit extends jspb.Message {
-  getSkip(): number;
-  setSkip(value: number): void;
-
-  getMax(): number;
-  setMax(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Limit.AsObject;
-  static toObject(includeInstance: boolean, msg: Limit): Limit.AsObject;
-  static serializeBinaryToWriter(message: Limit, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Limit;
-  static deserializeBinaryFromReader(message: Limit, reader: jspb.BinaryReader): Limit;
-}
-
-export namespace Limit {
-  export type AsObject = {
-    skip: number,
-    max: number,
-  }
-}
-
 export class IdWrapper extends jspb.Message {
-  getId(): string;
-  setId(value: string): void;
+  getId(): number;
+  setId(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): IdWrapper.AsObject;
@@ -50,7 +28,7 @@ export class IdWrapper extends jspb.Message {
 
 export namespace IdWrapper {
   export type AsObject = {
-    id: string,
+    id: number,
   }
 }
 

@@ -9,6 +9,7 @@ import Sider from "comps/sider/Sider";
 import { observer } from "mobx-react-lite";
 import EosAccounts from "pages/eosAccounts/EosAccounts";
 import Trades from "pages/trades/Trades";
+import CoinsOld from "pages/coinsOld/Coins";
 import Coins from "pages/coins/Coins";
 import Home from "pages/home/Home";
 import Login from "pages/login/Login";
@@ -17,7 +18,7 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  Switch
+  Switch,
 } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -31,11 +32,12 @@ const App: React.FC = () => {
           <Layout.Content
             style={{
               padding: "0px 30px 24px",
-              borderLeft: "1px solid #e8e8e8"
+              borderLeft: "1px solid #e8e8e8",
             }}
           >
             <Switch>
               <Route exact path="/coins/" component={Coins} />
+              <Route exact path="/coins-old/" component={CoinsOld} />
               <Route exact path="/trades/" component={Trades} />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
               <Route exact path="/" component={Home} />
