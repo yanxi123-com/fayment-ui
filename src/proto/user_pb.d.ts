@@ -112,6 +112,28 @@ export namespace AddGroupReq {
   }
 }
 
+export class UpdateGroupReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupReq.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupReq): UpdateGroupReq.AsObject;
+  static serializeBinaryToWriter(message: UpdateGroupReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupReq;
+  static deserializeBinaryFromReader(message: UpdateGroupReq, reader: jspb.BinaryReader): UpdateGroupReq;
+}
+
+export namespace UpdateGroupReq {
+  export type AsObject = {
+    id: number,
+    name: string,
+  }
+}
+
 export class ListGroupsReq extends jspb.Message {
   getType(): number;
   setType(value: number): void;

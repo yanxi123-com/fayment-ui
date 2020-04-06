@@ -10,64 +10,54 @@ import {
 import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { confirmPromise } from "comps/popup";
+import { confirmPromise, showError } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
+import { GroupType } from "constant";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { usePrices } from "hooks/usePrices";
-import { useUserData } from "hooks/userData";
 import { List } from "immutable";
+import { userService } from "lib/grpcClient";
 import { uniqStrs } from "lib/util/array";
+import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
+import {
+  AddGroupReq,
+  ListGroupsReq,
+  UpdateGroupReq,
+  SwitchGroupReq,
+} from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { BaseFieldSchema, globalContext } from "stores/GlobalStore";
+import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
+import { IdWrapper } from "proto/base_pb";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 let actionClicked = false;
 
 interface CoinInfo {
-  title: string;
+  name: string;
   sym: string;
-  balance: number;
+  amount: number;
 }
 
 interface Group {
-  title: string;
-  coins: Array<CoinInfo>;
+  id: number;
+  name: string;
 }
-
-// title 和 sym 都相同为相同
-function uniqCoins(coins: CoinInfo[]): CoinInfo[] {
-  const result: CoinInfo[] = [];
-  const strMap: { [key: string]: boolean } = {};
-  for (let i = 0; i < coins.length; i++) {
-    const coin = coins[i];
-    const key = `${coin.title},${coin.sym}`;
-    if (strMap[key] == null) {
-      strMap[key] = true;
-      result.push(coin);
-    }
-  }
-  return result;
-}
-
-const useUserDataOpts = {
-  oldLocalKey: "savedCoinsGroups",
-  dataKey: "coinGroups",
-  defaultGroups: [{ title: "我的资产", coins: [] }],
-  uniqGroupInfo: (group: Group) => {
-    group.coins = uniqCoins(group.coins);
-  },
-};
 
 function Component() {
+  // 用来让 groups 自动更新
+  const [groupVersion, setGroupVersion] = useState(0);
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [filerText, setFilterText] = useState("");
-  const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
+  const [groups, setGroups] = useState<Group[]>();
+  const [coins] = useState<CoinInfo[]>();
+
   const {
     refreshPrice,
     pricesByBTC,
@@ -76,33 +66,56 @@ function Component() {
     setBaseCoin,
   } = usePrices();
 
+  useEffect(() => {
+    const req = new ListGroupsReq();
+    req.setType(GroupType.CoinAccount);
+    userService
+      .listGroups(req, getAuthMD())
+      .then((res) => {
+        setGroups(
+          res.getGroupsList().map((g) => ({
+            id: g.getId(),
+            name: g.getName(),
+          }))
+        );
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
+  }, [groupVersion]);
+
   function computeChartOpt(): EChartOption | undefined {
     if (!groups || groups[selectedIndex] == null) {
+      return;
+    }
+
+    if (!coins) {
       return;
     }
 
     // 合并币种数据
     const coinMap: { [sym: string]: number } = {};
 
-    groups[selectedIndex].coins.forEach((coin) => {
-      const priceByBaseCoin = getBaseCoinPrice(coin.sym);
-      const amountByBaseCoin =
-        priceByBaseCoin != null ? priceByBaseCoin * coin.balance : undefined;
+    if (coins) {
+      coins.forEach((coin) => {
+        const priceByBaseCoin = getBaseCoinPrice(coin.sym);
+        const amountByBaseCoin =
+          priceByBaseCoin != null ? priceByBaseCoin * coin.amount : undefined;
 
-      if (amountByBaseCoin) {
-        if (coinMap[coin.sym] == null) {
-          coinMap[coin.sym] = amountByBaseCoin;
-        } else {
-          coinMap[coin.sym] += amountByBaseCoin;
+        if (amountByBaseCoin) {
+          if (coinMap[coin.sym] == null) {
+            coinMap[coin.sym] = amountByBaseCoin;
+          } else {
+            coinMap[coin.sym] += amountByBaseCoin;
+          }
         }
-      }
-    });
+      });
+    }
 
-    const coins = Object.keys(coinMap).sort((a, b) =>
+    const combinedCoins = Object.keys(coinMap).sort((a, b) =>
       coinMap[a] - coinMap[b] < 0 ? 1 : -1
     );
 
-    if (coins.length <= 1) {
+    if (combinedCoins.length <= 1) {
       return;
     }
 
@@ -119,7 +132,7 @@ function Component() {
       legend: {
         bottom: 10,
         left: "center",
-        data: coins,
+        data: combinedCoins,
       },
       series: [
         {
@@ -128,7 +141,7 @@ function Component() {
           radius: "65%",
           center: ["50%", "50%"],
           selectedMode: "single",
-          data: coins.map((coin) => ({
+          data: combinedCoins.map((coin) => ({
             value: coinMap[coin],
             name: coin,
           })),
@@ -174,16 +187,24 @@ function Component() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        setGroups(List(groups).push({ title: data.title, coins: [] }).toJS());
+        const req = new AddGroupReq();
+        req.setName(data.title);
+        userService
+          .addGroup(req, getAuthMD())
+          .then(() => {
+            setGroupVersion((i) => i + 1);
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
       },
     });
   }
 
   function getAccountNameEnum(): string[] {
-    if (groups == null) {
+    if (coins == null) {
       return [];
     }
-    const keys = groups[selectedIndex].coins.map((c) => c.title);
+    const keys = coins.map((c) => c.name);
     return uniqStrs(keys);
   }
 
@@ -231,9 +252,9 @@ function Component() {
         const title = data.title || "默认";
 
         const newCoin: CoinInfo = {
-          title,
+          name: title,
           sym,
-          balance,
+          amount: balance,
         };
         const newGroups: Group[] = List(groups)
           .updateIn([selectedIndex, "coins"], (list) => {
@@ -256,7 +277,7 @@ function Component() {
         type: "text",
         key: "title",
         title: "分组名",
-        defaultValue: groups[index].title,
+        defaultValue: groups[index].name,
       },
     ];
     openPopupForm({
@@ -267,6 +288,16 @@ function Component() {
         if (!groups) {
           return;
         }
+        const req = new UpdateGroupReq();
+        req.setId(groups[index].id);
+        req.setName(data.title);
+        userService
+          .updateGroup(req, getAuthMD())
+          .then(() => {
+            setGroupVersion((i) => i + 1);
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
         setGroups(List(groups).setIn([index, "title"], data.title).toJS());
       },
     });
@@ -333,15 +364,34 @@ function Component() {
     });
   }
 
-  function deleteCate(index: number, parentIndex?: number) {
+  function deleteGroup(index: number) {
     if (!groups) {
+      return;
+    }
+
+    const name = groups[index].name;
+    confirmPromise("请确认", `确实要删除[${name}]吗？`).then((confirm) => {
+      if (confirm) {
+        const req = new IdWrapper();
+        req.setId(groups[index].id);
+        userService
+          .deleteGroup(req, getAuthMD())
+          .then(() => setGroupVersion((i) => i + 1))
+          .catch(handleGrpcError)
+          .catch(showError);
+      }
+    });
+  }
+
+  function deleteCate(index: number, parentIndex?: number) {
+    if (!groups || !coins) {
       return;
     }
     const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
     const name =
       parentIndex == null
-        ? `分组 [${groups[index].title}] `
-        : `币种 [${groups[parentIndex].coins[index].sym}] `;
+        ? `分组 [${groups[index].name}] `
+        : `币种 [${coins[index].sym}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         setGroups(
@@ -353,18 +403,32 @@ function Component() {
     });
   }
 
-  function switchObject(
-    obj: any,
-    keyPath1: Array<any>,
-    keyPath2: Array<any>
-  ): any {
-    let a = List(obj);
-    if (a.getIn(keyPath1) && a.getIn(keyPath2)) {
-      a = a
-        .setIn(keyPath2, a.getIn(keyPath1))
-        .setIn(keyPath1, a.getIn(keyPath2));
+  function moveGroup(direction: "up" | "down", index: number) {
+    if (!groups) {
+      return;
     }
-    return a.toJS();
+    const otherIndex = direction === "up" ? index - 1 : index + 1;
+    if (otherIndex < 0 || otherIndex >= groups.length) {
+      return;
+    }
+
+    const req = new SwitchGroupReq();
+    req.setIdA(groups[index].id);
+    req.setIdB(groups[otherIndex].id);
+    userService
+      .switchGroup(req, getAuthMD())
+      .then(() => {
+        setGroupVersion((i) => i + 1);
+
+        // 是否选中跟随移动
+        if (otherIndex === selectedIndex) {
+          setSelectedIndex(index);
+        } else if (index === selectedIndex) {
+          setSelectedIndex(otherIndex);
+        }
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
   }
 
   // parentIndex 为空表示修改的是分组，否则修改的是账号
@@ -372,35 +436,7 @@ function Component() {
     direction: "up" | "down",
     index: number,
     parentIndex?: number
-  ) {
-    if (!groups) {
-      return;
-    }
-    const otherIndex = direction === "up" ? index - 1 : index + 1;
-    if (otherIndex < 0) {
-      return;
-    }
-    if (parentIndex == null && otherIndex >= groups.length) {
-      return;
-    }
-    if (parentIndex != null && otherIndex >= groups[parentIndex].coins.length) {
-      return;
-    }
-
-    if (parentIndex == null) {
-      // 是否选中跟随移动
-      if (otherIndex === selectedIndex) {
-        setSelectedIndex(index);
-      } else if (index === selectedIndex) {
-        setSelectedIndex(otherIndex);
-      }
-    }
-
-    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
-    setGroups(
-      switchObject(groups, [...keyPath, index], [...keyPath, otherIndex])
-    );
-  }
+  ) {}
 
   if (groups == null) {
     return <Loading />;
@@ -438,21 +474,21 @@ function Component() {
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
-                      moveItem("up", i);
+                      moveGroup("up", i);
                     }}
                   />,
                   <DownOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
-                      moveItem("down", i);
+                      moveGroup("down", i);
                     }}
                   />,
                   <DeleteOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
-                      deleteCate(i);
+                      deleteGroup(i);
                     }}
                   />,
                 ]}
@@ -469,7 +505,7 @@ function Component() {
                   i === selectedIndex - 1 && css.preActive
                 )}
               >
-                <div className={css.level1Title}>{item.title}</div>
+                <div className={css.level1Title}>{item.name}</div>
               </AntList.Item>
             )}
           />
@@ -526,91 +562,94 @@ function Component() {
                       </tr>
                     </thead>
                     <tbody className="ant-table-tbody">
-                      {groups[selectedIndex].coins.map((coin, i) => {
-                        const priceByBaseCoin = getBaseCoinPrice(coin.sym);
-                        const amountByBaseCoin =
-                          priceByBaseCoin != null
-                            ? priceByBaseCoin * coin.balance
-                            : undefined;
+                      {coins &&
+                        coins.map((coin, i) => {
+                          const priceByBaseCoin = getBaseCoinPrice(coin.sym);
+                          const amountByBaseCoin =
+                            priceByBaseCoin != null
+                              ? priceByBaseCoin * coin.amount
+                              : undefined;
 
-                        if (amountByBaseCoin != null) {
-                          totalAmountByBaseCoin += amountByBaseCoin;
-                        }
-
-                        if (filerText) {
-                          const word = filerText.toUpperCase();
-                          const { title, sym } = coin;
-                          if (
-                            title.toUpperCase().indexOf(word) === -1 &&
-                            sym.indexOf(word) === -1
-                          ) {
-                            return null;
+                          if (amountByBaseCoin != null) {
+                            totalAmountByBaseCoin += amountByBaseCoin;
                           }
-                        }
 
-                        return (
-                          <tr key={i}>
-                            <td>{i + 1}</td>
-                            <td>{coin.title}</td>
-                            <td>
-                              <a
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={`https://www.binance.com/cn/trade/${
-                                  coin.sym === "BTC"
-                                    ? "BTC_USDT"
-                                    : coin.sym + "_BTC"
-                                }`}
-                              >
-                                {coin.sym}
-                              </a>
-                            </td>
-                            <td>{coin.balance}</td>
-                            <td>
-                              {priceByBaseCoin &&
-                                `${priceByBaseCoin.toPrecision(5)} ${baseCoin}`}
-                            </td>
-                            <td>
-                              {amountByBaseCoin &&
-                                `${amountByBaseCoin.toPrecision(
-                                  5
-                                )} ${baseCoin}`}
-                            </td>
-                            <td style={{ width: 150, textAlign: "center" }}>
-                              <EditOutlined
-                                className={css.icon}
-                                onClick={() => updateCoin(selectedIndex, i)}
-                              />
-                              <Divider type="vertical" />
+                          if (filerText) {
+                            const word = filerText.toUpperCase();
+                            const { name, sym } = coin;
+                            if (
+                              name.toUpperCase().indexOf(word) === -1 &&
+                              sym.indexOf(word) === -1
+                            ) {
+                              return null;
+                            }
+                          }
 
-                              {filerText === "" && (
-                                <>
-                                  <UpOutlined
-                                    className={css.icon}
-                                    onClick={() =>
-                                      moveItem("up", i, selectedIndex)
-                                    }
-                                  />
-                                  <Divider type="vertical" />
+                          return (
+                            <tr key={i}>
+                              <td>{i + 1}</td>
+                              <td>{coin.name}</td>
+                              <td>
+                                <a
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  href={`https://www.binance.com/cn/trade/${
+                                    coin.sym === "BTC"
+                                      ? "BTC_USDT"
+                                      : coin.sym + "_BTC"
+                                  }`}
+                                >
+                                  {coin.sym}
+                                </a>
+                              </td>
+                              <td>{coin.amount}</td>
+                              <td>
+                                {priceByBaseCoin &&
+                                  `${priceByBaseCoin.toPrecision(
+                                    5
+                                  )} ${baseCoin}`}
+                              </td>
+                              <td>
+                                {amountByBaseCoin &&
+                                  `${amountByBaseCoin.toPrecision(
+                                    5
+                                  )} ${baseCoin}`}
+                              </td>
+                              <td style={{ width: 150, textAlign: "center" }}>
+                                <EditOutlined
+                                  className={css.icon}
+                                  onClick={() => updateCoin(selectedIndex, i)}
+                                />
+                                <Divider type="vertical" />
 
-                                  <DownOutlined
-                                    className={css.icon}
-                                    onClick={() =>
-                                      moveItem("down", i, selectedIndex)
-                                    }
-                                  />
-                                  <Divider type="vertical" />
-                                </>
-                              )}
+                                {filerText === "" && (
+                                  <>
+                                    <UpOutlined
+                                      className={css.icon}
+                                      onClick={() =>
+                                        moveItem("up", i, selectedIndex)
+                                      }
+                                    />
+                                    <Divider type="vertical" />
 
-                              <DeleteOutlined
-                                className={css.icon}
-                                onClick={() => deleteCate(i, selectedIndex)}
-                              />
-                            </td>
-                          </tr>
-                        );
-                      })}
+                                    <DownOutlined
+                                      className={css.icon}
+                                      onClick={() =>
+                                        moveItem("down", i, selectedIndex)
+                                      }
+                                    />
+                                    <Divider type="vertical" />
+                                  </>
+                                )}
+
+                                <DeleteOutlined
+                                  className={css.icon}
+                                  onClick={() => deleteCate(i, selectedIndex)}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">

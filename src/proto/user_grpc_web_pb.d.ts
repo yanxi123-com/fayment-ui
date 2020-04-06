@@ -10,6 +10,7 @@ import {
   LoginReq,
   LoginRes,
   SwitchGroupReq,
+  UpdateGroupReq,
   UserKvDTO} from './user_pb';
 
 export class UserServiceClient {
@@ -47,6 +48,13 @@ export class UserServiceClient {
 
   addGroup(
     request: AddGroupReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateGroup(
+    request: UpdateGroupReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -102,6 +110,11 @@ export class UserServicePromiseClient {
 
   addGroup(
     request: AddGroupReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateGroup(
+    request: UpdateGroupReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
