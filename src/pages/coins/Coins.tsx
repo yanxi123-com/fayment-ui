@@ -4,8 +4,8 @@ import {
   EditOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SearchOutlined,
   UpOutlined,
-  SearchOutlined
 } from "@ant-design/icons";
 import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
@@ -19,8 +19,9 @@ import { useUserData } from "hooks/userData";
 import { List } from "immutable";
 import { uniqStrs } from "lib/util/array";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
-import { BaseFieldSchema } from "stores/GlobalStore";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router";
+import { BaseFieldSchema, globalContext } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
 
@@ -60,7 +61,7 @@ const useUserDataOpts = {
   defaultGroups: [{ title: "我的资产", coins: [] }],
   uniqGroupInfo: (group: Group) => {
     group.coins = uniqCoins(group.coins);
-  }
+  },
 };
 
 function Component() {
@@ -72,7 +73,7 @@ function Component() {
     pricesByBTC,
     getBaseCoinPrice,
     baseCoin,
-    setBaseCoin
+    setBaseCoin,
   } = usePrices();
 
   function computeChartOpt(): EChartOption | undefined {
@@ -83,7 +84,7 @@ function Component() {
     // 合并币种数据
     const coinMap: { [sym: string]: number } = {};
 
-    groups[selectedIndex].coins.forEach(coin => {
+    groups[selectedIndex].coins.forEach((coin) => {
       const priceByBaseCoin = getBaseCoinPrice(coin.sym);
       const amountByBaseCoin =
         priceByBaseCoin != null ? priceByBaseCoin * coin.balance : undefined;
@@ -109,16 +110,16 @@ function Component() {
       title: {
         text: "持仓统计（按币种）",
         // subtext: "Fayment.com",
-        left: "center"
+        left: "center",
       },
       tooltip: {
         trigger: "item",
-        formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`
+        formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`,
       },
       legend: {
         bottom: 10,
         left: "center",
-        data: coins
+        data: coins,
       },
       series: [
         {
@@ -127,19 +128,19 @@ function Component() {
           radius: "65%",
           center: ["50%", "50%"],
           selectedMode: "single",
-          data: coins.map(coin => ({
+          data: coins.map((coin) => ({
             value: coinMap[coin],
-            name: coin
+            name: coin,
           })),
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
               shadowOffsetX: 0,
-              shadowColor: "rgba(0, 0, 0, 0.5)"
-            }
-          }
-        }
-      ]
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
     };
   }
 
@@ -165,20 +166,16 @@ function Component() {
       {
         type: "text",
         key: "title",
-        title: "分组名"
-      }
+        title: "分组名",
+      },
     ];
     openPopupForm({
       title: "添加分组",
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        setGroups(
-          List(groups)
-            .push({ title: data.title, coins: [] })
-            .toJS()
-        );
-      }
+        setGroups(List(groups).push({ title: data.title, coins: [] }).toJS());
+      },
     });
   }
 
@@ -186,7 +183,7 @@ function Component() {
     if (groups == null) {
       return [];
     }
-    const keys = groups[selectedIndex].coins.map(c => c.title);
+    const keys = groups[selectedIndex].coins.map((c) => c.title);
     return uniqStrs(keys);
   }
 
@@ -198,22 +195,22 @@ function Component() {
         key: "title",
         title: "账户",
         placeholder: "请填写账户名称",
-        defaultValue: "默认"
+        defaultValue: "默认",
       },
       {
         type: "enum",
         enumValues: Object.keys(pricesByBTC),
         key: "sym",
         title: "币种",
-        placeholder: "请填写币种，比如 BTC, EOS, ETH"
+        placeholder: "请填写币种，比如 BTC, EOS, ETH",
       },
       {
         type: "number",
         key: "balance",
         title: "持有数量",
         placeholder: "请输入持有数量",
-        defaultValue: "0"
-      }
+        defaultValue: "0",
+      },
     ];
     openPopupForm({
       title: "添加账户",
@@ -236,17 +233,17 @@ function Component() {
         const newCoin: CoinInfo = {
           title,
           sym,
-          balance
+          balance,
         };
         const newGroups: Group[] = List(groups)
-          .updateIn([selectedIndex, "coins"], list => {
+          .updateIn([selectedIndex, "coins"], (list) => {
             list.push(newCoin);
             return list;
           })
           .toJS();
 
         setGroups(newGroups);
-      }
+      },
     });
   }
 
@@ -259,8 +256,8 @@ function Component() {
         type: "text",
         key: "title",
         title: "分组名",
-        defaultValue: groups[index].title
-      }
+        defaultValue: groups[index].title,
+      },
     ];
     openPopupForm({
       title: "修改分组",
@@ -270,12 +267,8 @@ function Component() {
         if (!groups) {
           return;
         }
-        setGroups(
-          List(groups)
-            .setIn([index, "title"], data.title)
-            .toJS()
-        );
-      }
+        setGroups(List(groups).setIn([index, "title"], data.title).toJS());
+      },
     });
   }
 
@@ -293,8 +286,8 @@ function Component() {
           groupIndex,
           "coins",
           coinIndex,
-          "title"
-        ])
+          "title",
+        ]),
       },
       {
         type: "enum",
@@ -306,8 +299,8 @@ function Component() {
           groupIndex,
           "coins",
           coinIndex,
-          "sym"
-        ])
+          "sym",
+        ]),
       },
       {
         type: "number",
@@ -318,9 +311,9 @@ function Component() {
           groupIndex,
           "coins",
           coinIndex,
-          "balance"
-        ])
-      }
+          "balance",
+        ]),
+      },
     ];
     openPopupForm({
       title: "修改币种",
@@ -332,11 +325,11 @@ function Component() {
           .setIn([groupIndex, "coins", coinIndex], {
             title: data.title,
             sym: data.sym,
-            balance
+            balance,
           })
           .toJS();
         setGroups(newGroups);
-      }
+      },
     });
   }
 
@@ -349,7 +342,7 @@ function Component() {
       parentIndex == null
         ? `分组 [${groups[index].title}] `
         : `币种 [${groups[parentIndex].coins[index].sym}] `;
-    confirmPromise("请确认", `确实要删除${name}吗？`).then(confirm => {
+    confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         setGroups(
           List(groups)
@@ -461,7 +454,7 @@ function Component() {
                       actionClicked = true;
                       deleteCate(i);
                     }}
-                  />
+                  />,
                 ]}
                 onClick={() => {
                   if (actionClicked) {
@@ -485,12 +478,12 @@ function Component() {
           <div style={{ marginBottom: 20 }}>
             计价单位: &nbsp;
             <Radio.Group
-              onChange={e => {
+              onChange={(e) => {
                 setBaseCoin(e.target.value);
               }}
               defaultValue="BTC"
             >
-              {baseCoins.map(coin => (
+              {baseCoins.map((coin) => (
                 <Radio.Button key={coin} value={coin}>
                   {coin}
                 </Radio.Button>
@@ -500,7 +493,7 @@ function Component() {
               prefix={<SearchOutlined style={{ color: "gray" }} />}
               style={{ marginLeft: 30, width: 200 }}
               placeholder="过滤"
-              onChange={e => setFilterText(e.currentTarget.value)}
+              onChange={(e) => setFilterText(e.currentTarget.value)}
               allowClear
             />
           </div>
@@ -648,4 +641,17 @@ function Component() {
   );
 }
 
-export default observer(Component);
+function LoginComponent() {
+  const globalStore = useContext(globalContext);
+  const location = useLocation();
+  const history = useHistory();
+  useEffect(() => {
+    if (!globalStore.user) {
+      history.replace("/login?rd=" + location.pathname);
+    }
+  });
+
+  return globalStore.user ? <Component /> : <></>;
+}
+
+export default observer(LoginComponent);

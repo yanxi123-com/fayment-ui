@@ -1,7 +1,8 @@
 import { AutoComplete, Button, DatePicker, Form, Modal, Radio } from "antd";
-import moment, { Moment } from "moment";
-import React, { useState, useEffect } from "react";
 import { showError } from "comps/popup";
+import moment, { Moment } from "moment";
+import React, { useEffect, useState } from "react";
+
 import { getBaseSym } from "./priceUtil";
 
 export interface TradeInfo {

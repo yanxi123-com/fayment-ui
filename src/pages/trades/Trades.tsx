@@ -4,11 +4,10 @@ import {
   EditOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SearchOutlined,
   UpOutlined,
-  SearchOutlined
 } from "@ant-design/icons";
-import { Button, Col, Divider, List as AntList, Radio, Row, Input } from "antd";
-
+import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise } from "comps/popup";
@@ -17,13 +16,14 @@ import { usePrices } from "hooks/usePrices";
 import { useUserData } from "hooks/userData";
 import { List } from "immutable";
 import { formatDate } from "lib/util/format";
-import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
-import { BaseFieldSchema } from "stores/GlobalStore";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router";
+import { BaseFieldSchema, globalContext } from "stores/GlobalStore";
 
 import { getBaseSym } from "./priceUtil";
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
+import { observer } from "mobx-react-lite";
 
 const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -38,7 +38,7 @@ const useUserDataOpts = {
   oldLocalKey: "notSuppoted",
   dataKey: "tradeGroups",
   defaultGroups: [{ title: "交易监控", trades: [] }],
-  uniqGroupInfo: () => {}
+  uniqGroupInfo: () => {},
 };
 
 interface ModalInfo {
@@ -56,7 +56,7 @@ function Component() {
     pricesByBTC,
     baseCoin,
     setBaseCoin,
-    getBaseCoinPrice
+    getBaseCoinPrice,
   } = usePrices("USD");
 
   function addTrade() {
@@ -64,16 +64,16 @@ function Component() {
       return;
     }
     setModalInfo({
-      onSubmit: trade => {
+      onSubmit: (trade) => {
         const newGroups: Group[] = List(groups)
-          .updateIn([selectedIndex, "trades"], list => {
+          .updateIn([selectedIndex, "trades"], (list) => {
             list.push(trade);
             return list;
           })
           .toJS();
         setGroups(newGroups);
         setModalInfo({});
-      }
+      },
     });
   }
 
@@ -84,18 +84,18 @@ function Component() {
     const trade: TradeInfo = List(groups).getIn([
       groupIndex,
       "trades",
-      tradeIndex
+      tradeIndex,
     ]);
 
     setModalInfo({
       trade: trade,
-      onSubmit: trade => {
+      onSubmit: (trade) => {
         const newGroups: Group[] = List(groups)
           .setIn([groupIndex, "trades", tradeIndex], trade)
           .toJS();
         setGroups(newGroups);
         setModalInfo({});
-      }
+      },
     });
   }
 
@@ -107,20 +107,16 @@ function Component() {
       {
         type: "text",
         key: "title",
-        title: "分组名"
-      }
+        title: "分组名",
+      },
     ];
     openPopupForm({
       title: "添加分组",
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        setGroups(
-          List(groups)
-            .push({ title: data.title, trades: [] })
-            .toJS()
-        );
-      }
+        setGroups(List(groups).push({ title: data.title, trades: [] }).toJS());
+      },
     });
   }
 
@@ -133,8 +129,8 @@ function Component() {
         type: "text",
         key: "title",
         title: "分组名",
-        defaultValue: groups[index].title
-      }
+        defaultValue: groups[index].title,
+      },
     ];
     openPopupForm({
       title: "修改分组",
@@ -144,12 +140,8 @@ function Component() {
         if (!groups) {
           return;
         }
-        setGroups(
-          List(groups)
-            .setIn([index, "title"], data.title)
-            .toJS()
-        );
-      }
+        setGroups(List(groups).setIn([index, "title"], data.title).toJS());
+      },
     });
   }
 
@@ -160,7 +152,7 @@ function Component() {
     const keyPath = parentIndex == null ? [] : [parentIndex, "trades"];
     const name =
       parentIndex == null ? `分组 [${groups[index].title}] ` : `此交易`;
-    confirmPromise("请确认", `确实要删除${name}吗？`).then(confirm => {
+    confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         setGroups(
           List(groups)
@@ -283,7 +275,7 @@ function Component() {
                       actionClicked = true;
                       deleteCate(i);
                     }}
-                  />
+                  />,
                 ]}
                 onClick={() => {
                   if (actionClicked) {
@@ -316,12 +308,12 @@ function Component() {
             )}
             盈亏计价单位: &nbsp;
             <Radio.Group
-              onChange={e => {
+              onChange={(e) => {
                 setBaseCoin(e.target.value === "自动" ? "USD" : e.target.value);
               }}
               defaultValue="自动"
             >
-              {baseCoins.map(coin => (
+              {baseCoins.map((coin) => (
                 <Radio.Button key={coin} value={coin}>
                   {coin}
                 </Radio.Button>
@@ -331,7 +323,7 @@ function Component() {
               prefix={<SearchOutlined style={{ color: "gray" }} />}
               style={{ marginLeft: 30, width: 200 }}
               placeholder="过滤"
-              onChange={e => setFilterText(e.currentTarget.value)}
+              onChange={(e) => setFilterText(e.currentTarget.value)}
               allowClear
             />
           </div>
@@ -367,8 +359,8 @@ function Component() {
                           const findResult = [
                             formatDate(tradeDate),
                             buy,
-                            sell
-                          ].find(s => {
+                            sell,
+                          ].find((s) => {
                             if (s == null) {
                               return false;
                             }
@@ -602,9 +594,23 @@ function Component() {
   );
 }
 
-export default observer(Component);
-
 function parseQuantity(str: string): [number, string] {
   const ary = str.split(/\s+/);
   return [parseFloat(ary[0]), ary[1]];
 }
+
+const LoginComponent = function () {
+  const globalStore = useContext(globalContext);
+  const location = useLocation();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!globalStore.user) {
+      history.replace("/login?rd=" + location.pathname);
+    }
+  });
+
+  return globalStore.user ? <Component /> : null;
+};
+
+export default observer(LoginComponent);

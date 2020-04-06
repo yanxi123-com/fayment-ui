@@ -54,14 +54,13 @@ export class GlobalStore {
     this.user = { email, token };
     local.set("user", {
       email,
-      token
+      token,
     });
-    window.location.reload();
   };
 
   logout = () => {
     local.remove("user");
-    window.location.reload();
+    this.user = undefined;
   };
 
   setPopupFormSchema(s: FormSchema | undefined) {
@@ -72,7 +71,7 @@ export class GlobalStore {
 decorate(GlobalStore, {
   user: observable,
   popupFormSchema: observable,
-  currentGroupsVersion: observable
+  currentGroupsVersion: observable,
 });
 
 export const globalStore = new GlobalStore();
@@ -84,6 +83,6 @@ export function getAuthMD(): Metadata | undefined {
     return undefined;
   }
   return {
-    Authorization: `bearer ${globalStore.user.token}`
+    Authorization: `bearer ${globalStore.user.token}`,
   };
 }

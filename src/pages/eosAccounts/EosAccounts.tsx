@@ -8,9 +8,9 @@ import { List } from "immutable";
 import { getAccountInfo } from "lib/eos";
 import { trackEvent } from "lib/gtag";
 import { uniqStrs } from "lib/util/array";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import Clipboard from "react-clipboard.js";
-import { BaseFieldSchema } from "stores/GlobalStore";
+import { BaseFieldSchema, globalContext } from "stores/GlobalStore";
 
 import css from "./EosAccounts.module.scss";
 import {
@@ -19,8 +19,10 @@ import {
   UpOutlined,
   DownOutlined,
   DeleteOutlined,
-  ReloadOutlined
+  ReloadOutlined,
 } from "@ant-design/icons";
+import { useLocation, useHistory } from "react-router";
+import { observer } from "mobx-react-lite";
 
 let actionClicked = false;
 
@@ -48,10 +50,10 @@ const useUserDataOpts = {
   defaultGroups: [{ title: "我的资产", accounts: [] }],
   uniqGroupInfo: (group: Group) => {
     group.accounts = uniqStrs(group.accounts);
-  }
+  },
 };
 
-export default function() {
+function Component() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [accountMap, setAccountMap] = useState<AccountMap>({});
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
@@ -64,9 +66,9 @@ export default function() {
     trackEvent("fetch_eos_accounts");
     const accounts = groups[selectedIndex].accounts;
     Promise.all(
-      accounts.map(account => getAccountInfo(account).catch(() => null))
-    ).then(infos => {
-      infos.forEach(info => {
+      accounts.map((account) => getAccountInfo(account).catch(() => null))
+    ).then((infos) => {
+      infos.forEach((info) => {
         if (!info) {
           return;
         }
@@ -83,10 +85,10 @@ export default function() {
         const total = balance1 + balance2 + balance3;
         const accountInfo = { balance1, balance2, balance3, total };
 
-        setAccountMap(old => {
+        setAccountMap((old) => {
           const newAccountMap = {
             ...old,
-            [info.account_name]: accountInfo
+            [info.account_name]: accountInfo,
           };
           return deepClone(newAccountMap);
         });
@@ -114,8 +116,8 @@ export default function() {
       {
         type: "text",
         key: "title",
-        title: "分组名"
-      }
+        title: "分组名",
+      },
     ];
     openPopupForm({
       title: "添加分组",
@@ -123,11 +125,9 @@ export default function() {
       fields,
       onSubmit: (data: { [key: string]: any }) => {
         setGroups(
-          List(groups)
-            .push({ title: data.title, accounts: [] })
-            .toJS()
+          List(groups).push({ title: data.title, accounts: [] }).toJS()
         );
-      }
+      },
     });
   }
 
@@ -137,8 +137,8 @@ export default function() {
         type: "text",
         key: "account",
         title: "EOS 账号",
-        placeholder: "EOS 账户（可以一次填入多个，用逗号分隔）"
-      }
+        placeholder: "EOS 账户（可以一次填入多个，用逗号分隔）",
+      },
     ];
     openPopupForm({
       title: "添加 EOS 账号",
@@ -156,13 +156,13 @@ export default function() {
         const newAccounts = data.account.split(",");
         setGroups(
           List(groups)
-            .updateIn([selectedIndex, "accounts"], list => {
+            .updateIn([selectedIndex, "accounts"], (list) => {
               list.push(...newAccounts);
               return list;
             })
             .toJS()
         );
-      }
+      },
     });
   }
 
@@ -175,8 +175,8 @@ export default function() {
         type: "text",
         key: "title",
         title: "分组名",
-        defaultValue: groups[index].title
-      }
+        defaultValue: groups[index].title,
+      },
     ];
     openPopupForm({
       title: "修改分组",
@@ -186,12 +186,8 @@ export default function() {
         if (!groups) {
           return;
         }
-        setGroups(
-          List(groups)
-            .setIn([index, "title"], data.title)
-            .toJS()
-        );
-      }
+        setGroups(List(groups).setIn([index, "title"], data.title).toJS());
+      },
     });
   }
 
@@ -204,8 +200,12 @@ export default function() {
         type: "text",
         key: "account",
         title: "EOS 账号",
-        defaultValue: List(groups).getIn([groupIndex, "accounts", accountIndex])
-      }
+        defaultValue: List(groups).getIn([
+          groupIndex,
+          "accounts",
+          accountIndex,
+        ]),
+      },
     ];
     openPopupForm({
       title: "修改账户",
@@ -217,7 +217,7 @@ export default function() {
             .setIn([groupIndex, "accounts", accountIndex], data.account)
             .toJS()
         );
-      }
+      },
     });
   }
 
@@ -234,7 +234,7 @@ export default function() {
       parentIndex == null
         ? `分组 [${groups[index].title}] `
         : `账号 [${groups[parentIndex].accounts[index]}] `;
-    confirmPromise("请确认", `确实要删除${name}吗？`).then(confirm => {
+    confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         setGroups(
           List(groups)
@@ -306,7 +306,7 @@ export default function() {
   let sum3 = 0;
   let sumTotal = 0;
   if (groups[selectedIndex] != null) {
-    groups[selectedIndex].accounts.forEach(account => {
+    groups[selectedIndex].accounts.forEach((account) => {
       sum1 += accountMap[account] ? accountMap[account].balance1 : 0;
       sum2 += accountMap[account] ? accountMap[account].balance2 : 0;
       sum3 += accountMap[account] ? accountMap[account].balance3 : 0;
@@ -359,7 +359,7 @@ export default function() {
                       actionClicked = true;
                       deleteCate(i);
                     }}
-                  />
+                  />,
                 ]}
                 onClick={() => {
                   if (actionClicked) {
@@ -412,7 +412,7 @@ export default function() {
                           balance1: 0,
                           balance2: 0,
                           balance3: 0,
-                          total: 0
+                          total: 0,
                         };
                         return (
                           <tr key={i}>
@@ -501,3 +501,19 @@ export default function() {
     </div>
   );
 }
+
+const LoginComponent = function () {
+  const globalStore = useContext(globalContext);
+  const location = useLocation();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!globalStore.user) {
+      history.replace("/login?rd=" + location.pathname);
+    }
+  });
+
+  return globalStore.user ? <Component /> : null;
+};
+
+export default observer(LoginComponent);

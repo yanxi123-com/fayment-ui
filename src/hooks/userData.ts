@@ -1,4 +1,3 @@
-import { login } from "comps/header/Header";
 import { showError } from "comps/popup";
 import { AppError } from "lib/error";
 import { userService } from "lib/grpcClient";
@@ -20,10 +19,6 @@ interface UserDataHookResult<Group> {
   setGroups: (groups: Array<Group>, initVersion?: UserDataVersion) => void;
 }
 
-function promptLogin() {
-  login();
-}
-
 export function useUserData<Group>(
   opts: UserDataOpts<Group>
 ): UserDataHookResult<Group> {
@@ -39,7 +34,7 @@ export function useUserData<Group>(
 
       if (!initVersion && !globalStore.user) {
         // 通过 UI 更新，并且没有登录
-        promptLogin();
+        showError("清先登录");
         return;
       }
 
@@ -61,7 +56,6 @@ export function useUserData<Group>(
     Promise.resolve()
       .then(() => {
         if (!globalStore.user) {
-          promptLogin();
           throw new AppError(["REQUIRE_LOGIN", "请先登录"]);
         }
 

@@ -11,6 +11,7 @@ import EosAccounts from "pages/eosAccounts/EosAccounts";
 import Trades from "pages/trades/Trades";
 import Coins from "pages/coins/Coins";
 import Home from "pages/home/Home";
+import Login from "pages/login/Login";
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -38,6 +39,7 @@ const App: React.FC = () => {
               <Route exact path="/trades/" component={Trades} />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
               <Route exact path="/" component={Home} />
+              <Route exact path="/login" component={Login} />
 
               <Route>
                 <Redirect to="/" />
