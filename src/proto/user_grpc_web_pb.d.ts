@@ -3,14 +3,18 @@ import * as grpcWeb from 'grpc-web';
 import * as base_pb from './base_pb';
 
 import {
+  AddCoinAccountReq,
   AddGroupReq,
+  CoinAccountDTO,
+  CoinAccountsDTO,
   GetUserKvReq,
+  GroupDTO,
   GroupsDTO,
+  ListCoinAccountsReq,
   ListGroupsReq,
   LoginReq,
   LoginRes,
-  SwitchGroupReq,
-  UpdateGroupReq,
+  SwitchOrderReq,
   UserKvDTO} from './user_pb';
 
 export class UserServiceClient {
@@ -54,7 +58,7 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
   updateGroup(
-    request: UpdateGroupReq,
+    request: GroupDTO,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -75,7 +79,42 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<GroupsDTO>;
 
   switchGroup(
-    request: SwitchGroupReq,
+    request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  addCoinAccount(
+    request: AddCoinAccountReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateCoinAccount(
+    request: CoinAccountDTO,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  deleteCoinAccount(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listCoinAccounts(
+    request: ListCoinAccountsReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: CoinAccountsDTO) => void
+  ): grpcWeb.ClientReadableStream<CoinAccountsDTO>;
+
+  switchCoinAccount(
+    request: SwitchOrderReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -114,7 +153,7 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   updateGroup(
-    request: UpdateGroupReq,
+    request: GroupDTO,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
@@ -129,7 +168,32 @@ export class UserServicePromiseClient {
   ): Promise<GroupsDTO>;
 
   switchGroup(
-    request: SwitchGroupReq,
+    request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addCoinAccount(
+    request: AddCoinAccountReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateCoinAccount(
+    request: CoinAccountDTO,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  deleteCoinAccount(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listCoinAccounts(
+    request: ListCoinAccountsReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<CoinAccountsDTO>;
+
+  switchCoinAccount(
+    request: SwitchOrderReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 

@@ -21,18 +21,18 @@ import { userService } from "lib/grpcClient";
 import { uniqStrs } from "lib/util/array";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
+import { IdWrapper } from "proto/base_pb";
 import {
   AddGroupReq,
   ListGroupsReq,
-  UpdateGroupReq,
-  SwitchGroupReq,
+  SwitchOrderReq,
+  GroupDTO,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
-import { IdWrapper } from "proto/base_pb";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -288,7 +288,7 @@ function Component() {
         if (!groups) {
           return;
         }
-        const req = new UpdateGroupReq();
+        const req = new GroupDTO();
         req.setId(groups[index].id);
         req.setName(data.title);
         userService
@@ -412,7 +412,7 @@ function Component() {
       return;
     }
 
-    const req = new SwitchGroupReq();
+    const req = new SwitchOrderReq();
     req.setIdA(groups[index].id);
     req.setIdB(groups[otherIndex].id);
     userService

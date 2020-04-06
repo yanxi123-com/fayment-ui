@@ -112,28 +112,6 @@ export namespace AddGroupReq {
   }
 }
 
-export class UpdateGroupReq extends jspb.Message {
-  getId(): number;
-  setId(value: number): void;
-
-  getName(): string;
-  setName(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateGroupReq.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateGroupReq): UpdateGroupReq.AsObject;
-  static serializeBinaryToWriter(message: UpdateGroupReq, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateGroupReq;
-  static deserializeBinaryFromReader(message: UpdateGroupReq, reader: jspb.BinaryReader): UpdateGroupReq;
-}
-
-export namespace UpdateGroupReq {
-  export type AsObject = {
-    id: number,
-    name: string,
-  }
-}
-
 export class ListGroupsReq extends jspb.Message {
   getType(): number;
   setType(value: number): void;
@@ -194,7 +172,7 @@ export namespace GroupsDTO {
   }
 }
 
-export class SwitchGroupReq extends jspb.Message {
+export class SwitchOrderReq extends jspb.Message {
   getIdA(): number;
   setIdA(value: number): void;
 
@@ -202,17 +180,115 @@ export class SwitchGroupReq extends jspb.Message {
   setIdB(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SwitchGroupReq.AsObject;
-  static toObject(includeInstance: boolean, msg: SwitchGroupReq): SwitchGroupReq.AsObject;
-  static serializeBinaryToWriter(message: SwitchGroupReq, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SwitchGroupReq;
-  static deserializeBinaryFromReader(message: SwitchGroupReq, reader: jspb.BinaryReader): SwitchGroupReq;
+  toObject(includeInstance?: boolean): SwitchOrderReq.AsObject;
+  static toObject(includeInstance: boolean, msg: SwitchOrderReq): SwitchOrderReq.AsObject;
+  static serializeBinaryToWriter(message: SwitchOrderReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SwitchOrderReq;
+  static deserializeBinaryFromReader(message: SwitchOrderReq, reader: jspb.BinaryReader): SwitchOrderReq;
 }
 
-export namespace SwitchGroupReq {
+export namespace SwitchOrderReq {
   export type AsObject = {
     idA: number,
     idB: number,
+  }
+}
+
+export class AddCoinAccountReq extends jspb.Message {
+  getGroupId(): number;
+  setGroupId(value: number): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  getSym(): string;
+  setSym(value: string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddCoinAccountReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddCoinAccountReq): AddCoinAccountReq.AsObject;
+  static serializeBinaryToWriter(message: AddCoinAccountReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddCoinAccountReq;
+  static deserializeBinaryFromReader(message: AddCoinAccountReq, reader: jspb.BinaryReader): AddCoinAccountReq;
+}
+
+export namespace AddCoinAccountReq {
+  export type AsObject = {
+    groupId: number,
+    name: string,
+    sym: string,
+    amount: number,
+  }
+}
+
+export class ListCoinAccountsReq extends jspb.Message {
+  getGroupId(): number;
+  setGroupId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListCoinAccountsReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ListCoinAccountsReq): ListCoinAccountsReq.AsObject;
+  static serializeBinaryToWriter(message: ListCoinAccountsReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListCoinAccountsReq;
+  static deserializeBinaryFromReader(message: ListCoinAccountsReq, reader: jspb.BinaryReader): ListCoinAccountsReq;
+}
+
+export namespace ListCoinAccountsReq {
+  export type AsObject = {
+    groupId: number,
+  }
+}
+
+export class CoinAccountDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  getSym(): string;
+  setSym(value: string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CoinAccountDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: CoinAccountDTO): CoinAccountDTO.AsObject;
+  static serializeBinaryToWriter(message: CoinAccountDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CoinAccountDTO;
+  static deserializeBinaryFromReader(message: CoinAccountDTO, reader: jspb.BinaryReader): CoinAccountDTO;
+}
+
+export namespace CoinAccountDTO {
+  export type AsObject = {
+    id: number,
+    name: string,
+    sym: string,
+    amount: number,
+  }
+}
+
+export class CoinAccountsDTO extends jspb.Message {
+  getAccountsList(): Array<CoinAccountDTO>;
+  setAccountsList(value: Array<CoinAccountDTO>): void;
+  clearAccountsList(): void;
+  addAccounts(value?: CoinAccountDTO, index?: number): CoinAccountDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CoinAccountsDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: CoinAccountsDTO): CoinAccountsDTO.AsObject;
+  static serializeBinaryToWriter(message: CoinAccountsDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CoinAccountsDTO;
+  static deserializeBinaryFromReader(message: CoinAccountsDTO, reader: jspb.BinaryReader): CoinAccountsDTO;
+}
+
+export namespace CoinAccountsDTO {
+  export type AsObject = {
+    accountsList: Array<CoinAccountDTO.AsObject>,
   }
 }
 
