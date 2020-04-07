@@ -110,7 +110,7 @@ function Component() {
       render: (amount: number, log: CoinLog, index: number) => {
         if (coinLogs && coinLogs[index + 1]) {
           const value = amount - coinLogs[index + 1].amount;
-          return (value >= 0 ? "+" : "-") + parseFloat(value.toPrecision(4));
+          return (value > 0 ? "+" : "") + parseFloat(value.toPrecision(4));
         }
         return "-";
       },
