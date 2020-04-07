@@ -27,6 +27,9 @@ import {
   ListGroupsReq,
   SwitchOrderReq,
   GroupDTO,
+  ListCoinAccountsReq,
+  AddCoinAccountReq,
+  CoinAccountDTO,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -39,6 +42,7 @@ const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 let actionClicked = false;
 
 interface CoinInfo {
+  id: number;
   name: string;
   sym: string;
   amount: number;
@@ -52,11 +56,15 @@ interface Group {
 function Component() {
   // 用来让 groups 自动更新
   const [groupVersion, setGroupVersion] = useState(0);
+  // 用来让 coins 自动更新
+  const [coinsVersion, setCoinsVersion] = useState(0);
 
+  // 分组选中的 index
   const [selectedIndex, setSelectedIndex] = useState(0);
+
   const [filerText, setFilterText] = useState("");
   const [groups, setGroups] = useState<Group[]>();
-  const [coins] = useState<CoinInfo[]>();
+  const [coins, setCoins] = useState<CoinInfo[]>();
 
   const {
     refreshPrice,
@@ -66,6 +74,7 @@ function Component() {
     setBaseCoin,
   } = usePrices();
 
+  // fetch groups
   useEffect(() => {
     const req = new ListGroupsReq();
     req.setType(GroupType.CoinAccount);
@@ -82,6 +91,25 @@ function Component() {
       .catch(handleGrpcError)
       .catch(showError);
   }, [groupVersion]);
+
+  // fetch coin accounts
+  useEffect(() => {
+    if (!groups) {
+      return;
+    }
+    const req = new ListCoinAccountsReq();
+    req.setGroupId(groups[selectedIndex].id);
+    userService.listCoinAccounts(req, getAuthMD()).then((res) => {
+      setCoins(
+        res.getAccountsList().map((a) => ({
+          id: a.getId(),
+          name: a.getName(),
+          sym: a.getSym(),
+          amount: a.getAmount(),
+        }))
+      );
+    });
+  }, [selectedIndex, groups, coinsVersion]);
 
   function computeChartOpt(): EChartOption | undefined {
     if (!groups || groups[selectedIndex] == null) {
@@ -189,13 +217,13 @@ function Component() {
       onSubmit: (data: { [key: string]: any }) => {
         const req = new AddGroupReq();
         req.setName(data.title);
-        userService
+        return userService
           .addGroup(req, getAuthMD())
           .then(() => {
             setGroupVersion((i) => i + 1);
+            return;
           })
-          .catch(handleGrpcError)
-          .catch(showError);
+          .catch(handleGrpcError);
       },
     });
   }
@@ -251,19 +279,14 @@ function Component() {
         const balance = isNaN(data.balance) ? 0 : parseFloat(data.balance);
         const title = data.title || "默认";
 
-        const newCoin: CoinInfo = {
-          name: title,
-          sym,
-          amount: balance,
-        };
-        const newGroups: Group[] = List(groups)
-          .updateIn([selectedIndex, "coins"], (list) => {
-            list.push(newCoin);
-            return list;
-          })
-          .toJS();
-
-        setGroups(newGroups);
+        const req = new AddCoinAccountReq();
+        req.setGroupId(groups[selectedIndex].id);
+        req.setName(title);
+        req.setSym(sym);
+        req.setAmount(balance);
+        return userService
+          .addCoinAccount(req, getAuthMD())
+          .then(() => setCoinsVersion((i) => i + 1));
       },
     });
   }
@@ -303,22 +326,19 @@ function Component() {
     });
   }
 
-  function updateCoin(groupIndex: number, coinIndex: number) {
-    if (!groups) {
+  function updateCoin(coinIndex: number) {
+    if (!coins) {
       return;
     }
+
+    const coin = coins[coinIndex];
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
-        key: "title",
+        key: "name",
         title: "账户",
         placeholder: "请填写账户名称",
-        defaultValue: List(groups).getIn([
-          groupIndex,
-          "coins",
-          coinIndex,
-          "title",
-        ]),
+        defaultValue: coin.name,
       },
       {
         type: "enum",
@@ -326,24 +346,14 @@ function Component() {
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH",
-        defaultValue: List(groups).getIn([
-          groupIndex,
-          "coins",
-          coinIndex,
-          "sym",
-        ]),
+        defaultValue: coin.sym,
       },
       {
         type: "number",
-        key: "balance",
+        key: "amount",
         title: "持有数量",
         placeholder: "请输入持有数量",
-        defaultValue: List(groups).getIn([
-          groupIndex,
-          "coins",
-          coinIndex,
-          "balance",
-        ]),
+        defaultValue: coin.amount.toString(),
       },
     ];
     openPopupForm({
@@ -351,15 +361,16 @@ function Component() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        const balance = isNaN(data.balance) ? 0 : parseFloat(data.balance);
-        const newGroups: Group[] = List(groups)
-          .setIn([groupIndex, "coins", coinIndex], {
-            title: data.title,
-            sym: data.sym,
-            balance,
-          })
-          .toJS();
-        setGroups(newGroups);
+        const amount = isNaN(data.amount) ? 0 : parseFloat(data.amount);
+
+        const req = new CoinAccountDTO();
+        req.setId(coin.id);
+        req.setName(data.name);
+        req.setSym(data.sym);
+        req.setAmount(amount);
+        return userService
+          .updateCoinAccount(req, getAuthMD())
+          .then(() => setCoinsVersion((i) => i + 1));
       },
     });
   }
@@ -383,22 +394,19 @@ function Component() {
     });
   }
 
-  function deleteCate(index: number, parentIndex?: number) {
-    if (!groups || !coins) {
+  function deleteCoin(index: number) {
+    if (!coins) {
       return;
     }
-    const keyPath = parentIndex == null ? [] : [parentIndex, "coins"];
-    const name =
-      parentIndex == null
-        ? `分组 [${groups[index].name}] `
-        : `币种 [${coins[index].sym}] `;
+
+    const name = `币种 [${coins[index].sym}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
-        setGroups(
-          List(groups)
-            .deleteIn([...keyPath, index])
-            .toJS() as any
-        );
+        const req = new IdWrapper();
+        req.setId(coins[index].id);
+        userService.deleteCoinAccount(req, getAuthMD()).then((res) => {
+          setCoinsVersion((i) => i + 1);
+        });
       }
     });
   }
@@ -432,11 +440,26 @@ function Component() {
   }
 
   // parentIndex 为空表示修改的是分组，否则修改的是账号
-  function moveItem(
-    direction: "up" | "down",
-    index: number,
-    parentIndex?: number
-  ) {}
+  function moveCoin(direction: "up" | "down", index: number) {
+    if (!coins) {
+      return;
+    }
+    const otherIndex = direction === "up" ? index - 1 : index + 1;
+    if (otherIndex < 0 || otherIndex >= coins.length) {
+      return;
+    }
+
+    const req = new SwitchOrderReq();
+    req.setIdA(coins[index].id);
+    req.setIdB(coins[otherIndex].id);
+    userService
+      .switchCoinAccount(req, getAuthMD())
+      .then(() => {
+        setCoinsVersion((i) => i + 1);
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
+  }
 
   if (groups == null) {
     return <Loading />;
@@ -618,7 +641,7 @@ function Component() {
                               <td style={{ width: 150, textAlign: "center" }}>
                                 <EditOutlined
                                   className={css.icon}
-                                  onClick={() => updateCoin(selectedIndex, i)}
+                                  onClick={() => updateCoin(i)}
                                 />
                                 <Divider type="vertical" />
 
@@ -626,17 +649,13 @@ function Component() {
                                   <>
                                     <UpOutlined
                                       className={css.icon}
-                                      onClick={() =>
-                                        moveItem("up", i, selectedIndex)
-                                      }
+                                      onClick={() => moveCoin("up", i)}
                                     />
                                     <Divider type="vertical" />
 
                                     <DownOutlined
                                       className={css.icon}
-                                      onClick={() =>
-                                        moveItem("down", i, selectedIndex)
-                                      }
+                                      onClick={() => moveCoin("down", i)}
                                     />
                                     <Divider type="vertical" />
                                   </>
@@ -644,7 +663,7 @@ function Component() {
 
                                 <DeleteOutlined
                                   className={css.icon}
-                                  onClick={() => deleteCate(i, selectedIndex)}
+                                  onClick={() => deleteCoin(i)}
                                 />
                               </td>
                             </tr>

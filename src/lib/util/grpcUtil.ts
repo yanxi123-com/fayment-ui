@@ -12,7 +12,7 @@ export function parseGrpcError(grpcError: any): AppError {
 
 export function handleGrpcError(grpcError: any) {
   if (grpcError instanceof Error) {
-    return grpcError;
+    throw grpcError;
   }
   throw parseGrpcError(grpcError);
 }

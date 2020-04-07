@@ -6,10 +6,12 @@ import {
   AddCoinAccountReq,
   AddGroupReq,
   CoinAccountDTO,
+  CoinAccountLogsDTO,
   CoinAccountsDTO,
   GetUserKvReq,
   GroupDTO,
   GroupsDTO,
+  ListCoinAccountLogsReq,
   ListCoinAccountsReq,
   ListGroupsReq,
   LoginReq,
@@ -120,6 +122,13 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
+  listCoinAccountLogs(
+    request: ListCoinAccountLogsReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: CoinAccountLogsDTO) => void
+  ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
+
 }
 
 export class UserServicePromiseClient {
@@ -196,6 +205,11 @@ export class UserServicePromiseClient {
     request: SwitchOrderReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
+
+  listCoinAccountLogs(
+    request: ListCoinAccountLogsReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<CoinAccountLogsDTO>;
 
 }
 

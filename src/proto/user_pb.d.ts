@@ -292,3 +292,75 @@ export namespace CoinAccountsDTO {
   }
 }
 
+export class ListCoinAccountLogsReq extends jspb.Message {
+  getAccountId(): number;
+  setAccountId(value: number): void;
+
+  getMax(): number;
+  setMax(value: number): void;
+
+  getFromId(): number;
+  setFromId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListCoinAccountLogsReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ListCoinAccountLogsReq): ListCoinAccountLogsReq.AsObject;
+  static serializeBinaryToWriter(message: ListCoinAccountLogsReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListCoinAccountLogsReq;
+  static deserializeBinaryFromReader(message: ListCoinAccountLogsReq, reader: jspb.BinaryReader): ListCoinAccountLogsReq;
+}
+
+export namespace ListCoinAccountLogsReq {
+  export type AsObject = {
+    accountId: number,
+    max: number,
+    fromId: number,
+  }
+}
+
+export class CoinAccountLogDTO extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  getSym(): string;
+  setSym(value: string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CoinAccountLogDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: CoinAccountLogDTO): CoinAccountLogDTO.AsObject;
+  static serializeBinaryToWriter(message: CoinAccountLogDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CoinAccountLogDTO;
+  static deserializeBinaryFromReader(message: CoinAccountLogDTO, reader: jspb.BinaryReader): CoinAccountLogDTO;
+}
+
+export namespace CoinAccountLogDTO {
+  export type AsObject = {
+    name: string,
+    sym: string,
+    amount: number,
+  }
+}
+
+export class CoinAccountLogsDTO extends jspb.Message {
+  getLogsList(): Array<CoinAccountLogDTO>;
+  setLogsList(value: Array<CoinAccountLogDTO>): void;
+  clearLogsList(): void;
+  addLogs(value?: CoinAccountLogDTO, index?: number): CoinAccountLogDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CoinAccountLogsDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: CoinAccountLogsDTO): CoinAccountLogsDTO.AsObject;
+  static serializeBinaryToWriter(message: CoinAccountLogsDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CoinAccountLogsDTO;
+  static deserializeBinaryFromReader(message: CoinAccountLogsDTO, reader: jspb.BinaryReader): CoinAccountLogsDTO;
+}
+
+export namespace CoinAccountLogsDTO {
+  export type AsObject = {
+    logsList: Array<CoinAccountLogDTO.AsObject>,
+  }
+}
+

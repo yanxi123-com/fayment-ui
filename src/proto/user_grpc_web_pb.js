@@ -1188,5 +1188,85 @@ proto.fayment.UserServicePromiseClient.prototype.switchCoinAccount =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ListCoinAccountLogsReq,
+ *   !proto.fayment.CoinAccountLogsDTO>}
+ */
+const methodDescriptor_UserService_ListCoinAccountLogs = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListCoinAccountLogs',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ListCoinAccountLogsReq,
+  proto.fayment.CoinAccountLogsDTO,
+  /**
+   * @param {!proto.fayment.ListCoinAccountLogsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ListCoinAccountLogsReq,
+ *   !proto.fayment.CoinAccountLogsDTO>}
+ */
+const methodInfo_UserService_ListCoinAccountLogs = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.CoinAccountLogsDTO,
+  /**
+   * @param {!proto.fayment.ListCoinAccountLogsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ListCoinAccountLogsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.CoinAccountLogsDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.CoinAccountLogsDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listCoinAccountLogs =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListCoinAccountLogs',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListCoinAccountLogs,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ListCoinAccountLogsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.CoinAccountLogsDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listCoinAccountLogs =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListCoinAccountLogs',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListCoinAccountLogs);
+};
+
+
 module.exports = proto.fayment;
 

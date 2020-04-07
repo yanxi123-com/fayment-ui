@@ -16,7 +16,7 @@ function PopupForm() {
   useEffect(() => {
     const data: { [key: string]: any } = {};
     if (schema) {
-      schema.fields.forEach(field => {
+      schema.fields.forEach((field) => {
         if (field.defaultValue) {
           data[field.key] = field.defaultValue;
         }
@@ -33,10 +33,10 @@ function PopupForm() {
 
   const formItemLayout = {
     labelCol: { span: labelSpan },
-    wrapperCol: { span: 24 - labelSpan }
+    wrapperCol: { span: 24 - labelSpan },
   };
   const tailFormItemLayout = {
-    wrapperCol: { span: 24 - labelSpan, offset: labelSpan }
+    wrapperCol: { span: 24 - labelSpan, offset: labelSpan },
   };
 
   function submit() {
@@ -72,7 +72,7 @@ function PopupForm() {
       destroyOnClose
     >
       <Form {...formItemLayout} style={{ maxWidth: schema.width || 800 }}>
-        {schema.fields.map(field => {
+        {schema.fields.map((field) => {
           return (
             <Form.Item
               key={field.key}
@@ -85,7 +85,11 @@ function PopupForm() {
                   onChange={(value: string) => {
                     setData(field.key, value);
                   }}
-                  dataSource={field.enumValues}
+                  options={
+                    field.enumValues == null
+                      ? []
+                      : field.enumValues.map((value) => ({ value }))
+                  }
                   placeholder={field.placeholder}
                   filterOption
                 ></AutoComplete>
@@ -96,7 +100,7 @@ function PopupForm() {
                 <Input
                   value={formData[field.key]}
                   type={field.type}
-                  onChange={e => {
+                  onChange={(e) => {
                     setData(field.key, e.currentTarget.value);
                   }}
                   placeholder={field.placeholder}
