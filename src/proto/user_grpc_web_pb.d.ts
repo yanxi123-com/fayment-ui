@@ -11,6 +11,7 @@ import {
   GetUserKvReq,
   GroupDTO,
   GroupsDTO,
+  ImportCoinGroupsReq,
   ListCoinAccountLogsReq,
   ListCoinAccountsReq,
   ListGroupsReq,
@@ -82,6 +83,13 @@ export class UserServiceClient {
 
   switchGroup(
     request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  importCoinGroups(
+    request: ImportCoinGroupsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -178,6 +186,11 @@ export class UserServicePromiseClient {
 
   switchGroup(
     request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  importCoinGroups(
+    request: ImportCoinGroupsReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 

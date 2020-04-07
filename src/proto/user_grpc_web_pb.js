@@ -791,6 +791,86 @@ proto.fayment.UserServicePromiseClient.prototype.switchGroup =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ImportCoinGroupsReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_ImportCoinGroups = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ImportCoinGroups',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ImportCoinGroupsReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ImportCoinGroupsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ImportCoinGroupsReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_ImportCoinGroups = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ImportCoinGroupsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ImportCoinGroupsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.importCoinGroups =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ImportCoinGroups',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ImportCoinGroups,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ImportCoinGroupsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.importCoinGroups =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ImportCoinGroups',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ImportCoinGroups);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.AddCoinAccountReq,
  *   !proto.fayment.Empty>}
  */

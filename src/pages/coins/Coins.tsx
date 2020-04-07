@@ -16,24 +16,25 @@ import { GroupType } from "constant";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { usePrices } from "hooks/usePrices";
-import { List } from "immutable";
 import { userService } from "lib/grpcClient";
 import { uniqStrs } from "lib/util/array";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
 import {
+  AddCoinAccountReq,
   AddGroupReq,
-  ListGroupsReq,
-  SwitchOrderReq,
+  CoinAccountDTO,
   GroupDTO,
   ListCoinAccountsReq,
-  AddCoinAccountReq,
-  CoinAccountDTO,
+  ListGroupsReq,
+  SwitchOrderReq,
+  ImportCoinGroupsReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
+import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
 
@@ -81,6 +82,27 @@ function Component() {
     userService
       .listGroups(req, getAuthMD())
       .then((res) => {
+        if (res.getGroupsList().length === 0) {
+          // 初始化 group
+          const localGroups = localStorage.get("coinGroups");
+          const oldLocalGroups = localStorage.get("savedCoinsGroups");
+          console.log(localGroups || oldLocalGroups);
+          if (localGroups || oldLocalGroups) {
+            // 导入数据
+            const importReq = new ImportCoinGroupsReq();
+            importReq.setGroups(JSON.stringify(localGroups || oldLocalGroups));
+            return userService
+              .importCoinGroups(importReq, getAuthMD())
+              .then(() => setGroupVersion((i) => i + 1));
+          } else {
+            // 添加默认 group
+            const req = new AddGroupReq();
+            req.setName("我的资产");
+            return userService
+              .addGroup(req, getAuthMD())
+              .then(() => setGroupVersion((i) => i + 1));
+          }
+        }
         setGroups(
           res.getGroupsList().map((g) => ({
             id: g.getId(),
@@ -99,16 +121,20 @@ function Component() {
     }
     const req = new ListCoinAccountsReq();
     req.setGroupId(groups[selectedIndex].id);
-    userService.listCoinAccounts(req, getAuthMD()).then((res) => {
-      setCoins(
-        res.getAccountsList().map((a) => ({
-          id: a.getId(),
-          name: a.getName(),
-          sym: a.getSym(),
-          amount: a.getAmount(),
-        }))
-      );
-    });
+    userService
+      .listCoinAccounts(req, getAuthMD())
+      .then((res) => {
+        setCoins(
+          res.getAccountsList().map((a) => ({
+            id: a.getId(),
+            name: a.getName(),
+            sym: a.getSym(),
+            amount: a.getAmount(),
+          }))
+        );
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
   }, [selectedIndex, groups, coinsVersion]);
 
   function computeChartOpt(): EChartOption | undefined {
@@ -221,7 +247,6 @@ function Component() {
           .addGroup(req, getAuthMD())
           .then(() => {
             setGroupVersion((i) => i + 1);
-            return;
           })
           .catch(handleGrpcError);
       },
@@ -286,7 +311,8 @@ function Component() {
         req.setAmount(balance);
         return userService
           .addCoinAccount(req, getAuthMD())
-          .then(() => setCoinsVersion((i) => i + 1));
+          .then(() => setCoinsVersion((i) => i + 1))
+          .catch(handleGrpcError);
       },
     });
   }
@@ -314,14 +340,12 @@ function Component() {
         const req = new GroupDTO();
         req.setId(groups[index].id);
         req.setName(data.title);
-        userService
+        return userService
           .updateGroup(req, getAuthMD())
           .then(() => {
             setGroupVersion((i) => i + 1);
           })
-          .catch(handleGrpcError)
-          .catch(showError);
-        setGroups(List(groups).setIn([index, "title"], data.title).toJS());
+          .catch(handleGrpcError);
       },
     });
   }
@@ -370,7 +394,8 @@ function Component() {
         req.setAmount(amount);
         return userService
           .updateCoinAccount(req, getAuthMD())
-          .then(() => setCoinsVersion((i) => i + 1));
+          .then(() => setCoinsVersion((i) => i + 1))
+          .catch(handleGrpcError);
       },
     });
   }
@@ -387,7 +412,12 @@ function Component() {
         req.setId(groups[index].id);
         userService
           .deleteGroup(req, getAuthMD())
-          .then(() => setGroupVersion((i) => i + 1))
+          .then(() => {
+            if (index === selectedIndex) {
+              setSelectedIndex(0);
+            }
+            setGroupVersion((i) => i + 1);
+          })
           .catch(handleGrpcError)
           .catch(showError);
       }
@@ -404,9 +434,13 @@ function Component() {
       if (confirm) {
         const req = new IdWrapper();
         req.setId(coins[index].id);
-        userService.deleteCoinAccount(req, getAuthMD()).then((res) => {
-          setCoinsVersion((i) => i + 1);
-        });
+        userService
+          .deleteCoinAccount(req, getAuthMD())
+          .then((res) => {
+            setCoinsVersion((i) => i + 1);
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
       }
     });
   }
@@ -610,7 +644,11 @@ function Component() {
 
                           return (
                             <tr key={i}>
-                              <td>{i + 1}</td>
+                              <td>
+                                <Button type="link" style={{ paddingLeft: 5 }}>
+                                  {i + 1}
+                                </Button>
+                              </td>
                               <td>{coin.name}</td>
                               <td>
                                 <a

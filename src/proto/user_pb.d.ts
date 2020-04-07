@@ -194,6 +194,24 @@ export namespace SwitchOrderReq {
   }
 }
 
+export class ImportCoinGroupsReq extends jspb.Message {
+  getGroups(): string;
+  setGroups(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ImportCoinGroupsReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ImportCoinGroupsReq): ImportCoinGroupsReq.AsObject;
+  static serializeBinaryToWriter(message: ImportCoinGroupsReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ImportCoinGroupsReq;
+  static deserializeBinaryFromReader(message: ImportCoinGroupsReq, reader: jspb.BinaryReader): ImportCoinGroupsReq;
+}
+
+export namespace ImportCoinGroupsReq {
+  export type AsObject = {
+    groups: string,
+  }
+}
+
 export class AddCoinAccountReq extends jspb.Message {
   getGroupId(): number;
   setGroupId(value: number): void;
