@@ -747,6 +747,7 @@ function Component() {
                                   style={{
                                     padding: "0 0 0 5px",
                                     height: "auto",
+                                    border: 0,
                                   }}
                                   onClick={() => showCoinLogs(coin.id)}
                                 >
