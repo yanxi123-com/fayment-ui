@@ -194,19 +194,19 @@ export namespace SwitchOrderReq {
   }
 }
 
-export class ImportCoinGroupsReq extends jspb.Message {
+export class ImportGroupsReq extends jspb.Message {
   getGroups(): string;
   setGroups(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ImportCoinGroupsReq.AsObject;
-  static toObject(includeInstance: boolean, msg: ImportCoinGroupsReq): ImportCoinGroupsReq.AsObject;
-  static serializeBinaryToWriter(message: ImportCoinGroupsReq, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ImportCoinGroupsReq;
-  static deserializeBinaryFromReader(message: ImportCoinGroupsReq, reader: jspb.BinaryReader): ImportCoinGroupsReq;
+  toObject(includeInstance?: boolean): ImportGroupsReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ImportGroupsReq): ImportGroupsReq.AsObject;
+  static serializeBinaryToWriter(message: ImportGroupsReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ImportGroupsReq;
+  static deserializeBinaryFromReader(message: ImportGroupsReq, reader: jspb.BinaryReader): ImportGroupsReq;
 }
 
-export namespace ImportCoinGroupsReq {
+export namespace ImportGroupsReq {
   export type AsObject = {
     groups: string,
   }
@@ -387,6 +387,102 @@ export class CoinAccountLogsDTO extends jspb.Message {
 export namespace CoinAccountLogsDTO {
   export type AsObject = {
     logsList: Array<CoinAccountLogDTO.AsObject>,
+  }
+}
+
+export class AddTradeReq extends jspb.Message {
+  getCoinAccountId(): number;
+  setCoinAccountId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getBuySym(): string;
+  setBuySym(value: string): void;
+
+  getBuyAmount(): number;
+  setBuyAmount(value: number): void;
+
+  getSellSym(): string;
+  setSellSym(value: string): void;
+
+  getSellAmount(): string;
+  setSellAmount(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddTradeReq): AddTradeReq.AsObject;
+  static serializeBinaryToWriter(message: AddTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddTradeReq;
+  static deserializeBinaryFromReader(message: AddTradeReq, reader: jspb.BinaryReader): AddTradeReq;
+}
+
+export namespace AddTradeReq {
+  export type AsObject = {
+    coinAccountId: number,
+    tradedAt: number,
+    buySym: string,
+    buyAmount: number,
+    sellSym: string,
+    sellAmount: string,
+  }
+}
+
+export class TradeDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getBuySym(): string;
+  setBuySym(value: string): void;
+
+  getBuyAmount(): number;
+  setBuyAmount(value: number): void;
+
+  getSellSym(): string;
+  setSellSym(value: string): void;
+
+  getSellAmount(): string;
+  setSellAmount(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TradeDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: TradeDTO): TradeDTO.AsObject;
+  static serializeBinaryToWriter(message: TradeDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TradeDTO;
+  static deserializeBinaryFromReader(message: TradeDTO, reader: jspb.BinaryReader): TradeDTO;
+}
+
+export namespace TradeDTO {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    buySym: string,
+    buyAmount: number,
+    sellSym: string,
+    sellAmount: string,
+  }
+}
+
+export class TradesDTO extends jspb.Message {
+  getTradesList(): Array<TradeDTO>;
+  setTradesList(value: Array<TradeDTO>): void;
+  clearTradesList(): void;
+  addTrades(value?: TradeDTO, index?: number): TradeDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TradesDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: TradesDTO): TradesDTO.AsObject;
+  static serializeBinaryToWriter(message: TradesDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TradesDTO;
+  static deserializeBinaryFromReader(message: TradesDTO, reader: jspb.BinaryReader): TradesDTO;
+}
+
+export namespace TradesDTO {
+  export type AsObject = {
+    tradesList: Array<TradeDTO.AsObject>,
   }
 }
 

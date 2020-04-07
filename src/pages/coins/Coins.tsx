@@ -39,7 +39,7 @@ import {
   ListCoinAccountsReq,
   ListGroupsReq,
   SwitchOrderReq,
-  ImportCoinGroupsReq,
+  ImportGroupsReq,
   ListCoinAccountLogsReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
@@ -148,7 +148,7 @@ function Component() {
           console.log(localGroups || oldLocalGroups);
           if (localGroups || oldLocalGroups) {
             // 导入数据
-            const importReq = new ImportCoinGroupsReq();
+            const importReq = new ImportGroupsReq();
             importReq.setGroups(JSON.stringify(localGroups || oldLocalGroups));
             return userService
               .importCoinGroups(importReq, getAuthMD())

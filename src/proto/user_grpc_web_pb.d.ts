@@ -5,19 +5,22 @@ import * as base_pb from './base_pb';
 import {
   AddCoinAccountReq,
   AddGroupReq,
+  AddTradeReq,
   CoinAccountDTO,
   CoinAccountLogsDTO,
   CoinAccountsDTO,
   GetUserKvReq,
   GroupDTO,
   GroupsDTO,
-  ImportCoinGroupsReq,
+  ImportGroupsReq,
   ListCoinAccountLogsReq,
   ListCoinAccountsReq,
   ListGroupsReq,
   LoginReq,
   LoginRes,
   SwitchOrderReq,
+  TradeDTO,
+  TradesDTO,
   UserKvDTO} from './user_pb';
 
 export class UserServiceClient {
@@ -89,7 +92,7 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
   importCoinGroups(
-    request: ImportCoinGroupsReq,
+    request: ImportGroupsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -138,6 +141,41 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
 
   deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  importTradeGroups(
+    request: ImportGroupsReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  addTrade(
+    request: AddTradeReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateTrade(
+    request: TradeDTO,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listTrades(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: TradesDTO) => void
+  ): grpcWeb.ClientReadableStream<TradesDTO>;
+
+  deleteTrade(
     request: base_pb.IdWrapper,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
@@ -197,7 +235,7 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   importCoinGroups(
-    request: ImportCoinGroupsReq,
+    request: ImportGroupsReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
@@ -232,6 +270,31 @@ export class UserServicePromiseClient {
   ): Promise<CoinAccountLogsDTO>;
 
   deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  importTradeGroups(
+    request: ImportGroupsReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addTrade(
+    request: AddTradeReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateTrade(
+    request: TradeDTO,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listTrades(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<TradesDTO>;
+
+  deleteTrade(
     request: base_pb.IdWrapper,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;

@@ -791,16 +791,16 @@ proto.fayment.UserServicePromiseClient.prototype.switchGroup =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.fayment.ImportCoinGroupsReq,
+ *   !proto.fayment.ImportGroupsReq,
  *   !proto.fayment.Empty>}
  */
 const methodDescriptor_UserService_ImportCoinGroups = new grpc.web.MethodDescriptor(
   '/fayment.UserService/ImportCoinGroups',
   grpc.web.MethodType.UNARY,
-  proto.fayment.ImportCoinGroupsReq,
+  proto.fayment.ImportGroupsReq,
   base_pb.Empty,
   /**
-   * @param {!proto.fayment.ImportCoinGroupsReq} request
+   * @param {!proto.fayment.ImportGroupsReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -813,13 +813,13 @@ const methodDescriptor_UserService_ImportCoinGroups = new grpc.web.MethodDescrip
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.fayment.ImportCoinGroupsReq,
+ *   !proto.fayment.ImportGroupsReq,
  *   !proto.fayment.Empty>}
  */
 const methodInfo_UserService_ImportCoinGroups = new grpc.web.AbstractClientBase.MethodInfo(
   base_pb.Empty,
   /**
-   * @param {!proto.fayment.ImportCoinGroupsReq} request
+   * @param {!proto.fayment.ImportGroupsReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -830,7 +830,7 @@ const methodInfo_UserService_ImportCoinGroups = new grpc.web.AbstractClientBase.
 
 
 /**
- * @param {!proto.fayment.ImportCoinGroupsReq} request The
+ * @param {!proto.fayment.ImportGroupsReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -851,7 +851,7 @@ proto.fayment.UserServiceClient.prototype.importCoinGroups =
 
 
 /**
- * @param {!proto.fayment.ImportCoinGroupsReq} request The
+ * @param {!proto.fayment.ImportGroupsReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1425,6 +1425,406 @@ proto.fayment.UserServicePromiseClient.prototype.deleteCoinAccountLog =
       request,
       metadata || {},
       methodDescriptor_UserService_deleteCoinAccountLog);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ImportGroupsReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_ImportTradeGroups = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ImportTradeGroups',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ImportGroupsReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ImportGroupsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ImportGroupsReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_ImportTradeGroups = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ImportGroupsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ImportGroupsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.importTradeGroups =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ImportTradeGroups',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ImportTradeGroups,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ImportGroupsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.importTradeGroups =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ImportTradeGroups',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ImportTradeGroups);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.AddTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_AddTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/AddTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.AddTradeReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.AddTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_AddTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.AddTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.addTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/AddTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.AddTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.addTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/AddTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.TradeDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_UpdateTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/UpdateTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.TradeDTO,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.TradeDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.TradeDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_UpdateTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.TradeDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.TradeDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.updateTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/UpdateTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.TradeDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.updateTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/UpdateTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.TradesDTO>}
+ */
+const methodDescriptor_UserService_ListTrades = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListTrades',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  proto.fayment.TradesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.TradesDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.TradesDTO>}
+ */
+const methodInfo_UserService_ListTrades = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.TradesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.TradesDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.TradesDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.TradesDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listTrades =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListTrades',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListTrades,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.TradesDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listTrades =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListTrades',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListTrades);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_DeleteTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/DeleteTrade',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_DeleteTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/DeleteTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/DeleteTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteTrade);
 };
 
 
