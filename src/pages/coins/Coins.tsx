@@ -225,6 +225,7 @@ function Component() {
             name: l.getName(),
             sym: l.getSym(),
             amount: l.getAmount(),
+            createdAt: l.getCreatedAt(),
             coinId,
           }))
         );
@@ -743,7 +744,10 @@ function Component() {
                               <td>
                                 <Button
                                   type="link"
-                                  style={{ paddingLeft: 5 }}
+                                  style={{
+                                    padding: "0 0 0 5px",
+                                    height: "auto",
+                                  }}
                                   onClick={() => showCoinLogs(coin.id)}
                                 >
                                   {i + 1}

@@ -2884,7 +2884,7 @@ proto.fayment.CoinAccountLogDTO.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 2, ""),
     sym: jspb.Message.getFieldWithDefault(msg, 3, ""),
     amount: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    createdat: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    createdAt: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -2939,7 +2939,7 @@ proto.fayment.CoinAccountLogDTO.deserializeBinaryFromReader = function(msg, read
       break;
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setCreatedat(value);
+      msg.setCreatedAt(value);
       break;
     default:
       reader.skipField();
@@ -2998,7 +2998,7 @@ proto.fayment.CoinAccountLogDTO.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = message.getCreatedat();
+  f = message.getCreatedAt();
   if (f !== 0) {
     writer.writeInt64(
       5,
@@ -3081,10 +3081,10 @@ proto.fayment.CoinAccountLogDTO.prototype.setAmount = function(value) {
 
 
 /**
- * optional int64 createdAt = 5;
+ * optional int64 created_at = 5;
  * @return {number}
  */
-proto.fayment.CoinAccountLogDTO.prototype.getCreatedat = function() {
+proto.fayment.CoinAccountLogDTO.prototype.getCreatedAt = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -3093,7 +3093,7 @@ proto.fayment.CoinAccountLogDTO.prototype.getCreatedat = function() {
  * @param {number} value
  * @return {!proto.fayment.CoinAccountLogDTO} returns this
  */
-proto.fayment.CoinAccountLogDTO.prototype.setCreatedat = function(value) {
+proto.fayment.CoinAccountLogDTO.prototype.setCreatedAt = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
