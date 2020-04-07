@@ -1348,5 +1348,85 @@ proto.fayment.UserServicePromiseClient.prototype.listCoinAccountLogs =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_deleteCoinAccountLog = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/deleteCoinAccountLog',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_deleteCoinAccountLog = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteCoinAccountLog =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/deleteCoinAccountLog',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_deleteCoinAccountLog,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteCoinAccountLog =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/deleteCoinAccountLog',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_deleteCoinAccountLog);
+};
+
+
 module.exports = proto.fayment;
 

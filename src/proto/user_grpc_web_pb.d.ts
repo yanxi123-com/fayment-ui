@@ -137,6 +137,13 @@ export class UserServiceClient {
                response: CoinAccountLogsDTO) => void
   ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
 
+  deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
 }
 
 export class UserServicePromiseClient {
@@ -223,6 +230,11 @@ export class UserServicePromiseClient {
     request: ListCoinAccountLogsReq,
     metadata?: grpcWeb.Metadata
   ): Promise<CoinAccountLogsDTO>;
+
+  deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
 
 }
 

@@ -9,7 +9,6 @@ import Sider from "comps/sider/Sider";
 import { observer } from "mobx-react-lite";
 import EosAccounts from "pages/eosAccounts/EosAccounts";
 import Trades from "pages/trades/Trades";
-import CoinsOld from "pages/coinsOld/Coins";
 import Coins from "pages/coins/Coins";
 import Home from "pages/home/Home";
 import Login from "pages/login/Login";
@@ -37,7 +36,6 @@ const App: React.FC = () => {
           >
             <Switch>
               <Route exact path="/coins/" component={Coins} />
-              <Route exact path="/coins-old/" component={CoinsOld} />
               <Route exact path="/trades/" component={Trades} />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
               <Route exact path="/" component={Home} />

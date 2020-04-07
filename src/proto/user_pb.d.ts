@@ -337,6 +337,9 @@ export namespace ListCoinAccountLogsReq {
 }
 
 export class CoinAccountLogDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
   getName(): string;
   setName(value: string): void;
 
@@ -345,6 +348,9 @@ export class CoinAccountLogDTO extends jspb.Message {
 
   getAmount(): number;
   setAmount(value: number): void;
+
+  getCreatedat(): number;
+  setCreatedat(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CoinAccountLogDTO.AsObject;
@@ -356,9 +362,11 @@ export class CoinAccountLogDTO extends jspb.Message {
 
 export namespace CoinAccountLogDTO {
   export type AsObject = {
+    id: number,
     name: string,
     sym: string,
     amount: number,
+    createdat: number,
   }
 }
 

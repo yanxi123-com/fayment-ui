@@ -7,7 +7,17 @@ import {
   SearchOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
+import {
+  Button,
+  Col,
+  Divider,
+  Input,
+  List as AntList,
+  Radio,
+  Row,
+  Drawer,
+  Table,
+} from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -30,6 +40,7 @@ import {
   ListGroupsReq,
   SwitchOrderReq,
   ImportCoinGroupsReq,
+  ListCoinAccountLogsReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -37,6 +48,7 @@ import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
+import moment from "moment";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -54,6 +66,14 @@ interface Group {
   name: string;
 }
 
+interface CoinLog {
+  id: number;
+  name: string;
+  sym: string;
+  amount: number;
+  coinId: number;
+}
+
 function Component() {
   // 用来让 groups 自动更新
   const [groupVersion, setGroupVersion] = useState(0);
@@ -66,6 +86,7 @@ function Component() {
   const [filerText, setFilterText] = useState("");
   const [groups, setGroups] = useState<Group[]>();
   const [coins, setCoins] = useState<CoinInfo[]>();
+  const [coinLogs, setCoinLogs] = useState<CoinLog[]>();
 
   const {
     refreshPrice,
@@ -74,6 +95,44 @@ function Component() {
     baseCoin,
     setBaseCoin,
   } = usePrices();
+
+  const logTableColumns = [
+    { title: "账户名", dataIndex: "name" },
+    {
+      title: "币种数量",
+      render: (log: CoinLog) => {
+        return `${log.amount} ${log.sym}`;
+      },
+    },
+    {
+      title: "增减",
+      dataIndex: "amount",
+      render: (amount: number, log: CoinLog, index: number) => {
+        if (coinLogs && coinLogs[index + 1]) {
+          const value = amount - coinLogs[index + 1].amount;
+          return (value >= 0 ? "+" : "-") + parseFloat(value.toPrecision(4));
+        }
+        return "-";
+      },
+    },
+    {
+      title: "修改时间",
+      dataIndex: "createdAt",
+      render: (createdAt: number) =>
+        moment(createdAt).format("YYYY-MM-DD HH:mm:ss"),
+    },
+    {
+      title: "操作",
+      render: (log: CoinLog) => {
+        return (
+          <DeleteOutlined
+            className={css.icon}
+            onClick={() => deleteCoinLog(log)}
+          />
+        );
+      },
+    },
+  ];
 
   // fetch groups
   useEffect(() => {
@@ -136,6 +195,43 @@ function Component() {
       .catch(handleGrpcError)
       .catch(showError);
   }, [selectedIndex, groups, coinsVersion]);
+
+  function deleteCoinLog(log: CoinLog) {
+    confirmPromise("请确认", `确实要删除此记录吗？`).then((confirm) => {
+      if (confirm) {
+        const req = new IdWrapper();
+        req.setId(log.id);
+        userService
+          .deleteCoinAccountLog(req, getAuthMD())
+          .then(() => {
+            showCoinLogs(log.coinId);
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
+      }
+    });
+  }
+
+  function showCoinLogs(coinId: number) {
+    const req = new ListCoinAccountLogsReq();
+    req.setAccountId(coinId);
+    req.setMax(100);
+    userService
+      .listCoinAccountLogs(req, getAuthMD())
+      .then((res) => {
+        setCoinLogs(
+          res.getLogsList().map((l) => ({
+            id: l.getId(),
+            name: l.getName(),
+            sym: l.getSym(),
+            amount: l.getAmount(),
+            coinId,
+          }))
+        );
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
+  }
 
   function computeChartOpt(): EChartOption | undefined {
     if (!groups || groups[selectedIndex] == null) {
@@ -645,7 +741,11 @@ function Component() {
                           return (
                             <tr key={i}>
                               <td>
-                                <Button type="link" style={{ paddingLeft: 5 }}>
+                                <Button
+                                  type="link"
+                                  style={{ paddingLeft: 5 }}
+                                  onClick={() => showCoinLogs(coin.id)}
+                                >
                                   {i + 1}
                                 </Button>
                               </td>
@@ -733,6 +833,25 @@ function Component() {
           {chartOpt && <ReactEcharts className={css.chart} option={chartOpt} />}
         </Col>
       </Row>
+
+      {coins && coinLogs && (
+        <Drawer
+          title={`${coins[selectedIndex].name} ${coins[selectedIndex].sym} 修改历史`}
+          placement="right"
+          closable={false}
+          onClose={() => setCoinLogs(undefined)}
+          visible
+          width={700}
+        >
+          <Table
+            columns={logTableColumns}
+            dataSource={coinLogs}
+            size="small"
+            rowKey="id"
+            pagination={false}
+          />
+        </Drawer>
+      )}
     </div>
   );
 }
