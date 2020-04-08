@@ -11,11 +11,11 @@ import {
   Button,
   Col,
   Divider,
+  Drawer,
   Input,
   List as AntList,
   Radio,
   Row,
-  Drawer,
   Table,
 } from "antd";
 import cx from "classnames";
@@ -25,30 +25,26 @@ import { openPopupForm } from "comps/PopupForm";
 import { GroupType } from "constant";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { useGroups } from "hooks/useGroups";
 import { usePrices } from "hooks/usePrices";
 import { userService } from "lib/grpcClient";
 import { uniqStrs } from "lib/util/array";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
+import moment from "moment";
 import { IdWrapper } from "proto/base_pb";
 import {
   AddCoinAccountReq,
-  AddGroupReq,
   CoinAccountDTO,
-  GroupDTO,
-  ListCoinAccountsReq,
-  ListGroupsReq,
-  SwitchOrderReq,
-  ImportGroupsReq,
   ListCoinAccountLogsReq,
+  ListCoinAccountsReq,
+  SwitchOrderReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
-import localStorage from "stores/local";
 
 import css from "./Coins.module.scss";
-import moment from "moment";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -61,11 +57,6 @@ interface CoinInfo {
   amount: number;
 }
 
-interface Group {
-  id: number;
-  name: string;
-}
-
 interface CoinLog {
   id: number;
   name: string;
@@ -75,16 +66,9 @@ interface CoinLog {
 }
 
 function Component() {
-  // 用来让 groups 自动更新
-  const [groupVersion, setGroupVersion] = useState(0);
   // 用来让 coins 自动更新
   const [coinsVersion, setCoinsVersion] = useState(0);
-
-  // 分组选中的 index
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
   const [filerText, setFilterText] = useState("");
-  const [groups, setGroups] = useState<Group[]>();
   const [coins, setCoins] = useState<CoinInfo[]>();
   const [coinLogs, setCoinLogs] = useState<CoinLog[]>();
 
@@ -95,6 +79,16 @@ function Component() {
     baseCoin,
     setBaseCoin,
   } = usePrices();
+
+  const {
+    groups,
+    selectedIndex,
+    addGroup,
+    updateGroup,
+    moveGroup,
+    deleteGroup,
+    setSelectedIndex,
+  } = useGroups(GroupType.CoinAccount);
 
   const logTableColumns = [
     { title: "账户名", dataIndex: "name" },
@@ -133,45 +127,6 @@ function Component() {
       },
     },
   ];
-
-  // fetch groups
-  useEffect(() => {
-    const req = new ListGroupsReq();
-    req.setType(GroupType.CoinAccount);
-    userService
-      .listGroups(req, getAuthMD())
-      .then((res) => {
-        if (res.getGroupsList().length === 0) {
-          // 初始化 group
-          const localGroups = localStorage.get("coinGroups");
-          const oldLocalGroups = localStorage.get("savedCoinsGroups");
-          console.log(localGroups || oldLocalGroups);
-          if (localGroups || oldLocalGroups) {
-            // 导入数据
-            const importReq = new ImportGroupsReq();
-            importReq.setGroups(JSON.stringify(localGroups || oldLocalGroups));
-            return userService
-              .importCoinGroups(importReq, getAuthMD())
-              .then(() => setGroupVersion((i) => i + 1));
-          } else {
-            // 添加默认 group
-            const req = new AddGroupReq();
-            req.setName("我的资产");
-            return userService
-              .addGroup(req, getAuthMD())
-              .then(() => setGroupVersion((i) => i + 1));
-          }
-        }
-        setGroups(
-          res.getGroupsList().map((g) => ({
-            id: g.getId(),
-            name: g.getName(),
-          }))
-        );
-      })
-      .catch(handleGrpcError)
-      .catch(showError);
-  }, [groupVersion]);
 
   // fetch coin accounts
   useEffect(() => {
@@ -322,34 +277,6 @@ function Component() {
     return undefined;
   }
 
-  function addCate() {
-    if (!groups) {
-      return;
-    }
-    const fields: Array<BaseFieldSchema> = [
-      {
-        type: "text",
-        key: "title",
-        title: "分组名",
-      },
-    ];
-    openPopupForm({
-      title: "添加分组",
-      labelSpan: 3,
-      fields,
-      onSubmit: (data: { [key: string]: any }) => {
-        const req = new AddGroupReq();
-        req.setName(data.title);
-        return userService
-          .addGroup(req, getAuthMD())
-          .then(() => {
-            setGroupVersion((i) => i + 1);
-          })
-          .catch(handleGrpcError);
-      },
-    });
-  }
-
   function getAccountNameEnum(): string[] {
     if (coins == null) {
       return [];
@@ -414,39 +341,6 @@ function Component() {
     });
   }
 
-  function updateGroup(index: number) {
-    if (!groups) {
-      return;
-    }
-    const fields: Array<BaseFieldSchema> = [
-      {
-        type: "text",
-        key: "title",
-        title: "分组名",
-        defaultValue: groups[index].name,
-      },
-    ];
-    openPopupForm({
-      title: "修改分组",
-      labelSpan: 3,
-      fields,
-      onSubmit: (data: { [key: string]: any }) => {
-        if (!groups) {
-          return;
-        }
-        const req = new GroupDTO();
-        req.setId(groups[index].id);
-        req.setName(data.title);
-        return userService
-          .updateGroup(req, getAuthMD())
-          .then(() => {
-            setGroupVersion((i) => i + 1);
-          })
-          .catch(handleGrpcError);
-      },
-    });
-  }
-
   function updateCoin(coinIndex: number) {
     if (!coins) {
       return;
@@ -497,30 +391,6 @@ function Component() {
     });
   }
 
-  function deleteGroup(index: number) {
-    if (!groups) {
-      return;
-    }
-
-    const name = groups[index].name;
-    confirmPromise("请确认", `确实要删除[${name}]吗？`).then((confirm) => {
-      if (confirm) {
-        const req = new IdWrapper();
-        req.setId(groups[index].id);
-        userService
-          .deleteGroup(req, getAuthMD())
-          .then(() => {
-            if (index === selectedIndex) {
-              setSelectedIndex(0);
-            }
-            setGroupVersion((i) => i + 1);
-          })
-          .catch(handleGrpcError)
-          .catch(showError);
-      }
-    });
-  }
-
   function deleteCoin(index: number) {
     if (!coins) {
       return;
@@ -540,34 +410,6 @@ function Component() {
           .catch(showError);
       }
     });
-  }
-
-  function moveGroup(direction: "up" | "down", index: number) {
-    if (!groups) {
-      return;
-    }
-    const otherIndex = direction === "up" ? index - 1 : index + 1;
-    if (otherIndex < 0 || otherIndex >= groups.length) {
-      return;
-    }
-
-    const req = new SwitchOrderReq();
-    req.setIdA(groups[index].id);
-    req.setIdB(groups[otherIndex].id);
-    userService
-      .switchGroup(req, getAuthMD())
-      .then(() => {
-        setGroupVersion((i) => i + 1);
-
-        // 是否选中跟随移动
-        if (otherIndex === selectedIndex) {
-          setSelectedIndex(index);
-        } else if (index === selectedIndex) {
-          setSelectedIndex(otherIndex);
-        }
-      })
-      .catch(handleGrpcError)
-      .catch(showError);
   }
 
   // parentIndex 为空表示修改的是分组，否则修改的是账号
@@ -608,7 +450,7 @@ function Component() {
             header={
               <div style={{ margin: 0, padding: 0 }}>
                 分组列表
-                <Button type="link" onClick={() => addCate()}>
+                <Button type="link" onClick={() => addGroup()}>
                   <PlusOutlined />
                 </Button>
               </div>

@@ -98,6 +98,9 @@ export class AddGroupReq extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
+  getGroupType(): number;
+  setGroupType(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddGroupReq.AsObject;
   static toObject(includeInstance: boolean, msg: AddGroupReq): AddGroupReq.AsObject;
@@ -109,6 +112,7 @@ export class AddGroupReq extends jspb.Message {
 export namespace AddGroupReq {
   export type AsObject = {
     name: string,
+    groupType: number,
   }
 }
 
@@ -391,8 +395,8 @@ export namespace CoinAccountLogsDTO {
 }
 
 export class AddTradeReq extends jspb.Message {
-  getCoinAccountId(): number;
-  setCoinAccountId(value: number): void;
+  getGroupId(): number;
+  setGroupId(value: number): void;
 
   getTradedAt(): number;
   setTradedAt(value: number): void;
@@ -406,8 +410,8 @@ export class AddTradeReq extends jspb.Message {
   getSellSym(): string;
   setSellSym(value: string): void;
 
-  getSellAmount(): string;
-  setSellAmount(value: string): void;
+  getSellAmount(): number;
+  setSellAmount(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddTradeReq.AsObject;
@@ -419,12 +423,12 @@ export class AddTradeReq extends jspb.Message {
 
 export namespace AddTradeReq {
   export type AsObject = {
-    coinAccountId: number,
+    groupId: number,
     tradedAt: number,
     buySym: string,
     buyAmount: number,
     sellSym: string,
-    sellAmount: string,
+    sellAmount: number,
   }
 }
 
@@ -444,8 +448,8 @@ export class TradeDTO extends jspb.Message {
   getSellSym(): string;
   setSellSym(value: string): void;
 
-  getSellAmount(): string;
-  setSellAmount(value: string): void;
+  getSellAmount(): number;
+  setSellAmount(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradeDTO.AsObject;
@@ -462,7 +466,7 @@ export namespace TradeDTO {
     buySym: string,
     buyAmount: number,
     sellSym: string,
-    sellAmount: string,
+    sellAmount: number,
   }
 }
 

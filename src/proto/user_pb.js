@@ -1156,7 +1156,8 @@ proto.fayment.AddGroupReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.fayment.AddGroupReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    groupType: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -1197,6 +1198,10 @@ proto.fayment.AddGroupReq.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setGroupType(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1233,6 +1238,13 @@ proto.fayment.AddGroupReq.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getGroupType();
+  if (f !== 0) {
+    writer.writeInt32(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -1251,6 +1263,24 @@ proto.fayment.AddGroupReq.prototype.getName = function() {
  */
 proto.fayment.AddGroupReq.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional int32 group_type = 2;
+ * @return {number}
+ */
+proto.fayment.AddGroupReq.prototype.getGroupType = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.fayment.AddGroupReq} returns this
+ */
+proto.fayment.AddGroupReq.prototype.setGroupType = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -3356,12 +3386,12 @@ proto.fayment.AddTradeReq.prototype.toObject = function(opt_includeInstance) {
  */
 proto.fayment.AddTradeReq.toObject = function(includeInstance, msg) {
   var f, obj = {
-    coinAccountId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    groupId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     tradedAt: jspb.Message.getFieldWithDefault(msg, 2, 0),
     buySym: jspb.Message.getFieldWithDefault(msg, 3, ""),
     buyAmount: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     sellSym: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    sellAmount: jspb.Message.getFieldWithDefault(msg, 6, "")
+    sellAmount: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0)
   };
 
   if (includeInstance) {
@@ -3400,7 +3430,7 @@ proto.fayment.AddTradeReq.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setCoinAccountId(value);
+      msg.setGroupId(value);
       break;
     case 2:
       var value = /** @type {number} */ (reader.readInt32());
@@ -3419,7 +3449,7 @@ proto.fayment.AddTradeReq.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSellSym(value);
       break;
     case 6:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setSellAmount(value);
       break;
     default:
@@ -3451,7 +3481,7 @@ proto.fayment.AddTradeReq.prototype.serializeBinary = function() {
  */
 proto.fayment.AddTradeReq.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getCoinAccountId();
+  f = message.getGroupId();
   if (f !== 0) {
     writer.writeInt32(
       1,
@@ -3487,8 +3517,8 @@ proto.fayment.AddTradeReq.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getSellAmount();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0.0) {
+    writer.writeDouble(
       6,
       f
     );
@@ -3497,10 +3527,10 @@ proto.fayment.AddTradeReq.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional int32 coin_account_id = 1;
+ * optional int32 group_id = 1;
  * @return {number}
  */
-proto.fayment.AddTradeReq.prototype.getCoinAccountId = function() {
+proto.fayment.AddTradeReq.prototype.getGroupId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -3509,7 +3539,7 @@ proto.fayment.AddTradeReq.prototype.getCoinAccountId = function() {
  * @param {number} value
  * @return {!proto.fayment.AddTradeReq} returns this
  */
-proto.fayment.AddTradeReq.prototype.setCoinAccountId = function(value) {
+proto.fayment.AddTradeReq.prototype.setGroupId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -3587,20 +3617,20 @@ proto.fayment.AddTradeReq.prototype.setSellSym = function(value) {
 
 
 /**
- * optional string sell_amount = 6;
- * @return {string}
+ * optional double sell_amount = 6;
+ * @return {number}
  */
 proto.fayment.AddTradeReq.prototype.getSellAmount = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.fayment.AddTradeReq} returns this
  */
 proto.fayment.AddTradeReq.prototype.setSellAmount = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+  return jspb.Message.setProto3FloatField(this, 6, value);
 };
 
 
@@ -3641,7 +3671,7 @@ proto.fayment.TradeDTO.toObject = function(includeInstance, msg) {
     buySym: jspb.Message.getFieldWithDefault(msg, 3, ""),
     buyAmount: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     sellSym: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    sellAmount: jspb.Message.getFieldWithDefault(msg, 6, "")
+    sellAmount: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0)
   };
 
   if (includeInstance) {
@@ -3699,7 +3729,7 @@ proto.fayment.TradeDTO.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSellSym(value);
       break;
     case 6:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setSellAmount(value);
       break;
     default:
@@ -3767,8 +3797,8 @@ proto.fayment.TradeDTO.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getSellAmount();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0.0) {
+    writer.writeDouble(
       6,
       f
     );
@@ -3867,20 +3897,20 @@ proto.fayment.TradeDTO.prototype.setSellSym = function(value) {
 
 
 /**
- * optional string sell_amount = 6;
- * @return {string}
+ * optional double sell_amount = 6;
+ * @return {number}
  */
 proto.fayment.TradeDTO.prototype.getSellAmount = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.fayment.TradeDTO} returns this
  */
 proto.fayment.TradeDTO.prototype.setSellAmount = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+  return jspb.Message.setProto3FloatField(this, 6, value);
 };
 
 

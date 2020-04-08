@@ -6,32 +6,32 @@ import React, { useEffect, useState } from "react";
 import { getBaseSym } from "./priceUtil";
 
 export interface TradeInfo {
-  id?: number;
-  buySym: string;
-  buyAmount: number;
-  sellSym: string;
-  sellAmount: number;
-  tradedAt: number;
+  tradeDate: string | undefined; // 如果空表示交易计划，非空表示已成交
+  buy: string; // 100 EOS
+  sell: string; // 1000 USD
 }
 
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  wrapperCol: { span: 20 }
 };
 
 const tailFormItemLayout = {
-  wrapperCol: { span: 20, offset: 4 },
+  wrapperCol: { span: 20, offset: 4 }
 };
 
-function parseQuantity(str: string): { amount: number; sym: string } {
+function parseAmount(str: string): [number, string] {
   str = str.toUpperCase();
   const numPart = str.replace(/[^\d.]/g, "");
-  const amount = parseFloat(numPart);
-  let sym = str.substr(numPart.length).trim();
-  if (sym.indexOf("USD") > -1) {
-    sym = "USD";
+  return [parseFloat(numPart), str.substr(numPart.length).trim()];
+}
+
+function formatAmount(str: string): string {
+  let [n, s] = parseAmount(str);
+  if (s.indexOf("USD") > -1) {
+    s = "USD";
   }
-  return { amount, sym };
+  return `${n} ${s}`;
 }
 
 interface Props {
@@ -54,11 +54,11 @@ export function TradeForm(props: Props) {
 
   useEffect(() => {
     if (trade) {
-      setInputBuy(`${trade.buyAmount} ${trade.buySym}`);
-      setInputSell(`${trade.sellAmount} ${trade.sellSym}`);
-      if (trade.tradedAt > 0) {
+      setInputBuy(trade.buy);
+      setInputSell(trade.sell);
+      if (trade.tradeDate) {
         setTradeStatus("yes");
-        setTradeDate(moment(trade.tradedAt * 1000));
+        setTradeDate(moment(trade.tradeDate));
       }
     }
   }, [trade]);
@@ -69,11 +69,9 @@ export function TradeForm(props: Props) {
       return;
     }
     const trade: TradeInfo = {
-      buySym: parseQuantity(inputBuy).sym,
-      buyAmount: parseQuantity(inputBuy).amount,
-      sellSym: parseQuantity(inputSell).sym,
-      sellAmount: parseQuantity(inputSell).amount,
-      tradedAt: tradeStatus === "yes" ? tradeDate.toDate().getTime() / 1000 : 0,
+      tradeDate: tradeStatus === "yes" ? tradeDate.format() : undefined,
+      buy: formatAmount(inputBuy),
+      sell: formatAmount(inputSell)
     };
     onSubmit(trade);
   }
@@ -83,46 +81,37 @@ export function TradeForm(props: Props) {
   }
 
   function computeAutoOpts(text: string): { value: string }[] {
-    const quantity = parseQuantity(text);
+    const [numPart, symPart] = parseAmount(text);
 
-    if (!quantity.amount || Number.isNaN(quantity.amount)) {
+    if (!numPart || Number.isNaN(numPart)) {
       return [];
     }
 
     return Object.keys(symPriceMap)
-      .map((sym) => {
-        if (!quantity.sym) {
+      .map(sym => {
+        if (!symPart) {
           return sym;
         }
-        return sym.startsWith(quantity.sym) ? sym : null;
+        return sym.startsWith(symPart) ? sym : null;
       })
-      .filter((a) => a)
-      .map((a) => ({ value: `${quantity.amount} ${a}` }));
+      .filter(a => a)
+      .map(a => ({ value: `${numPart} ${a}` }));
   }
 
   function computePrice(): string | undefined {
-    const buyQuantity = parseQuantity(inputBuy);
-    const sellQuantity = parseQuantity(inputSell);
-    if (
-      !buyQuantity.amount ||
-      !sellQuantity.amount ||
-      isNaN(buyQuantity.amount) ||
-      isNaN(sellQuantity.amount)
-    ) {
+    const [num1, sym1] = parseAmount(inputBuy);
+    const [num2, sym2] = parseAmount(inputSell);
+    if (!num1 || !num2 || isNaN(num1) || isNaN(num2)) {
       return;
     }
 
-    const baseSym = getBaseSym(symPriceMap, buyQuantity.sym, sellQuantity.sym);
+    const baseSym = getBaseSym(symPriceMap, sym1, sym2);
 
-    if (baseSym === buyQuantity.sym) {
-      return `${(buyQuantity.amount / sellQuantity.amount).toPrecision(5)} ${
-        buyQuantity.sym
-      }/${sellQuantity.sym}`;
+    if (baseSym === sym1) {
+      return `${(num1 / num2).toPrecision(5)} ${sym1}/${sym2}`;
     }
 
-    return `${(sellQuantity.amount / buyQuantity.amount).toPrecision(5)} ${
-      sellQuantity.sym
-    }/${buyQuantity.sym}`;
+    return `${(num2 / num1).toPrecision(5)} ${sym2}/${sym1}`;
   }
 
   return (
@@ -140,9 +129,9 @@ export function TradeForm(props: Props) {
           <Radio.Group
             options={[
               { label: "已成交", value: "yes" },
-              { label: "未成交", value: "no" },
+              { label: "未成交", value: "no" }
             ]}
-            onChange={(e) => setTradeStatus(e.target.value)}
+            onChange={e => setTradeStatus(e.target.value)}
             value={tradeStatus}
           />
         </Form.Item>
@@ -150,7 +139,7 @@ export function TradeForm(props: Props) {
           <Form.Item label="成交日期" style={{ marginBottom: 10 }}>
             <DatePicker
               value={tradeDate}
-              onChange={(day) => {
+              onChange={day => {
                 if (day) {
                   setTradeDate(day);
                 }
