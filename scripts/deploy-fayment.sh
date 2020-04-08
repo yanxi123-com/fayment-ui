@@ -16,7 +16,7 @@ do
     cp index.html $dir
 done
 
-printf "fayment.com\n" > CNAME
+printf "old-github.fayment.com\n" > CNAME
 
 git init
 

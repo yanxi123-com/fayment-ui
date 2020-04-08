@@ -7,7 +7,7 @@ import { openPopupForm } from "comps/PopupForm";
 import {
   BaseFieldSchema,
   globalContext,
-  globalStore
+  globalStore,
 } from "stores/GlobalStore";
 import { httpPost } from "lib/apiClient";
 import { getCurrentTitle } from "comps/sider/Sider";
@@ -29,14 +29,14 @@ export function login() {
       key: "email",
       title: "Email",
       placeholder: "请输入你的 Email",
-      defaultValue: ""
+      defaultValue: "",
     },
     {
       type: "password",
       key: "pwd",
       title: "密码",
-      placeholder: "请设置密码"
-    }
+      placeholder: "请设置密码",
+    },
   ];
 
   openPopupForm({
@@ -51,7 +51,7 @@ export function login() {
 
       return httpPost("login", {
         email: data.email,
-        pwd: data.pwd
+        pwd: data.pwd,
       }).then(({ token }) => {
         afterLogin(email, token);
       });
@@ -64,7 +64,7 @@ export function login() {
           </Button>
         </div>
       </>
-    )
+    ),
   });
 }
 
@@ -75,21 +75,21 @@ export function register() {
       key: "email",
       title: "Email",
       placeholder: "请输入你的 Email",
-      defaultValue: ""
+      defaultValue: "",
     },
     {
       type: "password",
       key: "pwd",
       title: "密码",
-      placeholder: "请设置密码"
+      placeholder: "请设置密码",
     },
     {
       type: "password",
       key: "pwd2",
       title: "重输密码",
       placeholder: "请输入持有数量",
-      defaultValue: ""
-    }
+      defaultValue: "",
+    },
   ];
 
   openPopupForm({
@@ -107,7 +107,7 @@ export function register() {
 
       return httpPost("register", {
         email: data.email,
-        pwd: data.pwd
+        pwd: data.pwd,
       }).then(({ token }) => {
         afterLogin(email, token);
       });
@@ -120,7 +120,7 @@ export function register() {
           </Button>
         </div>
       </>
-    )
+    ),
   });
 }
 
@@ -147,13 +147,15 @@ function Component(props: Props) {
                     placement="bottom"
                     title="所有修改都会自动保存到云端"
                   >
-                    <CheckOutlined style={{ marginRight: 5 }} />
-                    <span className={css.text}>
-                      上次修改时间:&nbsp;
-                      <FriendlyDate
-                        date={currentGroupsVersion.cloudUpdatedAt}
-                      />
-                    </span>
+                    <>
+                      <CheckOutlined style={{ marginRight: 5 }} />
+                      <span className={css.text}>
+                        上次修改时间:&nbsp;
+                        <FriendlyDate
+                          date={currentGroupsVersion.cloudUpdatedAt}
+                        />
+                      </span>
+                    </>
                   </Tooltip>
                 )}
               {currentGroupsVersion.currentVersion !==

@@ -2,10 +2,10 @@ import { Modal } from "antd";
 import { register } from "comps/header/Header";
 import { showError } from "comps/popup";
 import { httpGet, httpPost } from "lib/apiClient";
+import { AppError } from "lib/error";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { globalContext, UserDataVersion } from "stores/GlobalStore";
 import localStorage from "stores/local";
-import { AppError } from "lib/error";
 
 interface UserDataOpts<Group> {
   oldLocalKey: string;
@@ -25,7 +25,7 @@ function promptLogin() {
     content: `登录后可同步数据到云端`,
     onOk() {
       register();
-    }
+    },
   });
 }
 
@@ -37,8 +37,14 @@ export function useUserData<Group>(
 
   const setGroups = useCallback(
     (groups: Array<Group>, initVersion?: UserDataVersion) => {
+      if (!initVersion) {
+        // 提示使用新版
+        showError("旧版停止使用，新版网站备案中，会很快推出");
+        return;
+      }
+
       // 去重
-      groups.forEach(group => {
+      groups.forEach((group) => {
         opts.uniqGroupInfo(group);
       });
 
@@ -71,15 +77,15 @@ export function useUserData<Group>(
         }
         return httpGet("getUserData", { key: opts.dataKey });
       })
-      .then(data => {
+      .then((data) => {
         groups = data.value;
         version = {
           currentVersion: 1,
           cloudVersion: 1,
-          cloudUpdatedAt: new Date(data.updatedAt)
+          cloudUpdatedAt: new Date(data.updatedAt),
         };
       })
-      .catch(e => {
+      .catch((e) => {
         if (e.code === "REQUIRE_LOGIN" || e.code === "NoSuchKey") {
           // 未登录，或者无云上数据
           const localGroups = localStorage.get(opts.dataKey);
@@ -90,7 +96,7 @@ export function useUserData<Group>(
             groups = localGroups || oldLocalGroups || opts.defaultGroups;
           }
           version = {
-            currentVersion: 1
+            currentVersion: 1,
           };
         } else {
           throw e;
@@ -127,9 +133,9 @@ export function useUserData<Group>(
       version.uploadingVersion = version.currentVersion;
       httpPost("saveUserData", {
         key: opts.dataKey,
-        data: groups
+        data: groups,
       })
-        .then(data => {
+        .then((data) => {
           version.cloudVersion = version.uploadingVersion;
           version.uploadingVersion = undefined;
           version.cloudUpdatedAt = new Date(data.updatedAt);
