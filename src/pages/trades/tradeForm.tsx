@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { getBaseSym } from "./priceUtil";
 
 export interface TradeInfo {
-  id?: number;
+  id: number;
   buySym: string;
   buyAmount: number;
   sellSym: string;
@@ -68,14 +68,15 @@ export function TradeForm(props: Props) {
       showError("买入或者卖出设置有误");
       return;
     }
-    const trade: TradeInfo = {
+    const submitTrade: TradeInfo = {
+      id: trade ? trade.id : 0,
       buySym: parseQuantity(inputBuy).sym,
       buyAmount: parseQuantity(inputBuy).amount,
       sellSym: parseQuantity(inputSell).sym,
       sellAmount: parseQuantity(inputSell).amount,
       tradedAt: tradeStatus === "yes" ? tradeDate.toDate().getTime() / 1000 : 0,
     };
-    onSubmit(trade);
+    onSubmit(submitTrade);
   }
 
   function close() {

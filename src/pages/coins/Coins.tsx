@@ -412,7 +412,6 @@ function Component() {
     });
   }
 
-  // parentIndex 为空表示修改的是分组，否则修改的是账号
   function moveCoin(direction: "up" | "down", index: number) {
     if (!coins) {
       return;

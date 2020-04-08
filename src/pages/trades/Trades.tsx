@@ -10,16 +10,16 @@ import {
 import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
-import { showError } from "comps/popup";
+import { confirmPromise, showError } from "comps/popup";
 import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
 import { usePrices } from "hooks/usePrices";
-import { List } from "immutable";
 import { userService } from "lib/grpcClient";
 import { formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
-import { AddTradeReq, TradeDTO } from "proto/user_pb";
+import { IdWrapper } from "proto/base_pb";
+import { AddTradeReq, SwitchOrderReq, TradeDTO } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
@@ -31,11 +31,6 @@ import css from "./Trades.module.scss";
 const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 let actionClicked = false;
-
-interface Group {
-  id: number;
-  name: string;
-}
 
 interface ModalInfo {
   trade?: TradeInfo;
@@ -66,7 +61,32 @@ function Component() {
     moveGroup,
     deleteGroup,
     setSelectedIndex,
-  } = useGroups(GroupType.CoinAccount);
+  } = useGroups(GroupType.CoinTrade);
+
+  // fetch coin accounts
+  useEffect(() => {
+    if (!groups) {
+      return;
+    }
+    const req = new IdWrapper();
+    req.setId(groups[selectedIndex].id);
+    userService
+      .listTrades(req, getAuthMD())
+      .then((res) => {
+        setTrades(
+          res.getTradesList().map((t) => ({
+            id: t.getId(),
+            buySym: t.getBuySym(),
+            buyAmount: t.getBuyAmount(),
+            sellSym: t.getSellSym(),
+            sellAmount: t.getSellAmount(),
+            tradedAt: t.getTradedAt(),
+          }))
+        );
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
+  }, [selectedIndex, groups, tradesVersion]);
 
   function addTrade() {
     if (!groups) {
@@ -128,40 +148,45 @@ function Component() {
     });
   }
 
-  // parentIndex 为空表示修改的是分组，否则修改的是账号
-  function moveItem(
-    direction: "up" | "down",
-    index: number,
-    parentIndex?: number
-  ) {
-    // if (!groups) {
-    //   return;
-    // }
-    // const otherIndex = direction === "up" ? index - 1 : index + 1;
-    // if (otherIndex < 0) {
-    //   return;
-    // }
-    // if (parentIndex == null && otherIndex >= groups.length) {
-    //   return;
-    // }
-    // if (
-    //   parentIndex != null &&
-    //   otherIndex >= groups[parentIndex].trades.length
-    // ) {
-    //   return;
-    // }
-    // if (parentIndex == null) {
-    //   // 是否选中跟随移动
-    //   if (otherIndex === selectedIndex) {
-    //     setSelectedIndex(index);
-    //   } else if (index === selectedIndex) {
-    //     setSelectedIndex(otherIndex);
-    //   }
-    // }
-    // const keyPath = parentIndex == null ? [] : [parentIndex, "trades"];
-    // setGroups(
-    //   switchObject(groups, [...keyPath, index], [...keyPath, otherIndex])
-    // );
+  function deleteTrade(index: number) {
+    if (!trades) {
+      return;
+    }
+
+    confirmPromise("请确认", `确实要删除此交易吗？`).then((confirm) => {
+      if (confirm) {
+        const req = new IdWrapper();
+        req.setId(trades[index].id);
+        userService
+          .deleteTrade(req, getAuthMD())
+          .then(() => {
+            setTradesVersion((i) => i + 1);
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
+      }
+    });
+  }
+
+  function moveTrade(direction: "up" | "down", index: number) {
+    if (!trades) {
+      return;
+    }
+    const otherIndex = direction === "up" ? index - 1 : index + 1;
+    if (otherIndex < 0 || otherIndex >= trades.length) {
+      return;
+    }
+
+    const req = new SwitchOrderReq();
+    req.setIdA(trades[index].id);
+    req.setIdB(trades[otherIndex].id);
+    userService
+      .switchTrade(req, getAuthMD())
+      .then(() => {
+        setTradesVersion((i) => i + 1);
+      })
+      .catch(handleGrpcError)
+      .catch(showError);
   }
 
   if (groups == null) {
@@ -208,14 +233,14 @@ function Component() {
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
-                      moveItem("up", i);
+                      moveGroup("up", i);
                     }}
                   />,
                   <DownOutlined
                     className={css.icon}
                     onClick={() => {
                       actionClicked = true;
-                      moveItem("down", i);
+                      moveGroup("down", i);
                     }}
                   />,
                   <DeleteOutlined
@@ -501,17 +526,13 @@ function Component() {
                                   <>
                                     <UpOutlined
                                       className={css.icon}
-                                      onClick={() =>
-                                        moveItem("up", i, selectedIndex)
-                                      }
+                                      onClick={() => moveTrade("up", i)}
                                     />
                                     <Divider type="vertical" />
 
                                     <DownOutlined
                                       className={css.icon}
-                                      onClick={() =>
-                                        moveItem("down", i, selectedIndex)
-                                      }
+                                      onClick={() => moveTrade("down", i)}
                                     />
                                     <Divider type="vertical" />
                                   </>
@@ -519,7 +540,7 @@ function Component() {
 
                                 <DeleteOutlined
                                   className={css.icon}
-                                  onClick={() => deleteGroup(i)}
+                                  onClick={() => deleteTrade(i)}
                                 />
                               </td>
                             </tr>
