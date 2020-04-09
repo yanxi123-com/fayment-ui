@@ -74,7 +74,10 @@ export function TradeForm(props: Props) {
       buyAmount: parseQuantity(inputBuy).amount,
       sellSym: parseQuantity(inputSell).sym,
       sellAmount: parseQuantity(inputSell).amount,
-      tradedAt: tradeStatus === "yes" ? tradeDate.toDate().getTime() / 1000 : 0,
+      tradedAt:
+        tradeStatus === "yes"
+          ? Math.round(tradeDate.toDate().getTime() / 1000)
+          : 0,
     };
     onSubmit(submitTrade);
   }
