@@ -7,7 +7,7 @@ import {
   SearchOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Divider, Input, List as AntList, Radio, Row } from "antd";
+import { Button, Col, Divider, Input, List as AntList, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -28,8 +28,6 @@ import { getBaseSym } from "./priceUtil";
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
-const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
-
 let actionClicked = false;
 
 interface ModalInfo {
@@ -45,13 +43,9 @@ function Component() {
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
 
-  const {
-    refreshPrice,
-    pricesByBTC,
-    baseCoin,
-    setBaseCoin,
-    getBaseCoinPrice,
-  } = usePrices("USD");
+  const { refreshPrice, pricesByBTC, baseCoin, getBaseCoinPrice } = usePrices(
+    "USD"
+  );
 
   const {
     groups,
@@ -61,7 +55,7 @@ function Component() {
     moveGroup,
     deleteGroup,
     setSelectedIndex,
-  } = useGroups(GroupType.CoinTrade);
+  } = useGroups(GroupType.StockTrade);
 
   // fetch coin accounts
   useEffect(() => {
@@ -271,28 +265,14 @@ function Component() {
         </Col>
         <Col span={18}>
           <div style={{ marginBottom: 20 }}>
-            {Object.keys(pricesByBTC).length > 0 && (
-              <Button
-                onClick={() => addTrade()}
-                icon={<PlusOutlined />}
-                style={{ marginRight: 30 }}
-              >
-                添加记录
-              </Button>
-            )}
-            盈亏计价单位: &nbsp;
-            <Radio.Group
-              onChange={(e) => {
-                setBaseCoin(e.target.value === "自动" ? "USD" : e.target.value);
-              }}
-              defaultValue="自动"
+            <Button
+              onClick={() => addTrade()}
+              icon={<PlusOutlined />}
+              style={{ marginRight: 30 }}
             >
-              {baseCoins.map((coin) => (
-                <Radio.Button key={coin} value={coin}>
-                  {coin}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
+              添加记录
+            </Button>
+
             <Input
               prefix={<SearchOutlined style={{ color: "gray" }} />}
               style={{ marginLeft: 30, width: 200 }}

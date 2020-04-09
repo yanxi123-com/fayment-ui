@@ -11,7 +11,7 @@ import {
   ListGroupsReq,
   SwitchOrderReq,
 } from "proto/user_pb";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema, getAuthMD } from "stores/GlobalStore";
 import localStorage from "stores/local";
 
@@ -28,6 +28,16 @@ export function useGroups(groupType: GroupType) {
 
   const [groups, setGroups] = useState<Group[]>();
 
+  const callAddGroup = useCallback(
+    (name: string) => {
+      const req = new AddGroupReq();
+      req.setName(name);
+      req.setGroupType(groupType);
+      return userService.addGroup(req, getAuthMD());
+    },
+    [groupType]
+  );
+
   const initCoinGroups = useCallback(() => {
     const localGroups = localStorage.get("coinGroups");
     const oldLocalGroups = localStorage.get("savedCoinsGroups");
@@ -38,12 +48,9 @@ export function useGroups(groupType: GroupType) {
       return userService.importCoinGroups(importReq, getAuthMD());
     } else {
       // 添加默认 group
-      const req = new AddGroupReq();
-      req.setName("我的资产");
-      req.setGroupType(groupType);
-      return userService.addGroup(req, getAuthMD());
+      return callAddGroup("我的资产");
     }
-  }, [groupType]);
+  }, [callAddGroup]);
 
   const initTradeGroups = useCallback(() => {
     const localGroups = localStorage.get("tradeGroups");
@@ -54,12 +61,9 @@ export function useGroups(groupType: GroupType) {
       return userService.importTradeGroups(importReq, getAuthMD());
     } else {
       // 添加默认 group
-      const req = new AddGroupReq();
-      req.setName("交易记录");
-      req.setGroupType(groupType);
-      return userService.addGroup(req, getAuthMD());
+      return callAddGroup("交易记录");
     }
-  }, [groupType]);
+  }, [callAddGroup]);
 
   // fetch groups
   useEffect(() => {
@@ -74,6 +78,10 @@ export function useGroups(groupType: GroupType) {
             return initCoinGroups().then(() => setGroupVersion((i) => i + 1));
           } else if (groupType === GroupType.CoinTrade) {
             return initTradeGroups().then(() => setGroupVersion((i) => i + 1));
+          } else if (groupType === GroupType.StockTrade) {
+            return callAddGroup("交易记录").then(() =>
+              setGroupVersion((i) => i + 1)
+            );
           }
         }
         setGroups(
@@ -85,7 +93,7 @@ export function useGroups(groupType: GroupType) {
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [groupVersion, groupType, initCoinGroups, initTradeGroups]);
+  }, [groupVersion, groupType, initCoinGroups, initTradeGroups, callAddGroup]);
 
   function addGroup() {
     if (!groups) {
@@ -102,12 +110,8 @@ export function useGroups(groupType: GroupType) {
       title: "添加分组",
       labelSpan: 3,
       fields,
-      onSubmit: (data: { [key: string]: any }) => {
-        const req = new AddGroupReq();
-        req.setName(data.title);
-        req.setGroupType(groupType);
-        return userService
-          .addGroup(req, getAuthMD())
+      onSubmit: async (data: { [key: string]: any }) => {
+        return callAddGroup(data.title)
           .then(() => {
             setGroupVersion((i) => i + 1);
           })
@@ -162,6 +166,9 @@ export function useGroups(groupType: GroupType) {
         userService
           .deleteGroup(req, getAuthMD())
           .then(() => {
+            if (index < selectedIndex) {
+              setSelectedIndex((i) => i - 1);
+            }
             if (index === selectedIndex) {
               setSelectedIndex(0);
             }
