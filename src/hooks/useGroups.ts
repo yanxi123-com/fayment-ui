@@ -55,7 +55,7 @@ export function useGroups(groupType: GroupType) {
     } else {
       // 添加默认 group
       const req = new AddGroupReq();
-      req.setName("交易监控");
+      req.setName("交易记录");
       req.setGroupType(groupType);
       return userService.addGroup(req, getAuthMD());
     }
