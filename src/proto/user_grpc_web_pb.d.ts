@@ -5,6 +5,7 @@ import * as base_pb from './base_pb';
 import {
   AddCoinAccountReq,
   AddGroupReq,
+  AddStockTradeReq,
   AddTradeReq,
   CoinAccountDTO,
   CoinAccountLogsDTO,
@@ -18,6 +19,8 @@ import {
   ListGroupsReq,
   LoginReq,
   LoginRes,
+  StockTradeDTO,
+  StockTradesDTO,
   SwitchOrderReq,
   TradeDTO,
   TradesDTO,
@@ -189,6 +192,41 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
+  addStockTrade(
+    request: AddStockTradeReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateStockTrade(
+    request: StockTradeDTO,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listStockTrades(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: StockTradesDTO) => void
+  ): grpcWeb.ClientReadableStream<StockTradesDTO>;
+
+  deleteStockTrade(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  switchStockTrade(
+    request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
 }
 
 export class UserServicePromiseClient {
@@ -307,6 +345,31 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   switchTrade(
+    request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addStockTrade(
+    request: AddStockTradeReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateStockTrade(
+    request: StockTradeDTO,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listStockTrades(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<StockTradesDTO>;
+
+  deleteStockTrade(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  switchStockTrade(
     request: SwitchOrderReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;

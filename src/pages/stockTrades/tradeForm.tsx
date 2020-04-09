@@ -1,16 +1,15 @@
-import { AutoComplete, Button, DatePicker, Form, Modal, Radio } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Radio } from "antd";
 import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 
-import { getBaseSym } from "./priceUtil";
-
 export interface TradeInfo {
   id: number;
-  buySym: string;
-  buyAmount: number;
-  sellSym: string;
-  sellAmount: number;
+  stockSym: string;
+  stockName: string;
+  stockNum: number;
+  direction: string;
+  amount: number;
   tradedAt: number;
 }
 
@@ -23,62 +22,69 @@ const tailFormItemLayout = {
   wrapperCol: { span: 20, offset: 4 },
 };
 
-function parseQuantity(str: string): { amount: number; sym: string } {
-  str = str.toUpperCase();
-  const numPart = str.replace(/[^\d.]/g, "");
-  const amount = parseFloat(numPart);
-  let sym = str.substr(numPart.length).trim();
-  if (sym.indexOf("USD") > -1) {
-    sym = "USD";
-  }
-  return { amount, sym };
-}
-
 interface Props {
   trade?: TradeInfo;
-  symPriceMap: { [sym: string]: number };
   onSubmit: (trade: TradeInfo) => void;
   onCancel: () => void;
 }
 
-type TradeStatus = "yes" | "no";
+interface FormValues {
+  stockName: string;
+  stockSym: string;
+  stockNum: number;
+  direction: "B" | "S";
+  amount: number;
+  tradedAt: Moment;
+}
 
 export function TradeForm(props: Props) {
-  const { trade, symPriceMap, onSubmit, onCancel } = props;
-  const [tradeStatus, setTradeStatus] = useState<TradeStatus>("no");
-  const [inputBuy, setInputBuy] = useState("");
-  const [inputSell, setInputSell] = useState("");
-  const [optsBuy, setOptsBuy] = useState<{ value: string }[]>([]);
-  const [optsSell, setOptsSell] = useState<{ value: string }[]>([]);
-  const [tradeDate, setTradeDate] = useState<Moment>(moment());
+  const { trade, onSubmit, onCancel } = props;
+  const [isTraded, setIsTraded] = useState(false);
+  const [form] = Form.useForm();
+  console.log(props);
 
   useEffect(() => {
     if (trade) {
-      setInputBuy(`${trade.buyAmount} ${trade.buySym}`);
-      setInputSell(`${trade.sellAmount} ${trade.sellSym}`);
-      if (trade.tradedAt > 0) {
-        setTradeStatus("yes");
-        setTradeDate(moment(trade.tradedAt * 1000));
-      }
+      setIsTraded(trade.tradedAt > 0);
     }
   }, [trade]);
 
-  function submit() {
-    if (!computePrice()) {
-      showError("买入或者卖出设置有误");
-      return;
+  function onFinish(values: { [name: string]: any }) {
+    const {
+      stockName,
+      stockSym,
+      stockNum,
+      direction,
+      amount,
+      tradedAt,
+    } = values as FormValues;
+
+    if (!stockSym || !stockSym.match(/^\d{6}$/)) {
+      return showError("股票代码必须为6位数字");
     }
+
+    if (!stockName) {
+      return showError("股票名称不能为空");
+    }
+
+    if (!stockNum || stockNum === 0) {
+      return showError("股票数量不能为空");
+    }
+
+    if (!amount || amount === 0) {
+      return showError("总金额不能为空");
+    }
+
     const submitTrade: TradeInfo = {
       id: trade ? trade.id : 0,
-      buySym: parseQuantity(inputBuy).sym,
-      buyAmount: parseQuantity(inputBuy).amount,
-      sellSym: parseQuantity(inputSell).sym,
-      sellAmount: parseQuantity(inputSell).amount,
-      tradedAt:
-        tradeStatus === "yes"
-          ? Math.round(tradeDate.toDate().getTime() / 1000)
-          : 0,
+      stockSym,
+      stockName,
+      stockNum,
+      direction,
+      amount,
+      tradedAt: isTraded ? Math.round(tradedAt.toDate().getTime() / 1000) : 0,
     };
+
     onSubmit(submitTrade);
   }
 
@@ -86,48 +92,19 @@ export function TradeForm(props: Props) {
     onCancel();
   }
 
-  function computeAutoOpts(text: string): { value: string }[] {
-    const quantity = parseQuantity(text);
-
-    if (!quantity.amount || Number.isNaN(quantity.amount)) {
-      return [];
-    }
-
-    return Object.keys(symPriceMap)
-      .map((sym) => {
-        if (!quantity.sym) {
-          return sym;
-        }
-        return sym.startsWith(quantity.sym) ? sym : null;
-      })
-      .filter((a) => a)
-      .map((a) => ({ value: `${quantity.amount} ${a}` }));
-  }
-
-  function computePrice(): string | undefined {
-    const buyQuantity = parseQuantity(inputBuy);
-    const sellQuantity = parseQuantity(inputSell);
-    if (
-      !buyQuantity.amount ||
-      !sellQuantity.amount ||
-      isNaN(buyQuantity.amount) ||
-      isNaN(sellQuantity.amount)
-    ) {
-      return;
-    }
-
-    const baseSym = getBaseSym(symPriceMap, buyQuantity.sym, sellQuantity.sym);
-
-    if (baseSym === buyQuantity.sym) {
-      return `${(buyQuantity.amount / sellQuantity.amount).toPrecision(5)} ${
-        buyQuantity.sym
-      }/${sellQuantity.sym}`;
-    }
-
-    return `${(sellQuantity.amount / buyQuantity.amount).toPrecision(5)} ${
-      sellQuantity.sym
-    }/${buyQuantity.sym}`;
-  }
+  const initValues = {
+    traded: isTraded ? "yes" : "no",
+    tradedAt:
+      trade == null || trade.tradedAt === 0
+        ? moment()
+        : moment(trade.tradedAt * 1000),
+    direction: trade != null ? trade.direction : "B",
+    stockSym: trade != null ? trade.stockSym : undefined,
+    stockName: trade != null ? trade.stockName : undefined,
+    stockNum: trade != null ? trade.stockNum : undefined,
+    stockPrice: trade != null ? trade.amount / trade.stockNum : undefined,
+    amount: trade != null ? trade.amount : undefined,
+  };
 
   return (
     <Modal
@@ -139,61 +116,85 @@ export function TradeForm(props: Props) {
       maskClosable={false}
       destroyOnClose
     >
-      <Form {...formItemLayout} style={{ maxWidth: 800 }}>
-        <Form.Item label="是否成交" style={{ marginBottom: 10 }}>
+      <Form
+        form={form}
+        {...formItemLayout}
+        style={{ maxWidth: 800 }}
+        onFinish={onFinish}
+        initialValues={initValues}
+        onValuesChange={(changedValues, allValues) => {
+          setIsTraded(allValues.traded === "yes");
+
+          if (allValues.stockNum) {
+            if (changedValues.stockPrice) {
+              const amount = allValues.stockNum * changedValues.stockPrice;
+              form.setFieldsValue({
+                amount: amount.toFixed(2),
+              });
+            } else if (changedValues.amount) {
+              const price = changedValues.amount / allValues.stockNum;
+              form.setFieldsValue({
+                stockPrice: price.toFixed(4),
+              });
+            }
+          }
+        }}
+      >
+        <Form.Item label="是否成交" style={{ marginBottom: 10 }} name="traded">
           <Radio.Group
             options={[
               { label: "已成交", value: "yes" },
               { label: "未成交", value: "no" },
             ]}
-            onChange={(e) => setTradeStatus(e.target.value)}
-            value={tradeStatus}
           />
         </Form.Item>
-        {tradeStatus === "yes" && (
-          <Form.Item label="成交日期" style={{ marginBottom: 10 }}>
-            <DatePicker
-              value={tradeDate}
-              onChange={(day) => {
-                if (day) {
-                  setTradeDate(day);
-                }
-              }}
-            />
+
+        {isTraded && (
+          <Form.Item
+            label="成交日期"
+            style={{ marginBottom: 10 }}
+            name="tradedAt"
+          >
+            <DatePicker />
           </Form.Item>
         )}
-        <Form.Item label="买入" style={{ marginBottom: 10 }}>
-          <AutoComplete
-            value={inputBuy}
-            options={optsBuy}
-            onChange={(value: string) => {
-              setInputBuy(value);
-            }}
-            onSearch={(text: string) => {
-              setOptsBuy(computeAutoOpts(text));
-            }}
-            placeholder="请输入币种和数量，示例: 0.5 BTC"
-          ></AutoComplete>
+
+        <Form.Item label="方向" style={{ marginBottom: 10 }} name="direction">
+          <Radio.Group
+            options={[
+              { label: "买入", value: "B" },
+              { label: "卖出", value: "S" },
+            ]}
+          />
         </Form.Item>
-        <Form.Item label="卖出" style={{ marginBottom: 10 }}>
-          <AutoComplete
-            value={inputSell}
-            options={optsSell}
-            onChange={(value: string) => {
-              setInputSell(value);
-            }}
-            onSearch={(text: string) => {
-              setOptsSell(computeAutoOpts(text));
-            }}
-            placeholder="请输入币种和数量，示例: 5000 USD"
-          ></AutoComplete>
+        <Form.Item
+          label="股票代码"
+          style={{ marginBottom: 10 }}
+          name="stockSym"
+        >
+          <Input type="text" />
         </Form.Item>
-        <Form.Item label="单价" style={{ marginBottom: 10 }}>
-          <>{computePrice() || "根据买入和卖出值自动计算"}</>
+        <Form.Item
+          label="股票名称"
+          style={{ marginBottom: 10 }}
+          name="stockName"
+        >
+          <Input type="text" />
+        </Form.Item>
+
+        <Form.Item label="数量" style={{ marginBottom: 10 }} name="stockNum">
+          <Input type="number" autoComplete="off" />
+        </Form.Item>
+
+        <Form.Item label="单价" style={{ marginBottom: 10 }} name="stockPrice">
+          <Input type="number" autoComplete="off" />
+        </Form.Item>
+        <Form.Item label="总金额" style={{ marginBottom: 10 }} name="amount">
+          <Input type="number" autoComplete="off" />
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout} style={{ marginBottom: 10 }}>
-          <Button type="primary" onClick={submit}>
+          <Button type="primary" htmlType="submit">
             确定
           </Button>
           <Button onClick={close}>取消</Button>

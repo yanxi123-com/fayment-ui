@@ -1908,5 +1908,405 @@ proto.fayment.UserServicePromiseClient.prototype.switchTrade =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.AddStockTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_AddStockTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/AddStockTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.AddStockTradeReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddStockTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.AddStockTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_AddStockTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddStockTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.AddStockTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.addStockTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/AddStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddStockTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.AddStockTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.addStockTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/AddStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddStockTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.StockTradeDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_UpdateStockTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/UpdateStockTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.StockTradeDTO,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.StockTradeDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.StockTradeDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_UpdateStockTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.StockTradeDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.StockTradeDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.updateStockTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/UpdateStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateStockTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.StockTradeDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.updateStockTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/UpdateStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateStockTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.StockTradesDTO>}
+ */
+const methodDescriptor_UserService_ListStockTrades = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListStockTrades',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  proto.fayment.StockTradesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.StockTradesDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.StockTradesDTO>}
+ */
+const methodInfo_UserService_ListStockTrades = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.StockTradesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.StockTradesDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.StockTradesDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.StockTradesDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listStockTrades =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListStockTrades',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockTrades,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.StockTradesDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listStockTrades =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListStockTrades',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockTrades);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_DeleteStockTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/DeleteStockTrade',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_DeleteStockTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteStockTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/DeleteStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteStockTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteStockTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/DeleteStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteStockTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_SwitchStockTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/SwitchStockTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.SwitchOrderReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_SwitchStockTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.switchStockTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/SwitchStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchStockTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.switchStockTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/SwitchStockTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchStockTrade);
+};
+
+
 module.exports = proto.fayment;
 

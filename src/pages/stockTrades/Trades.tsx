@@ -13,18 +13,17 @@ import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
 import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
-import { usePrices } from "hooks/usePrices";
+import { useStockPrices } from "hooks/useStockPrices";
 import { userService } from "lib/grpcClient";
 import { formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
-import { AddTradeReq, SwitchOrderReq, TradeDTO } from "proto/user_pb";
+import { AddStockTradeReq, StockTradeDTO, SwitchOrderReq } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
-import { getBaseSym } from "./priceUtil";
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
@@ -43,9 +42,7 @@ function Component() {
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
 
-  const { refreshPrice, pricesByBTC, baseCoin, getBaseCoinPrice } = usePrices(
-    "USD"
-  );
+  const { refreshPrice } = useStockPrices();
 
   const {
     groups,
@@ -65,15 +62,16 @@ function Component() {
     const req = new IdWrapper();
     req.setId(groups[selectedIndex].id);
     userService
-      .listTrades(req, getAuthMD())
+      .listStockTrades(req, getAuthMD())
       .then((res) => {
         setTrades(
           res.getTradesList().map((t) => ({
             id: t.getId(),
-            buySym: t.getBuySym(),
-            buyAmount: t.getBuyAmount(),
-            sellSym: t.getSellSym(),
-            sellAmount: t.getSellAmount(),
+            stockSym: t.getStockSym(),
+            stockName: t.getStockName(),
+            stockNum: t.getStockNum(),
+            direction: t.getDirection(),
+            amount: t.getAmount(),
             tradedAt: t.getTradedAt(),
           }))
         );
@@ -91,15 +89,17 @@ function Component() {
         if (!groups) {
           return;
         }
-        const req = new AddTradeReq();
+
+        const req = new AddStockTradeReq();
         req.setGroupId(groups[selectedIndex].id);
-        req.setBuyAmount(trade.buyAmount);
-        req.setBuySym(trade.buySym);
-        req.setSellAmount(trade.sellAmount);
-        req.setSellSym(trade.sellSym);
         req.setTradedAt(trade.tradedAt);
+        req.setStockSym(trade.stockSym);
+        req.setStockName(trade.stockName);
+        req.setStockNum(trade.stockNum);
+        req.setDirection(trade.direction);
+        req.setAmount(trade.amount);
         userService
-          .addTrade(req, getAuthMD())
+          .addStockTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -115,23 +115,23 @@ function Component() {
       return;
     }
     const trade: TradeInfo = trades[tradeIndex];
-
+    console.log("trade", trade);
     setModalInfo({
       trade,
       onSubmit: (trade) => {
         if (trade.id == null) {
           return;
         }
-
-        const req = new TradeDTO();
+        const req = new StockTradeDTO();
         req.setId(trade.id);
-        req.setBuyAmount(trade.buyAmount);
-        req.setBuySym(trade.buySym);
-        req.setSellAmount(trade.sellAmount);
-        req.setSellSym(trade.sellSym);
         req.setTradedAt(trade.tradedAt);
+        req.setStockSym(trade.stockSym);
+        req.setStockName(trade.stockName);
+        req.setStockNum(trade.stockNum);
+        req.setDirection(trade.direction);
+        req.setAmount(trade.amount);
         userService
-          .updateTrade(req, getAuthMD())
+          .updateStockTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -152,7 +152,7 @@ function Component() {
         const req = new IdWrapper();
         req.setId(trades[index].id);
         userService
-          .deleteTrade(req, getAuthMD())
+          .deleteStockTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
           })
@@ -175,7 +175,7 @@ function Component() {
     req.setIdA(trades[index].id);
     req.setIdB(trades[otherIndex].id);
     userService
-      .switchTrade(req, getAuthMD())
+      .switchStockTrade(req, getAuthMD())
       .then(() => {
         setTradesVersion((i) => i + 1);
       })
@@ -187,15 +187,13 @@ function Component() {
     return <Loading />;
   }
 
-  let totalAmountByBaseCoin: number = 0;
-  let totalAmountByUSD: number = 0;
+  let totalEarnAmount: number = 0;
 
   return (
     <div className={css.container}>
       {modalInfo.onSubmit && (
         <TradeForm
           trade={modalInfo.trade}
-          symPriceMap={pricesByBTC}
           onSubmit={modalInfo.onSubmit}
           onCancel={() => setModalInfo({})}
         />
@@ -290,11 +288,13 @@ function Component() {
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
                         <th>交易时间</th>
-                        <th>买入</th>
-                        <th>卖出</th>
+                        <th>方向</th>
+                        <th>代码</th>
+                        <th>名称</th>
+                        <th>数量</th>
                         <th>成交价</th>
-                        <th>最新价</th>
-                        <th>盈亏数量</th>
+                        <th>现价</th>
+                        <th>盈亏比例</th>
                         <th>盈亏额度</th>
                         <th style={{ textAlign: "center" }}>
                           操作
@@ -317,8 +317,8 @@ function Component() {
 
                             const findResult = [
                               tradeDate,
-                              trade.buySym,
-                              trade.sellSym,
+                              trade.stockName,
+                              trade.stockSym,
                             ].find((s) => {
                               if (s == null) {
                                 return false;
@@ -332,48 +332,21 @@ function Component() {
                           }
 
                           // 计算交易价格
-                          const baseSym = getBaseSym(
-                            pricesByBTC,
-                            trade.buySym,
-                            trade.sellSym
-                          );
-                          let tradePrice: number;
-                          if (baseSym === trade.buySym) {
-                            // 做空: btc(sell) -> usd(buy)
-                            tradePrice = trade.buyAmount / trade.sellAmount;
-                          } else {
-                            // 做多: usd(sell) -> btc(buy)
-                            tradePrice = trade.sellAmount / trade.buyAmount;
-                          }
+                          const tradePrice: number =
+                            trade.amount / trade.stockNum;
 
                           // 计算最新价格
-                          let currentPrice: number | undefined;
-                          const buySymPrice = pricesByBTC[trade.buySym];
-                          const sellSymPrice = pricesByBTC[trade.sellSym];
-                          if (buySymPrice && sellSymPrice) {
-                            if (baseSym === trade.buySym) {
-                              // 做空: btc(sell) -> usd(buy)
-                              currentPrice = sellSymPrice / buySymPrice;
-                            } else {
-                              // 做多: usd(sell) -> btc(buy)
-                              currentPrice = buySymPrice / sellSymPrice;
-                            }
-                          }
+                          let currentPrice: number | undefined = 1;
 
                           // 计算盈亏比例
                           let earnPercent: number | undefined;
                           if (tradePrice && currentPrice) {
-                            if (baseSym === trade.buySym) {
-                              // 做空: btc(sell) -> usd(buy)
-                              currentPrice = sellSymPrice / buySymPrice;
-
+                            if (trade.direction === "S") {
                               // 做空盈亏计算
                               earnPercent =
                                 ((tradePrice - currentPrice) / tradePrice) *
                                 100;
                             } else {
-                              // 做多: usd(sell) -> btc(buy)
-                              currentPrice = buySymPrice / sellSymPrice;
                               earnPercent =
                                 ((currentPrice - tradePrice) / tradePrice) *
                                 100;
@@ -381,38 +354,14 @@ function Component() {
                           }
 
                           // 盈亏数量
-                          let earnBaseSymAmount: number | undefined;
+                          let earnAmount: number | undefined;
                           if (tradePrice && currentPrice) {
-                            if (baseSym === trade.buySym) {
-                              // 做空: btc(sell) -> usd(buy)
-                              earnBaseSymAmount =
-                                tradePrice * trade.sellAmount -
-                                currentPrice * trade.sellAmount;
+                            if (trade.direction === "B") {
+                              earnAmount =
+                                currentPrice * trade.stockNum - trade.amount;
                             } else {
-                              // 做多: usd(sell) -> btc(buy)
-                              earnBaseSymAmount =
-                                currentPrice * trade.buyAmount -
-                                tradePrice * trade.buyAmount;
-                            }
-                          }
-
-                          // 盈亏数据基于 baseCoin
-                          let earnBaseCoinAmount: number | undefined;
-                          if (earnBaseSymAmount && trade.tradedAt > 0) {
-                            const baseSymPrice = getBaseCoinPrice(baseSym);
-                            if (baseSymPrice) {
-                              earnBaseCoinAmount =
-                                earnBaseSymAmount * baseSymPrice;
-                              totalAmountByBaseCoin += earnBaseCoinAmount;
-                            }
-                          }
-
-                          // 盈亏数据基于 USD
-                          if (earnBaseSymAmount && trade.tradedAt > 0) {
-                            const baseSymPrice = getBaseCoinPrice("USD");
-                            if (baseSymPrice) {
-                              totalAmountByUSD +=
-                                earnBaseSymAmount * baseSymPrice;
+                              earnAmount =
+                                trade.amount - currentPrice * trade.stockNum;
                             }
                           }
 
@@ -425,22 +374,22 @@ function Component() {
                                   : "交易计划"}
                               </td>
                               <td>
-                                {trade.buyAmount}&nbsp;{trade.buySym}
-                              </td>
-                              <td>
-                                {trade.sellAmount}&nbsp;{trade.sellSym}
+                                {trade.direction === "B" ? "买入" : "卖出"}
                               </td>
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
                               >
-                                {tradePrice.toPrecision(4)} {baseSym}
+                                {trade.stockSym}
                               </td>
+                              <td
+                                className={cx(trade.tradedAt === 0 && css.gray)}
+                              >
+                                {trade.stockName}
+                              </td>
+                              <td>{trade.stockNum}</td>
+                              <td>{tradePrice}</td>
                               <td>
-                                {currentPrice && (
-                                  <>
-                                    {currentPrice.toPrecision(4)} {baseSym}
-                                  </>
-                                )}
+                                {currentPrice && currentPrice.toPrecision(2)}
                               </td>
                               <td>
                                 {trade.tradedAt > 0 && (
@@ -478,20 +427,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnBaseSymAmount && baseCoin === "自动" && (
-                                      <>
-                                        {earnBaseSymAmount.toPrecision(4)}&nbsp;
-                                        {baseSym}
-                                      </>
-                                    )}
-
-                                    {earnBaseCoinAmount && baseCoin !== "自动" && (
-                                      <>
-                                        {earnBaseCoinAmount.toPrecision(4)}
-                                        &nbsp;
-                                        {baseCoin}
-                                      </>
-                                    )}
+                                    {earnAmount && earnAmount.toPrecision(2)}
                                   </span>
                                 )}
                               </td>
@@ -537,19 +473,9 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>
-                          {(baseCoin === "自动" && totalAmountByUSD && (
-                            <>{totalAmountByUSD.toPrecision(4)} USD</>
-                          )) ||
-                            null}
-                          {(baseCoin !== "自动" && totalAmountByUSD && (
-                            <>
-                              {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
-                              {baseCoin}
-                            </>
-                          )) ||
-                            null}
-                        </th>
+                        <th></th>
+                        <th></th>
+                        <th>{totalEarnAmount}</th>
                         <th></th>
                       </tr>
                     </thead>

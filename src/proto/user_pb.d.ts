@@ -490,3 +490,107 @@ export namespace TradesDTO {
   }
 }
 
+export class AddStockTradeReq extends jspb.Message {
+  getGroupId(): number;
+  setGroupId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getStockSym(): string;
+  setStockSym(value: string): void;
+
+  getStockName(): string;
+  setStockName(value: string): void;
+
+  getStockNum(): number;
+  setStockNum(value: number): void;
+
+  getDirection(): string;
+  setDirection(value: string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddStockTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddStockTradeReq): AddStockTradeReq.AsObject;
+  static serializeBinaryToWriter(message: AddStockTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddStockTradeReq;
+  static deserializeBinaryFromReader(message: AddStockTradeReq, reader: jspb.BinaryReader): AddStockTradeReq;
+}
+
+export namespace AddStockTradeReq {
+  export type AsObject = {
+    groupId: number,
+    tradedAt: number,
+    stockSym: string,
+    stockName: string,
+    stockNum: number,
+    direction: string,
+    amount: number,
+  }
+}
+
+export class StockTradeDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getStockSym(): string;
+  setStockSym(value: string): void;
+
+  getStockName(): string;
+  setStockName(value: string): void;
+
+  getStockNum(): number;
+  setStockNum(value: number): void;
+
+  getDirection(): string;
+  setDirection(value: string): void;
+
+  getAmount(): number;
+  setAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StockTradeDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: StockTradeDTO): StockTradeDTO.AsObject;
+  static serializeBinaryToWriter(message: StockTradeDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StockTradeDTO;
+  static deserializeBinaryFromReader(message: StockTradeDTO, reader: jspb.BinaryReader): StockTradeDTO;
+}
+
+export namespace StockTradeDTO {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    stockSym: string,
+    stockName: string,
+    stockNum: number,
+    direction: string,
+    amount: number,
+  }
+}
+
+export class StockTradesDTO extends jspb.Message {
+  getTradesList(): Array<StockTradeDTO>;
+  setTradesList(value: Array<StockTradeDTO>): void;
+  clearTradesList(): void;
+  addTrades(value?: StockTradeDTO, index?: number): StockTradeDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StockTradesDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: StockTradesDTO): StockTradesDTO.AsObject;
+  static serializeBinaryToWriter(message: StockTradesDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StockTradesDTO;
+  static deserializeBinaryFromReader(message: StockTradesDTO, reader: jspb.BinaryReader): StockTradesDTO;
+}
+
+export namespace StockTradesDTO {
+  export type AsObject = {
+    tradesList: Array<StockTradeDTO.AsObject>,
+  }
+}
+
