@@ -102,7 +102,8 @@ export function TradeForm(props: Props) {
     stockSym: trade != null ? trade.stockSym : undefined,
     stockName: trade != null ? trade.stockName : undefined,
     stockNum: trade != null ? trade.stockNum : undefined,
-    stockPrice: trade != null ? trade.amount / trade.stockNum : undefined,
+    stockPrice:
+      trade != null ? (trade.amount / trade.stockNum).toFixed(4) : undefined,
     amount: trade != null ? trade.amount : undefined,
   };
 
