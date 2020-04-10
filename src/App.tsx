@@ -31,7 +31,7 @@ const App: React.FC = () => {
           <Sider />
           <Layout.Content
             style={{
-              padding: "0px 30px 24px",
+              padding: "0 30px 24px",
               borderLeft: "1px solid #e8e8e8",
             }}
           >
