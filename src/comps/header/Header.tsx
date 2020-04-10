@@ -24,7 +24,7 @@ function Component(props: Props) {
           <img src={logo} style={{ width: 130 }} alt="Fayment" />
         </Link>
         <div className={css.title}>
-          {getCurrentTitle(props.location) || "区块链资产统计"}
+          {getCurrentTitle(props.location) || "资产统计和交易工具"}
         </div>
         <div className={css.tips}>
           {user && currentGroupsVersion && (

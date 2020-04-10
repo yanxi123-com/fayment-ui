@@ -34,6 +34,15 @@ interface ModalInfo {
   onSubmit?: (trade: TradeInfo) => void;
 }
 
+function formatCurrency(amount: number) {
+  return Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "JPY",
+    currencyDisplay: "symbol",
+    minimumFractionDigits: 2,
+  }).format(amount);
+}
+
 function Component() {
   // 用来让 coins 自动更新
   const [tradesVersion, setTradesVersion] = useState(0);
@@ -428,7 +437,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnAmount && earnAmount.toFixed()}
+                                    {earnAmount && formatCurrency(earnAmount)}
                                   </span>
                                 )}
                               </td>
@@ -476,7 +485,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{totalEarnAmount.toFixed()}</th>
+                        <th>{formatCurrency(totalEarnAmount)}</th>
                         <th></th>
                       </tr>
                     </thead>
