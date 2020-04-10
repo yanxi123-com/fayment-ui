@@ -42,7 +42,7 @@ function Component() {
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
 
-  const { refreshPrice } = useStockPrices();
+  const { refreshPrice, prices, addTrades } = useStockPrices();
 
   const {
     groups,
@@ -64,21 +64,24 @@ function Component() {
     userService
       .listStockTrades(req, getAuthMD())
       .then((res) => {
+        addTrades(res.toObject().tradesList);
         setTrades(
-          res.getTradesList().map((t) => ({
-            id: t.getId(),
-            stockSym: t.getStockSym(),
-            stockName: t.getStockName(),
-            stockNum: t.getStockNum(),
-            direction: t.getDirection(),
-            amount: t.getAmount(),
-            tradedAt: t.getTradedAt(),
-          }))
+          res.getTradesList().map((t) => {
+            return {
+              id: t.getId(),
+              stockSym: t.getStockSym(),
+              stockName: t.getStockName(),
+              stockNum: t.getStockNum(),
+              direction: t.getDirection(),
+              amount: t.getAmount(),
+              tradedAt: t.getTradedAt(),
+            };
+          })
         );
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, tradesVersion]);
+  }, [selectedIndex, groups, tradesVersion, addTrades]);
 
   function addTrade() {
     if (!groups) {
@@ -115,7 +118,6 @@ function Component() {
       return;
     }
     const trade: TradeInfo = trades[tradeIndex];
-    console.log("trade", trade);
     setModalInfo({
       trade,
       onSubmit: (trade) => {
@@ -336,7 +338,8 @@ function Component() {
                             trade.amount / trade.stockNum;
 
                           // 计算最新价格
-                          let currentPrice: number | undefined = 1;
+                          const currentPrice: number | undefined =
+                            prices[trade.stockSym];
 
                           // 计算盈亏比例
                           let earnPercent: number | undefined;
@@ -363,10 +366,10 @@ function Component() {
                               earnAmount =
                                 trade.amount - currentPrice * trade.stockNum;
                             }
+                            totalEarnAmount += earnAmount;
                           }
-
                           return (
-                            <tr key={i}>
+                            <tr key={trade.id}>
                               <td>{i + 1}</td>
                               <td>
                                 {trade.tradedAt > 0
@@ -387,10 +390,8 @@ function Component() {
                                 {trade.stockName}
                               </td>
                               <td>{trade.stockNum}</td>
-                              <td>{tradePrice}</td>
-                              <td>
-                                {currentPrice && currentPrice.toPrecision(2)}
-                              </td>
+                              <td>{tradePrice.toFixed(4)}</td>
+                              <td>{currentPrice && currentPrice.toFixed(4)}</td>
                               <td>
                                 {trade.tradedAt > 0 && (
                                   <span
@@ -427,7 +428,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnAmount && earnAmount.toPrecision(2)}
+                                    {earnAmount && earnAmount.toFixed()}
                                   </span>
                                 )}
                               </td>
@@ -475,7 +476,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{totalEarnAmount}</th>
+                        <th>{totalEarnAmount.toFixed()}</th>
                         <th></th>
                       </tr>
                     </thead>

@@ -4484,6 +4484,7 @@ proto.fayment.StockTradeDTO.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
     tradedAt: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    stockSite: jspb.Message.getFieldWithDefault(msg, 8, ""),
     stockSym: jspb.Message.getFieldWithDefault(msg, 3, ""),
     stockName: jspb.Message.getFieldWithDefault(msg, 4, ""),
     stockNum: jspb.Message.getFieldWithDefault(msg, 5, 0),
@@ -4532,6 +4533,10 @@ proto.fayment.StockTradeDTO.deserializeBinaryFromReader = function(msg, reader) 
     case 2:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setTradedAt(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStockSite(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -4593,6 +4598,13 @@ proto.fayment.StockTradeDTO.serializeBinaryToWriter = function(message, writer) 
   if (f !== 0) {
     writer.writeInt32(
       2,
+      f
+    );
+  }
+  f = message.getStockSite();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
       f
     );
   }
@@ -4667,6 +4679,24 @@ proto.fayment.StockTradeDTO.prototype.getTradedAt = function() {
  */
 proto.fayment.StockTradeDTO.prototype.setTradedAt = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional string stock_site = 8;
+ * @return {string}
+ */
+proto.fayment.StockTradeDTO.prototype.getStockSite = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.fayment.StockTradeDTO} returns this
+ */
+proto.fayment.StockTradeDTO.prototype.setStockSite = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 

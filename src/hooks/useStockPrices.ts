@@ -1,19 +1,56 @@
-import { showError } from "comps/popup";
-import { httpGet } from "lib/apiClient";
 import { trackEvent } from "lib/gtag";
-import { useCallback, useEffect } from "react";
+import { uniqStrs } from "lib/util/array";
+import { useCallback, useEffect, useState } from "react";
+
+type Trades = Array<{ stockSite: string; stockSym: string }>;
 
 interface PriceHookResult {
   refreshPrice: () => void;
   prices: { [sym: string]: number };
+  addTrades: (trades: Trades) => void;
 }
 
-export function useStockPrices(defaultBaseCoin?: string): PriceHookResult {
+export function useStockPrices(): PriceHookResult {
+  const [fullSyms, setFullSyms] = useState<Array<string>>([]);
+  const [prices, setPrices] = useState<{ [sym: string]: number }>({});
+
   const fetchPrices = useCallback(() => {
+    if (fullSyms.length === 0) {
+      return;
+    }
     trackEvent("fetch_stock_prices");
-    httpGet("listPricesByBTC")
-      .then((data) => {})
-      .catch(showError);
+
+    const syms = fullSyms.join(",");
+
+    const preScriptEle = document.getElementById("sina_stock_hq");
+    if (preScriptEle != null) {
+      preScriptEle.remove();
+    }
+
+    const scriptEle = document.createElement("script");
+    scriptEle.id = "sina_stock_hq";
+    scriptEle.async = true;
+    scriptEle.src = "https://hq.sinajs.cn/?list=" + syms;
+    scriptEle.onload = function () {
+      setPrices((prices) => {
+        const newPrices = prices;
+        fullSyms.forEach((s) => {
+          const info = (window as any)[`hq_str_${s}`];
+          if (info) {
+            newPrices[s.substr(2)] = parseFloat(info.split(",")[3]);
+          }
+        });
+        return { ...newPrices };
+      });
+    };
+    document.body.appendChild(scriptEle);
+  }, [fullSyms]);
+
+  const addTrades = useCallback((trades: Trades) => {
+    const newSyms = trades.map(
+      ({ stockSite, stockSym }) => `${stockSite}${stockSym}`
+    );
+    setFullSyms((fullSyms) => uniqStrs([...fullSyms, ...newSyms]));
   }, []);
 
   useEffect(() => {
@@ -26,6 +63,7 @@ export function useStockPrices(defaultBaseCoin?: string): PriceHookResult {
 
   return {
     refreshPrice: fetchPrices,
-    prices: {},
+    prices,
+    addTrades,
   };
 }

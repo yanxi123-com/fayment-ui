@@ -539,6 +539,9 @@ export class StockTradeDTO extends jspb.Message {
   getTradedAt(): number;
   setTradedAt(value: number): void;
 
+  getStockSite(): string;
+  setStockSite(value: string): void;
+
   getStockSym(): string;
   setStockSym(value: string): void;
 
@@ -566,6 +569,7 @@ export namespace StockTradeDTO {
   export type AsObject = {
     id: number,
     tradedAt: number,
+    stockSite: string,
     stockSym: string,
     stockName: string,
     stockNum: number,
