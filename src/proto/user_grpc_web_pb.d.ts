@@ -5,6 +5,7 @@ import * as base_pb from './base_pb';
 import {
   AddCoinAccountReq,
   AddGroupReq,
+  AddStockAccountReq,
   AddStockTradeReq,
   AddTradeReq,
   CoinAccountDTO,
@@ -14,11 +15,12 @@ import {
   GroupDTO,
   GroupsDTO,
   ImportGroupsReq,
-  ListCoinAccountLogsReq,
-  ListCoinAccountsReq,
+  ListAccountLogsReq,
   ListGroupsReq,
   LoginReq,
   LoginRes,
+  StockAccountDTO,
+  StockAccountsDTO,
   StockTradeDTO,
   StockTradesDTO,
   SwitchOrderReq,
@@ -123,7 +125,7 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
   listCoinAccounts(
-    request: ListCoinAccountsReq,
+    request: base_pb.IdWrapper,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: CoinAccountsDTO) => void
@@ -137,13 +139,62 @@ export class UserServiceClient {
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
   listCoinAccountLogs(
-    request: ListCoinAccountLogsReq,
+    request: ListAccountLogsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: CoinAccountLogsDTO) => void
   ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
 
   deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  addStockAccount(
+    request: AddStockAccountReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateStockAccount(
+    request: StockAccountDTO,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  deleteStockAccount(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listStockAccounts(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: StockAccountsDTO) => void
+  ): grpcWeb.ClientReadableStream<StockAccountsDTO>;
+
+  switchStockAccount(
+    request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listStockAccountLogs(
+    request: ListAccountLogsReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: CoinAccountLogsDTO) => void
+  ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
+
+  deleteStockAccountLog(
     request: base_pb.IdWrapper,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
@@ -300,7 +351,7 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   listCoinAccounts(
-    request: ListCoinAccountsReq,
+    request: base_pb.IdWrapper,
     metadata?: grpcWeb.Metadata
   ): Promise<CoinAccountsDTO>;
 
@@ -310,11 +361,46 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   listCoinAccountLogs(
-    request: ListCoinAccountLogsReq,
+    request: ListAccountLogsReq,
     metadata?: grpcWeb.Metadata
   ): Promise<CoinAccountLogsDTO>;
 
   deleteCoinAccountLog(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addStockAccount(
+    request: AddStockAccountReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateStockAccount(
+    request: StockAccountDTO,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  deleteStockAccount(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listStockAccounts(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<StockAccountsDTO>;
+
+  switchStockAccount(
+    request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listStockAccountLogs(
+    request: ListAccountLogsReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<CoinAccountLogsDTO>;
+
+  deleteStockAccountLog(
     request: base_pb.IdWrapper,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;

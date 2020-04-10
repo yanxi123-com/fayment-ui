@@ -36,8 +36,7 @@ import { IdWrapper } from "proto/base_pb";
 import {
   AddCoinAccountReq,
   CoinAccountDTO,
-  ListCoinAccountLogsReq,
-  ListCoinAccountsReq,
+  ListAccountLogsReq,
   SwitchOrderReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
@@ -133,8 +132,8 @@ function Component() {
     if (!groups) {
       return;
     }
-    const req = new ListCoinAccountsReq();
-    req.setGroupId(groups[selectedIndex].id);
+    const req = new IdWrapper();
+    req.setId(groups[selectedIndex].id);
     userService
       .listCoinAccounts(req, getAuthMD())
       .then((res) => {
@@ -168,7 +167,7 @@ function Component() {
   }
 
   function showCoinLogs(coinId: number) {
-    const req = new ListCoinAccountLogsReq();
+    const req = new ListAccountLogsReq();
     req.setAccountId(coinId);
     req.setMax(100);
     userService

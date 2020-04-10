@@ -1111,16 +1111,16 @@ proto.fayment.UserServicePromiseClient.prototype.deleteCoinAccount =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.fayment.ListCoinAccountsReq,
+ *   !proto.fayment.IdWrapper,
  *   !proto.fayment.CoinAccountsDTO>}
  */
 const methodDescriptor_UserService_ListCoinAccounts = new grpc.web.MethodDescriptor(
   '/fayment.UserService/ListCoinAccounts',
   grpc.web.MethodType.UNARY,
-  proto.fayment.ListCoinAccountsReq,
+  base_pb.IdWrapper,
   proto.fayment.CoinAccountsDTO,
   /**
-   * @param {!proto.fayment.ListCoinAccountsReq} request
+   * @param {!proto.fayment.IdWrapper} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1133,13 +1133,13 @@ const methodDescriptor_UserService_ListCoinAccounts = new grpc.web.MethodDescrip
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.fayment.ListCoinAccountsReq,
+ *   !proto.fayment.IdWrapper,
  *   !proto.fayment.CoinAccountsDTO>}
  */
 const methodInfo_UserService_ListCoinAccounts = new grpc.web.AbstractClientBase.MethodInfo(
   proto.fayment.CoinAccountsDTO,
   /**
-   * @param {!proto.fayment.ListCoinAccountsReq} request
+   * @param {!proto.fayment.IdWrapper} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1150,7 +1150,7 @@ const methodInfo_UserService_ListCoinAccounts = new grpc.web.AbstractClientBase.
 
 
 /**
- * @param {!proto.fayment.ListCoinAccountsReq} request The
+ * @param {!proto.fayment.IdWrapper} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1171,7 +1171,7 @@ proto.fayment.UserServiceClient.prototype.listCoinAccounts =
 
 
 /**
- * @param {!proto.fayment.ListCoinAccountsReq} request The
+ * @param {!proto.fayment.IdWrapper} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1271,16 +1271,16 @@ proto.fayment.UserServicePromiseClient.prototype.switchCoinAccount =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.fayment.ListCoinAccountLogsReq,
+ *   !proto.fayment.ListAccountLogsReq,
  *   !proto.fayment.CoinAccountLogsDTO>}
  */
 const methodDescriptor_UserService_ListCoinAccountLogs = new grpc.web.MethodDescriptor(
   '/fayment.UserService/ListCoinAccountLogs',
   grpc.web.MethodType.UNARY,
-  proto.fayment.ListCoinAccountLogsReq,
+  proto.fayment.ListAccountLogsReq,
   proto.fayment.CoinAccountLogsDTO,
   /**
-   * @param {!proto.fayment.ListCoinAccountLogsReq} request
+   * @param {!proto.fayment.ListAccountLogsReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1293,13 +1293,13 @@ const methodDescriptor_UserService_ListCoinAccountLogs = new grpc.web.MethodDesc
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.fayment.ListCoinAccountLogsReq,
+ *   !proto.fayment.ListAccountLogsReq,
  *   !proto.fayment.CoinAccountLogsDTO>}
  */
 const methodInfo_UserService_ListCoinAccountLogs = new grpc.web.AbstractClientBase.MethodInfo(
   proto.fayment.CoinAccountLogsDTO,
   /**
-   * @param {!proto.fayment.ListCoinAccountLogsReq} request
+   * @param {!proto.fayment.ListAccountLogsReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1310,7 +1310,7 @@ const methodInfo_UserService_ListCoinAccountLogs = new grpc.web.AbstractClientBa
 
 
 /**
- * @param {!proto.fayment.ListCoinAccountLogsReq} request The
+ * @param {!proto.fayment.ListAccountLogsReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1331,7 +1331,7 @@ proto.fayment.UserServiceClient.prototype.listCoinAccountLogs =
 
 
 /**
- * @param {!proto.fayment.ListCoinAccountLogsReq} request The
+ * @param {!proto.fayment.ListAccountLogsReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1425,6 +1425,566 @@ proto.fayment.UserServicePromiseClient.prototype.deleteCoinAccountLog =
       request,
       metadata || {},
       methodDescriptor_UserService_deleteCoinAccountLog);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.AddStockAccountReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_AddStockAccount = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/AddStockAccount',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.AddStockAccountReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddStockAccountReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.AddStockAccountReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_AddStockAccount = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddStockAccountReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.AddStockAccountReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.addStockAccount =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/AddStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddStockAccount,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.AddStockAccountReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.addStockAccount =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/AddStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddStockAccount);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.StockAccountDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_UpdateStockAccount = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/UpdateStockAccount',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.StockAccountDTO,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.StockAccountDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.StockAccountDTO,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_UpdateStockAccount = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.StockAccountDTO} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.StockAccountDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.updateStockAccount =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/UpdateStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateStockAccount,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.StockAccountDTO} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.updateStockAccount =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/UpdateStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateStockAccount);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_DeleteStockAccount = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/DeleteStockAccount',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_DeleteStockAccount = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteStockAccount =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/DeleteStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteStockAccount,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteStockAccount =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/DeleteStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteStockAccount);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.StockAccountsDTO>}
+ */
+const methodDescriptor_UserService_ListStockAccounts = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListStockAccounts',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  proto.fayment.StockAccountsDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.StockAccountsDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.StockAccountsDTO>}
+ */
+const methodInfo_UserService_ListStockAccounts = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.StockAccountsDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.StockAccountsDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.StockAccountsDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.StockAccountsDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listStockAccounts =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListStockAccounts',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockAccounts,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.StockAccountsDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listStockAccounts =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListStockAccounts',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockAccounts);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_SwitchStockAccount = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/SwitchStockAccount',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.SwitchOrderReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_SwitchStockAccount = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.switchStockAccount =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/SwitchStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchStockAccount,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.switchStockAccount =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/SwitchStockAccount',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchStockAccount);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ListAccountLogsReq,
+ *   !proto.fayment.CoinAccountLogsDTO>}
+ */
+const methodDescriptor_UserService_ListStockAccountLogs = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListStockAccountLogs',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ListAccountLogsReq,
+  proto.fayment.CoinAccountLogsDTO,
+  /**
+   * @param {!proto.fayment.ListAccountLogsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ListAccountLogsReq,
+ *   !proto.fayment.CoinAccountLogsDTO>}
+ */
+const methodInfo_UserService_ListStockAccountLogs = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.CoinAccountLogsDTO,
+  /**
+   * @param {!proto.fayment.ListAccountLogsReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ListAccountLogsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.CoinAccountLogsDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.CoinAccountLogsDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listStockAccountLogs =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListStockAccountLogs',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockAccountLogs,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ListAccountLogsReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.CoinAccountLogsDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listStockAccountLogs =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListStockAccountLogs',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListStockAccountLogs);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_deleteStockAccountLog = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/deleteStockAccountLog',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_deleteStockAccountLog = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteStockAccountLog =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/deleteStockAccountLog',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_deleteStockAccountLog,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteStockAccountLog =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/deleteStockAccountLog',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_deleteStockAccountLog);
 };
 
 
