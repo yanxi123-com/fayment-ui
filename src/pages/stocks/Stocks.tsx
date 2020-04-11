@@ -201,8 +201,8 @@ function Component() {
 
     if (stocks) {
       stocks.forEach((stock) => {
-        const name = `${stock.name} (${stock.sym})`;
-        const price = prices[stock.sym];
+        const name = stock.name;
+        const price = stock.sym === "CNY" ? 1 : prices[stock.sym];
 
         if (!price) {
           return;
@@ -301,7 +301,7 @@ function Component() {
           throw new Error("股票名称不能为空");
         }
         if (isNaN(parseInt(num))) {
-          throw new Error("股票数量不能为空");
+          throw new Error("股票数量必须为数字");
         }
 
         const req = new AddStockAccountReq();
@@ -360,7 +360,7 @@ function Component() {
           throw new Error("股票名称不能为空");
         }
         if (isNaN(parseInt(num))) {
-          throw new Error("股票数量不能为空");
+          throw new Error("股票数量必须为数字");
         }
 
         const req = new StockAccountDTO();
@@ -381,7 +381,7 @@ function Component() {
       return;
     }
 
-    const name = `币种 [${stocks[index].sym}] `;
+    const name = `${stocks[index].name} [${stocks[index].sym}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
@@ -416,6 +416,53 @@ function Component() {
       })
       .catch(handleGrpcError)
       .catch(showError);
+  }
+
+  function addCurrency() {
+    const fields: Array<BaseFieldSchema> = [
+      {
+        type: "text",
+        key: "name",
+        title: "名称",
+        defaultValue: "账户余额",
+      },
+      {
+        type: "number",
+        key: "num",
+        title: "金额",
+        placeholder: "请输入金额",
+        defaultValue: "0",
+      },
+    ];
+    openPopupForm({
+      title: "添加现金",
+      labelSpan: 3,
+      fields,
+      onSubmit: (data: { [key: string]: any }) => {
+        if (!groups) {
+          return;
+        }
+
+        const { name, num } = data;
+
+        if (!name) {
+          throw new Error("名称不能为空");
+        }
+        if (isNaN(parseInt(num))) {
+          throw new Error("金额必须为数字");
+        }
+
+        const req = new AddStockAccountReq();
+        req.setGroupId(groups[selectedIndex].id);
+        req.setName(name);
+        req.setSym("CNY");
+        req.setNum(parseInt(num));
+        return userService
+          .addStockAccount(req, getAuthMD())
+          .then(() => setStocksVersion((i) => i + 1))
+          .catch(handleGrpcError);
+      },
+    });
   }
 
   if (groups == null) {
@@ -495,9 +542,16 @@ function Component() {
             <Button
               onClick={() => addStock()}
               icon={<PlusOutlined />}
+              style={{ marginRight: 20 }}
+            >
+              添加股票
+            </Button>
+            <Button
+              onClick={() => addCurrency()}
+              icon={<PlusOutlined />}
               style={{ marginRight: 30 }}
             >
-              添加记录
+              添加现金
             </Button>
             <Input
               prefix={<SearchOutlined style={{ color: "gray" }} />}
@@ -532,11 +586,13 @@ function Component() {
                       {stocks &&
                         stocks.map((stock, i) => {
                           let stockPrice: number | undefined;
-                          if (stock.sym.length === 6) {
+                          if (stock.sym === "CNY") {
+                            stockPrice = 1;
+                          } else if (stock.sym.length === 6) {
                             stockPrice = prices[stock.sym];
-                            if (stockPrice) {
-                              totalAmount += stock.num * stockPrice;
-                            }
+                          }
+                          if (stockPrice) {
+                            totalAmount += stock.num * stockPrice;
                           }
 
                           if (filerText) {

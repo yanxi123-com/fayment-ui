@@ -47,9 +47,10 @@ export function useStockPrices(): PriceHookResult {
   }, [fullSyms]);
 
   const addStocks = useCallback((trades: StockInfo) => {
-    const newSyms = trades.map(
-      ({ stockSite, stockSym }) => `${stockSite}${stockSym}`
-    );
+    const newSyms = trades
+      .map(({ stockSite, stockSym }) => `${stockSite}${stockSym}`)
+      // 沪深股票长度都为8, 2(site) + 6(sym)
+      .filter((fullSym) => fullSym.length === 8);
     setFullSyms((fullSyms) => uniqStrs([...fullSyms, ...newSyms]));
   }, []);
 
