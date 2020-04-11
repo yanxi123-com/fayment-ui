@@ -19,11 +19,7 @@ export default function () {
         </Link>
       </div>
       <div className={css.line}>
-        <Link
-          to="/"
-          className={css.item}
-          onClick={() => showInfo("将于近期推出，尽情期待！")}
-        >
+        <Link to="/stocks/" className={css.item}>
           A股资产统计
         </Link>
         <Link to="/stock-trades/" className={css.item}>
