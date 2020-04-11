@@ -51,7 +51,7 @@ function Component() {
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
 
-  const { refreshPrice, prices, addTrades } = useStockPrices();
+  const { refreshPrice, prices, addStocks } = useStockPrices();
 
   const {
     groups,
@@ -73,7 +73,7 @@ function Component() {
     userService
       .listStockTrades(req, getAuthMD())
       .then((res) => {
-        addTrades(res.toObject().tradesList);
+        addStocks(res.toObject().tradesList);
         setTrades(
           res.getTradesList().map((t) => {
             return {
@@ -90,7 +90,7 @@ function Component() {
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, tradesVersion, addTrades]);
+  }, [selectedIndex, groups, tradesVersion, addStocks]);
 
   function addTrade() {
     if (!groups) {

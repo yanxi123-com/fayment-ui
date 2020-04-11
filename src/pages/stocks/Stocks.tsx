@@ -69,7 +69,7 @@ function Component() {
   const [stocks, setStocks] = useState<StockInfo[]>();
   const [stockLogs, setStockLogs] = useState<StockLog[]>();
 
-  const { refreshPrice, prices, addTrades } = useStockPrices();
+  const { refreshPrice, prices, addStocks } = useStockPrices();
 
   const {
     groups,
@@ -135,10 +135,17 @@ function Component() {
             num: a.getNum(),
           }))
         );
+
+        addStocks(
+          res.getAccountsList().map((a) => ({
+            stockSite: a.getSite(),
+            stockSym: a.getSym(),
+          }))
+        );
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, stocksVersion]);
+  }, [selectedIndex, groups, stocksVersion, addStocks]);
 
   function deleteStockLog(log: StockLog) {
     confirmPromise("请确认", `确实要删除此记录吗？`).then((confirm) => {
@@ -190,14 +197,21 @@ function Component() {
     }
 
     // 合并币种数据
-    const stockNumMap: { [sym: string]: number } = {};
+    const stockNumMap: { [name: string]: number } = {};
 
     if (stocks) {
       stocks.forEach((stock) => {
-        if (stockNumMap[stock.sym] == null) {
-          stockNumMap[stock.sym] = stock.num;
+        const name = `${stock.name} (${stock.sym})`;
+        const price = prices[stock.sym];
+
+        if (!price) {
+          return;
+        }
+
+        if (stockNumMap[name] == null) {
+          stockNumMap[name] = stock.num * price;
         } else {
-          stockNumMap[stock.sym] += stock.num;
+          stockNumMap[name] += stock.num * price;
         }
       });
     }
@@ -217,7 +231,7 @@ function Component() {
       },
       tooltip: {
         trigger: "item",
-        formatter: `{a} <br/>{b} 持仓: {c} ({d}%)`,
+        formatter: `{a} <br/>{b} 持仓: ￥{c} ({d}%)`,
       },
       legend: {
         bottom: 10,
@@ -517,8 +531,13 @@ function Component() {
                     <tbody className="ant-table-tbody">
                       {stocks &&
                         stocks.map((stock, i) => {
-                          const stockPrice = 1;
-                          totalAmount += stock.num * stockPrice;
+                          let stockPrice: number | undefined;
+                          if (stock.sym.length === 6) {
+                            stockPrice = prices[stock.sym];
+                            if (stockPrice) {
+                              totalAmount += stock.num * stockPrice;
+                            }
+                          }
 
                           if (filerText) {
                             const word = filerText.toUpperCase();
@@ -549,8 +568,11 @@ function Component() {
                               <td>{stock.sym}</td>
                               <td>{stock.name}</td>
                               <td>{stock.num} </td>
-                              <td>latestPrice</td>
-                              <td>num * latestPrice</td>
+                              <td>{stockPrice}</td>
+                              <td>
+                                {stockPrice &&
+                                  (stockPrice * stock.num).toFixed(2)}
+                              </td>
                               <td style={{ width: 150, textAlign: "center" }}>
                                 <EditOutlined
                                   className={css.icon}

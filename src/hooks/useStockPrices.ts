@@ -2,12 +2,12 @@ import { trackEvent } from "lib/gtag";
 import { uniqStrs } from "lib/util/array";
 import { useCallback, useEffect, useState } from "react";
 
-type Trades = Array<{ stockSite: string; stockSym: string }>;
+type StockInfo = Array<{ stockSite: string; stockSym: string }>;
 
 interface PriceHookResult {
   refreshPrice: () => void;
   prices: { [sym: string]: number };
-  addTrades: (trades: Trades) => void;
+  addStocks: (trades: StockInfo) => void;
 }
 
 export function useStockPrices(): PriceHookResult {
@@ -46,7 +46,7 @@ export function useStockPrices(): PriceHookResult {
     document.body.appendChild(scriptEle);
   }, [fullSyms]);
 
-  const addTrades = useCallback((trades: Trades) => {
+  const addStocks = useCallback((trades: StockInfo) => {
     const newSyms = trades.map(
       ({ stockSite, stockSym }) => `${stockSite}${stockSym}`
     );
@@ -64,6 +64,6 @@ export function useStockPrices(): PriceHookResult {
   return {
     refreshPrice: fetchPrices,
     prices,
-    addTrades,
+    addStocks,
   };
 }
