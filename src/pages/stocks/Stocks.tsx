@@ -14,7 +14,6 @@ import {
   Drawer,
   Input,
   List as AntList,
-  Radio,
   Row,
   Table,
 } from "antd";
@@ -26,16 +25,15 @@ import { GroupType } from "constant";
 import { EChartOption } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { useGroups } from "hooks/useGroups";
-import { usePrices } from "hooks/usePrices";
+import { useStockPrices } from "hooks/useStockPrices";
 import { userService } from "lib/grpcClient";
-import { uniqStrs } from "lib/util/array";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import { IdWrapper } from "proto/base_pb";
 import {
-  AddCoinAccountReq,
-  CoinAccountDTO,
+  AddStockAccountReq,
+  StockAccountDTO,
   ListAccountLogsReq,
   SwitchOrderReq,
 } from "proto/user_pb";
@@ -43,41 +41,35 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 
-import css from "./Coins.module.scss";
-
-const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
+import css from "./Stocks.module.scss";
 
 let actionClicked = false;
 
-interface CoinInfo {
+interface StockInfo {
   id: number;
-  name: string;
+  site: string;
   sym: string;
-  amount: number;
+  name: string;
+  num: number;
 }
 
-interface CoinLog {
+interface StockLog {
   id: number;
-  name: string;
+  site: string;
   sym: string;
-  amount: number;
-  coinId: number;
+  name: string;
+  num: number;
+  stockId: number;
 }
 
 function Component() {
-  // 用来让 coins 自动更新
-  const [coinsVersion, setCoinsVersion] = useState(0);
+  // 用来让 stocks 自动更新
+  const [stocksVersion, setStocksVersion] = useState(0);
   const [filerText, setFilterText] = useState("");
-  const [coins, setCoins] = useState<CoinInfo[]>();
-  const [coinLogs, setCoinLogs] = useState<CoinLog[]>();
+  const [stocks, setStocks] = useState<StockInfo[]>();
+  const [stockLogs, setStockLogs] = useState<StockLog[]>();
 
-  const {
-    refreshPrice,
-    pricesByBTC,
-    getBaseCoinPrice,
-    baseCoin,
-    setBaseCoin,
-  } = usePrices();
+  const { refreshPrice, prices, addTrades } = useStockPrices();
 
   const {
     groups,
@@ -87,23 +79,19 @@ function Component() {
     moveGroup,
     deleteGroup,
     setSelectedIndex,
-  } = useGroups(GroupType.CoinAccount);
+  } = useGroups(GroupType.StockAccount);
 
   const logTableColumns = [
-    { title: "账户名", dataIndex: "name" },
-    {
-      title: "币种数量",
-      render: (log: CoinLog) => {
-        return `${log.amount} ${log.sym}`;
-      },
-    },
+    { title: "名称", dataIndex: "name" },
+    { title: "代码", dataIndex: "sym" },
+    { title: "数量", dataIndex: "num" },
     {
       title: "增减",
-      dataIndex: "amount",
-      render: (amount: number, log: CoinLog, index: number) => {
-        if (coinLogs && coinLogs[index + 1]) {
-          const value = amount - coinLogs[index + 1].amount;
-          return (value > 0 ? "+" : "") + parseFloat(value.toPrecision(5));
+      dataIndex: "num",
+      render: (num: number, log: StockLog, index: number) => {
+        if (stockLogs && stockLogs[index + 1]) {
+          const value = num - stockLogs[index + 1].num;
+          return (value > 0 ? "+" : "") + parseFloat(value.toFixed(2));
         }
         return "-";
       },
@@ -116,49 +104,51 @@ function Component() {
     },
     {
       title: "操作",
-      render: (log: CoinLog) => {
+      render: (log: StockLog) => {
         return (
           <DeleteOutlined
             className={css.icon}
-            onClick={() => deleteCoinLog(log)}
+            onClick={() => deleteStockLog(log)}
           />
         );
       },
     },
   ];
 
-  // fetch coin accounts
+  // fetch stock accounts
   useEffect(() => {
-    if (!groups) {
+    if (!groups || groups.length === 0) {
       return;
     }
+
     const req = new IdWrapper();
     req.setId(groups[selectedIndex].id);
     userService
-      .listCoinAccounts(req, getAuthMD())
+      .listStockAccounts(req, getAuthMD())
       .then((res) => {
-        setCoins(
+        setStocks(
           res.getAccountsList().map((a) => ({
             id: a.getId(),
-            name: a.getName(),
+            site: a.getSite(),
             sym: a.getSym(),
-            amount: a.getAmount(),
+            name: a.getName(),
+            num: a.getNum(),
           }))
         );
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, coinsVersion]);
+  }, [selectedIndex, groups, stocksVersion]);
 
-  function deleteCoinLog(log: CoinLog) {
+  function deleteStockLog(log: StockLog) {
     confirmPromise("请确认", `确实要删除此记录吗？`).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
         req.setId(log.id);
         userService
-          .deleteCoinAccountLog(req, getAuthMD())
+          .deleteStockAccountLog(req, getAuthMD())
           .then(() => {
-            showCoinLogs(log.coinId);
+            showStockLogs(log.stockId);
           })
           .catch(handleGrpcError)
           .catch(showError);
@@ -166,21 +156,22 @@ function Component() {
     });
   }
 
-  function showCoinLogs(coinId: number) {
+  function showStockLogs(stockId: number) {
     const req = new ListAccountLogsReq();
-    req.setAccountId(coinId);
+    req.setAccountId(stockId);
     req.setMax(100);
     userService
-      .listCoinAccountLogs(req, getAuthMD())
+      .listStockAccountLogs(req, getAuthMD())
       .then((res) => {
-        setCoinLogs(
+        setStockLogs(
           res.getLogsList().map((l) => ({
             id: l.getId(),
-            name: l.getName(),
+            site: l.getSite(),
             sym: l.getSym(),
-            amount: l.getAmount(),
+            name: l.getName(),
+            num: l.getNum(),
             createdAt: l.getCreatedAt(),
-            coinId,
+            stockId,
           }))
         );
       })
@@ -194,51 +185,44 @@ function Component() {
       return;
     }
 
-    if (!coins) {
+    if (!stocks) {
       return;
     }
 
     // 合并币种数据
-    const coinMap: { [sym: string]: number } = {};
+    const stockNumMap: { [sym: string]: number } = {};
 
-    if (coins) {
-      coins.forEach((coin) => {
-        const priceByBaseCoin = getBaseCoinPrice(coin.sym);
-        const amountByBaseCoin =
-          priceByBaseCoin != null ? priceByBaseCoin * coin.amount : undefined;
-
-        if (amountByBaseCoin) {
-          if (coinMap[coin.sym] == null) {
-            coinMap[coin.sym] = amountByBaseCoin;
-          } else {
-            coinMap[coin.sym] += amountByBaseCoin;
-          }
+    if (stocks) {
+      stocks.forEach((stock) => {
+        if (stockNumMap[stock.sym] == null) {
+          stockNumMap[stock.sym] = stock.num;
+        } else {
+          stockNumMap[stock.sym] += stock.num;
         }
       });
     }
 
-    const combinedCoins = Object.keys(coinMap).sort((a, b) =>
-      coinMap[a] - coinMap[b] < 0 ? 1 : -1
+    const combinedStocks = Object.keys(stockNumMap).sort((a, b) =>
+      stockNumMap[a] - stockNumMap[b] < 0 ? 1 : -1
     );
 
-    if (combinedCoins.length <= 1) {
+    if (combinedStocks.length <= 1) {
       return;
     }
 
     return {
       title: {
-        text: "持仓统计（按币种）",
-        // subtext: "Fayment.com",
+        text: "持仓统计",
         left: "center",
       },
       tooltip: {
         trigger: "item",
-        formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`,
+        formatter: `{a} <br/>{b} 持仓: {c} ({d}%)`,
       },
       legend: {
         bottom: 10,
         left: "center",
-        data: combinedCoins,
+        data: combinedStocks,
       },
       series: [
         {
@@ -247,9 +231,9 @@ function Component() {
           radius: "65%",
           center: ["50%", "50%"],
           selectedMode: "single",
-          data: combinedCoins.map((coin) => ({
-            value: coinMap[coin],
-            name: coin,
+          data: combinedStocks.map((stock) => ({
+            value: stockNumMap[stock],
+            name: stock,
           })),
           emphasis: {
             itemStyle: {
@@ -263,55 +247,30 @@ function Component() {
     };
   }
 
-  function parseCoinSym(sym: string | undefined): string | undefined {
-    if (sym == null) {
-      return undefined;
-    }
-    sym = sym.toUpperCase();
-    if (sym.indexOf("USD") > -1) {
-      return "USD";
-    }
-    if (pricesByBTC[sym]) {
-      return sym;
-    }
-    return undefined;
-  }
-
-  function getAccountNameEnum(): string[] {
-    if (coins == null) {
-      return [];
-    }
-    const keys = coins.map((c) => c.name);
-    return uniqStrs(keys);
-  }
-
-  function addCoin() {
+  function addStock() {
     const fields: Array<BaseFieldSchema> = [
       {
-        type: "enum",
-        enumValues: getAccountNameEnum(),
-        key: "title",
-        title: "账户",
-        placeholder: "请填写账户名称",
-        defaultValue: "默认",
+        type: "text",
+        key: "sym",
+        title: "股票代码",
+        placeholder: "请填写股票代码",
       },
       {
-        type: "enum",
-        enumValues: Object.keys(pricesByBTC),
-        key: "sym",
-        title: "币种",
-        placeholder: "请填写币种，比如 BTC, EOS, ETH",
+        type: "text",
+        key: "name",
+        title: "股票名称",
+        placeholder: "请填写股票名称",
       },
       {
         type: "number",
-        key: "balance",
+        key: "num",
         title: "持有数量",
         placeholder: "请输入持有数量",
         defaultValue: "0",
       },
     ];
     openPopupForm({
-      title: "添加账户",
+      title: "添加股票",
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
@@ -319,92 +278,104 @@ function Component() {
           return;
         }
 
-        const sym = parseCoinSym(data.sym);
-        if (sym == null) {
-          // sym 不符合要求
-          throw new Error("不支持此币种");
+        const { sym, name, num } = data;
+
+        if (!sym) {
+          throw new Error("股票代码不能为空");
+        }
+        if (!name) {
+          throw new Error("股票名称不能为空");
+        }
+        if (isNaN(parseInt(num))) {
+          throw new Error("股票数量不能为空");
         }
 
-        const balance = isNaN(data.balance) ? 0 : parseFloat(data.balance);
-        const title = data.title || "默认";
-
-        const req = new AddCoinAccountReq();
+        const req = new AddStockAccountReq();
         req.setGroupId(groups[selectedIndex].id);
-        req.setName(title);
+        req.setName(name);
         req.setSym(sym);
-        req.setAmount(balance);
+        req.setNum(parseInt(num));
         return userService
-          .addCoinAccount(req, getAuthMD())
-          .then(() => setCoinsVersion((i) => i + 1))
+          .addStockAccount(req, getAuthMD())
+          .then(() => setStocksVersion((i) => i + 1))
           .catch(handleGrpcError);
       },
     });
   }
 
-  function updateCoin(coinIndex: number) {
-    if (!coins) {
+  function updateStock(stockIndex: number) {
+    if (!stocks) {
       return;
     }
 
-    const coin = coins[coinIndex];
+    const stock = stocks[stockIndex];
     const fields: Array<BaseFieldSchema> = [
       {
         type: "text",
-        key: "name",
-        title: "账户",
-        placeholder: "请填写账户名称",
-        defaultValue: coin.name,
+        key: "sym",
+        title: "股票代码",
+        placeholder: "请填写股票代码",
+        defaultValue: stock.sym,
       },
       {
-        type: "enum",
-        enumValues: Object.keys(pricesByBTC),
-        key: "sym",
-        title: "币种",
-        placeholder: "请填写币种，比如 BTC, EOS, ETH",
-        defaultValue: coin.sym,
+        type: "text",
+        key: "name",
+        title: "股票名称",
+        placeholder: "请填写股票名称",
+        defaultValue: stock.name,
       },
       {
         type: "number",
-        key: "amount",
+        key: "num",
         title: "持有数量",
         placeholder: "请输入持有数量",
-        defaultValue: coin.amount.toString(),
+        defaultValue: stock.num.toString(),
       },
     ];
     openPopupForm({
-      title: "修改币种",
+      title: "修改股票信息",
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        const amount = isNaN(data.amount) ? 0 : parseFloat(data.amount);
+        const { sym, name, num } = data;
 
-        const req = new CoinAccountDTO();
-        req.setId(coin.id);
-        req.setName(data.name);
-        req.setSym(data.sym);
-        req.setAmount(amount);
+        if (!sym) {
+          throw new Error("股票代码不能为空");
+        }
+        if (!name) {
+          throw new Error("股票名称不能为空");
+        }
+        if (isNaN(parseInt(num))) {
+          throw new Error("股票数量不能为空");
+        }
+
+        const req = new StockAccountDTO();
+        req.setId(stock.id);
+        req.setName(name);
+        req.setSym(sym);
+        req.setNum(parseInt(num));
         return userService
-          .updateCoinAccount(req, getAuthMD())
-          .then(() => setCoinsVersion((i) => i + 1))
+          .updateStockAccount(req, getAuthMD())
+          .then(() => setStocksVersion((i) => i + 1))
           .catch(handleGrpcError);
       },
     });
   }
 
-  function deleteCoin(index: number) {
-    if (!coins) {
+  function deleteStock(index: number) {
+    if (!stocks) {
       return;
     }
 
-    const name = `币种 [${coins[index].sym}] `;
+    const name = `币种 [${stocks[index].sym}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
-        req.setId(coins[index].id);
+        req.setId(stocks[index].id);
         userService
-          .deleteCoinAccount(req, getAuthMD())
+          .deleteStockAccount(req, getAuthMD())
           .then((res) => {
-            setCoinsVersion((i) => i + 1);
+            setStocksVersion((i) => i + 1);
           })
           .catch(handleGrpcError)
           .catch(showError);
@@ -412,22 +383,22 @@ function Component() {
     });
   }
 
-  function moveCoin(direction: "up" | "down", index: number) {
-    if (!coins) {
+  function moveStock(direction: "up" | "down", index: number) {
+    if (!stocks) {
       return;
     }
     const otherIndex = direction === "up" ? index - 1 : index + 1;
-    if (otherIndex < 0 || otherIndex >= coins.length) {
+    if (otherIndex < 0 || otherIndex >= stocks.length) {
       return;
     }
 
     const req = new SwitchOrderReq();
-    req.setIdA(coins[index].id);
-    req.setIdB(coins[otherIndex].id);
+    req.setIdA(stocks[index].id);
+    req.setIdB(stocks[otherIndex].id);
     userService
-      .switchCoinAccount(req, getAuthMD())
+      .switchStockAccount(req, getAuthMD())
       .then(() => {
-        setCoinsVersion((i) => i + 1);
+        setStocksVersion((i) => i + 1);
       })
       .catch(handleGrpcError)
       .catch(showError);
@@ -438,7 +409,7 @@ function Component() {
   }
 
   const chartOpt = computeChartOpt();
-  let totalAmountByBaseCoin: number = 0;
+  let totalAmount: number = 0;
 
   return (
     <div className={css.container}>
@@ -507,19 +478,13 @@ function Component() {
         </Col>
         <Col span={17}>
           <div style={{ marginBottom: 20 }}>
-            计价单位: &nbsp;
-            <Radio.Group
-              onChange={(e) => {
-                setBaseCoin(e.target.value);
-              }}
-              defaultValue="BTC"
+            <Button
+              onClick={() => addStock()}
+              icon={<PlusOutlined />}
+              style={{ marginRight: 30 }}
             >
-              {baseCoins.map((coin) => (
-                <Radio.Button key={coin} value={coin}>
-                  {coin}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
+              添加记录
+            </Button>
             <Input
               prefix={<SearchOutlined style={{ color: "gray" }} />}
               style={{ marginLeft: 30, width: 200 }}
@@ -532,19 +497,12 @@ function Component() {
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">
-                  <table className={cx("table", css.coins)}>
+                  <table className={cx("table", css.stocks)}>
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
-                        <th>
-                          账户
-                          {Object.keys(pricesByBTC).length > 0 && (
-                            <Button type="link" onClick={() => addCoin()}>
-                              <PlusOutlined />
-                            </Button>
-                          )}
-                        </th>
-                        <th>币种</th>
+                        <th>股票代码</th>
+                        <th>股票名称</th>
                         <th>数量</th>
                         <th>最新价</th>
                         <th>总金额</th>
@@ -557,21 +515,14 @@ function Component() {
                       </tr>
                     </thead>
                     <tbody className="ant-table-tbody">
-                      {coins &&
-                        coins.map((coin, i) => {
-                          const priceByBaseCoin = getBaseCoinPrice(coin.sym);
-                          const amountByBaseCoin =
-                            priceByBaseCoin != null
-                              ? priceByBaseCoin * coin.amount
-                              : undefined;
-
-                          if (amountByBaseCoin != null) {
-                            totalAmountByBaseCoin += amountByBaseCoin;
-                          }
+                      {stocks &&
+                        stocks.map((stock, i) => {
+                          const stockPrice = 1;
+                          totalAmount += stock.num * stockPrice;
 
                           if (filerText) {
                             const word = filerText.toUpperCase();
-                            const { name, sym } = coin;
+                            const { name, sym } = stock;
                             if (
                               name.toUpperCase().indexOf(word) === -1 &&
                               sym.indexOf(word) === -1
@@ -590,42 +541,20 @@ function Component() {
                                     height: "auto",
                                     border: 0,
                                   }}
-                                  onClick={() => showCoinLogs(coin.id)}
+                                  onClick={() => showStockLogs(stock.id)}
                                 >
                                   {i + 1}
                                 </Button>
                               </td>
-                              <td>{coin.name}</td>
-                              <td>
-                                <a
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  href={`https://www.binance.com/cn/trade/${
-                                    coin.sym === "BTC"
-                                      ? "BTC_USDT"
-                                      : coin.sym + "_BTC"
-                                  }`}
-                                >
-                                  {coin.sym}
-                                </a>
-                              </td>
-                              <td>{coin.amount}</td>
-                              <td>
-                                {priceByBaseCoin &&
-                                  `${priceByBaseCoin.toPrecision(
-                                    5
-                                  )} ${baseCoin}`}
-                              </td>
-                              <td>
-                                {amountByBaseCoin &&
-                                  `${amountByBaseCoin.toPrecision(
-                                    5
-                                  )} ${baseCoin}`}
-                              </td>
+                              <td>{stock.sym}</td>
+                              <td>{stock.name}</td>
+                              <td>{stock.num} </td>
+                              <td>latestPrice</td>
+                              <td>num * latestPrice</td>
                               <td style={{ width: 150, textAlign: "center" }}>
                                 <EditOutlined
                                   className={css.icon}
-                                  onClick={() => updateCoin(i)}
+                                  onClick={() => updateStock(i)}
                                 />
                                 <Divider type="vertical" />
 
@@ -633,13 +562,13 @@ function Component() {
                                   <>
                                     <UpOutlined
                                       className={css.icon}
-                                      onClick={() => moveCoin("up", i)}
+                                      onClick={() => moveStock("up", i)}
                                     />
                                     <Divider type="vertical" />
 
                                     <DownOutlined
                                       className={css.icon}
-                                      onClick={() => moveCoin("down", i)}
+                                      onClick={() => moveStock("down", i)}
                                     />
                                     <Divider type="vertical" />
                                   </>
@@ -647,7 +576,7 @@ function Component() {
 
                                 <DeleteOutlined
                                   className={css.icon}
-                                  onClick={() => deleteCoin(i)}
+                                  onClick={() => deleteStock(i)}
                                 />
                               </td>
                             </tr>
@@ -661,12 +590,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>
-                          {totalAmountByBaseCoin &&
-                            `${totalAmountByBaseCoin.toPrecision(
-                              5
-                            )} ${baseCoin}`}
-                        </th>
+                        <th>{totalAmount && `${totalAmount.toFixed(2)}`}</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -680,18 +604,18 @@ function Component() {
         </Col>
       </Row>
 
-      {coins && coinLogs && (
+      {stocks && stockLogs && (
         <Drawer
-          title={`${coins[selectedIndex].name} ${coins[selectedIndex].sym} 修改历史`}
+          title={`${stocks[selectedIndex].name} ${stocks[selectedIndex].sym} 修改历史`}
           placement="right"
           closable={false}
-          onClose={() => setCoinLogs(undefined)}
+          onClose={() => setStockLogs(undefined)}
           visible
           width={700}
         >
           <Table
             columns={logTableColumns}
-            dataSource={coinLogs}
+            dataSource={stockLogs}
             size="small"
             rowKey="id"
             pagination={false}

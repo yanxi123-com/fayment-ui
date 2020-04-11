@@ -20,6 +20,7 @@ import {
   LoginReq,
   LoginRes,
   StockAccountDTO,
+  StockAccountLogsDTO,
   StockAccountsDTO,
   StockTradeDTO,
   StockTradesDTO,
@@ -191,8 +192,8 @@ export class UserServiceClient {
     request: ListAccountLogsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
-               response: CoinAccountLogsDTO) => void
-  ): grpcWeb.ClientReadableStream<CoinAccountLogsDTO>;
+               response: StockAccountLogsDTO) => void
+  ): grpcWeb.ClientReadableStream<StockAccountLogsDTO>;
 
   deleteStockAccountLog(
     request: base_pb.IdWrapper,
@@ -398,7 +399,7 @@ export class UserServicePromiseClient {
   listStockAccountLogs(
     request: ListAccountLogsReq,
     metadata?: grpcWeb.Metadata
-  ): Promise<CoinAccountLogsDTO>;
+  ): Promise<StockAccountLogsDTO>;
 
   deleteStockAccountLog(
     request: base_pb.IdWrapper,

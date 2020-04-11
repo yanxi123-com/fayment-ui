@@ -380,17 +380,14 @@ export class AddStockAccountReq extends jspb.Message {
   getGroupId(): number;
   setGroupId(value: number): void;
 
-  getSite(): string;
-  setSite(value: string): void;
-
   getSym(): string;
   setSym(value: string): void;
 
   getName(): string;
   setName(value: string): void;
 
-  getAmount(): number;
-  setAmount(value: number): void;
+  getNum(): number;
+  setNum(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddStockAccountReq.AsObject;
@@ -403,10 +400,9 @@ export class AddStockAccountReq extends jspb.Message {
 export namespace AddStockAccountReq {
   export type AsObject = {
     groupId: number,
-    site: string,
     sym: string,
     name: string,
-    amount: number,
+    num: number,
   }
 }
 
@@ -423,8 +419,8 @@ export class StockAccountDTO extends jspb.Message {
   getName(): string;
   setName(value: string): void;
 
-  getAmount(): number;
-  setAmount(value: number): void;
+  getNum(): number;
+  setNum(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StockAccountDTO.AsObject;
@@ -440,7 +436,7 @@ export namespace StockAccountDTO {
     site: string,
     sym: string,
     name: string,
-    amount: number,
+    num: number,
   }
 }
 
@@ -461,6 +457,64 @@ export class StockAccountsDTO extends jspb.Message {
 export namespace StockAccountsDTO {
   export type AsObject = {
     accountsList: Array<StockAccountDTO.AsObject>,
+  }
+}
+
+export class StockAccountLogDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getSite(): string;
+  setSite(value: string): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  getSym(): string;
+  setSym(value: string): void;
+
+  getNum(): number;
+  setNum(value: number): void;
+
+  getCreatedAt(): number;
+  setCreatedAt(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StockAccountLogDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: StockAccountLogDTO): StockAccountLogDTO.AsObject;
+  static serializeBinaryToWriter(message: StockAccountLogDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StockAccountLogDTO;
+  static deserializeBinaryFromReader(message: StockAccountLogDTO, reader: jspb.BinaryReader): StockAccountLogDTO;
+}
+
+export namespace StockAccountLogDTO {
+  export type AsObject = {
+    id: number,
+    site: string,
+    name: string,
+    sym: string,
+    num: number,
+    createdAt: number,
+  }
+}
+
+export class StockAccountLogsDTO extends jspb.Message {
+  getLogsList(): Array<StockAccountLogDTO>;
+  setLogsList(value: Array<StockAccountLogDTO>): void;
+  clearLogsList(): void;
+  addLogs(value?: StockAccountLogDTO, index?: number): StockAccountLogDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StockAccountLogsDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: StockAccountLogsDTO): StockAccountLogsDTO.AsObject;
+  static serializeBinaryToWriter(message: StockAccountLogsDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StockAccountLogsDTO;
+  static deserializeBinaryFromReader(message: StockAccountLogsDTO, reader: jspb.BinaryReader): StockAccountLogsDTO;
+}
+
+export namespace StockAccountLogsDTO {
+  export type AsObject = {
+    logsList: Array<StockAccountLogDTO.AsObject>,
   }
 }
 

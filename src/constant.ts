@@ -3,4 +3,5 @@ export enum GroupType {
   CoinTrade = 2,
   EosAccount = 3,
   StockTrade = 4,
+  StockAccount = 5,
 }

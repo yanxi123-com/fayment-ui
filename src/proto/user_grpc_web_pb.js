@@ -1832,13 +1832,13 @@ proto.fayment.UserServicePromiseClient.prototype.switchStockAccount =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.ListAccountLogsReq,
- *   !proto.fayment.CoinAccountLogsDTO>}
+ *   !proto.fayment.StockAccountLogsDTO>}
  */
 const methodDescriptor_UserService_ListStockAccountLogs = new grpc.web.MethodDescriptor(
   '/fayment.UserService/ListStockAccountLogs',
   grpc.web.MethodType.UNARY,
   proto.fayment.ListAccountLogsReq,
-  proto.fayment.CoinAccountLogsDTO,
+  proto.fayment.StockAccountLogsDTO,
   /**
    * @param {!proto.fayment.ListAccountLogsReq} request
    * @return {!Uint8Array}
@@ -1846,7 +1846,7 @@ const methodDescriptor_UserService_ListStockAccountLogs = new grpc.web.MethodDes
   function(request) {
     return request.serializeBinary();
   },
-  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+  proto.fayment.StockAccountLogsDTO.deserializeBinary
 );
 
 
@@ -1854,10 +1854,10 @@ const methodDescriptor_UserService_ListStockAccountLogs = new grpc.web.MethodDes
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.fayment.ListAccountLogsReq,
- *   !proto.fayment.CoinAccountLogsDTO>}
+ *   !proto.fayment.StockAccountLogsDTO>}
  */
 const methodInfo_UserService_ListStockAccountLogs = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.fayment.CoinAccountLogsDTO,
+  proto.fayment.StockAccountLogsDTO,
   /**
    * @param {!proto.fayment.ListAccountLogsReq} request
    * @return {!Uint8Array}
@@ -1865,7 +1865,7 @@ const methodInfo_UserService_ListStockAccountLogs = new grpc.web.AbstractClientB
   function(request) {
     return request.serializeBinary();
   },
-  proto.fayment.CoinAccountLogsDTO.deserializeBinary
+  proto.fayment.StockAccountLogsDTO.deserializeBinary
 );
 
 
@@ -1874,9 +1874,9 @@ const methodInfo_UserService_ListStockAccountLogs = new grpc.web.AbstractClientB
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.fayment.CoinAccountLogsDTO)}
+ * @param {function(?grpc.web.Error, ?proto.fayment.StockAccountLogsDTO)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.fayment.CoinAccountLogsDTO>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.StockAccountLogsDTO>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.fayment.UserServiceClient.prototype.listStockAccountLogs =
@@ -1895,7 +1895,7 @@ proto.fayment.UserServiceClient.prototype.listStockAccountLogs =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.fayment.CoinAccountLogsDTO>}
+ * @return {!Promise<!proto.fayment.StockAccountLogsDTO>}
  *     A native promise that resolves to the response
  */
 proto.fayment.UserServicePromiseClient.prototype.listStockAccountLogs =

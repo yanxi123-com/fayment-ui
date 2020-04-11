@@ -82,6 +82,10 @@ export function useGroups(groupType: GroupType) {
             return callAddGroup("交易记录").then(() =>
               setGroupVersion((i) => i + 1)
             );
+          } else if (groupType === GroupType.StockAccount) {
+            return callAddGroup("我的股票").then(() =>
+              setGroupVersion((i) => i + 1)
+            );
           }
         }
         setGroups(
