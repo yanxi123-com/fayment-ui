@@ -41,7 +41,6 @@ export function TradeForm(props: Props) {
   const { trade, onSubmit, onCancel } = props;
   const [isTraded, setIsTraded] = useState(false);
   const [form] = Form.useForm();
-  console.log(props);
 
   useEffect(() => {
     if (trade) {
@@ -73,6 +72,10 @@ export function TradeForm(props: Props) {
 
     if (!amount || amount === 0) {
       return showError("总金额不能为空");
+    }
+
+    if (isTraded && !tradedAt) {
+      return showError("请填入日期");
     }
 
     const submitTrade: TradeInfo = {
