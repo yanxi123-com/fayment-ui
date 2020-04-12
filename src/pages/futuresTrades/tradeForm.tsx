@@ -101,7 +101,7 @@ export function TradeForm(props: Props) {
         : moment(trade.tradedAt * 1000),
     direction: trade != null ? trade.direction : "B",
     contractSym: trade != null ? trade.contractSym : undefined,
-    num: trade != null ? trade.num : undefined,
+    num: trade != null ? trade.num : 1,
     price: trade != null ? trade.price : undefined,
   };
 
