@@ -292,7 +292,8 @@ function Component() {
           return;
         }
 
-        const { sym, name, num } = data;
+        const { sym, name, num: numStr } = data;
+        const num = parseFloat(numStr);
 
         if (!sym) {
           throw new Error("股票代码不能为空");
@@ -300,7 +301,7 @@ function Component() {
         if (!name) {
           throw new Error("股票名称不能为空");
         }
-        if (isNaN(parseInt(num))) {
+        if (isNaN(num)) {
           throw new Error("股票数量必须为数字");
         }
 
@@ -308,7 +309,7 @@ function Component() {
         req.setGroupId(groups[selectedIndex].id);
         req.setName(name);
         req.setSym(sym);
-        req.setNum(parseInt(num));
+        req.setNum(num);
         return userService
           .addStockAccount(req, getAuthMD())
           .then(() => setStocksVersion((i) => i + 1))
@@ -351,7 +352,8 @@ function Component() {
       labelSpan: 3,
       fields,
       onSubmit: (data: { [key: string]: any }) => {
-        const { sym, name, num } = data;
+        const { sym, name, num: numStr } = data;
+        const num = parseFloat(numStr);
 
         if (!sym) {
           throw new Error("股票代码不能为空");
@@ -359,7 +361,7 @@ function Component() {
         if (!name) {
           throw new Error("股票名称不能为空");
         }
-        if (isNaN(parseInt(num))) {
+        if (isNaN(num)) {
           throw new Error("股票数量必须为数字");
         }
 
@@ -367,7 +369,7 @@ function Component() {
         req.setId(stock.id);
         req.setName(name);
         req.setSym(sym);
-        req.setNum(parseInt(num));
+        req.setNum(num);
         return userService
           .updateStockAccount(req, getAuthMD())
           .then(() => setStocksVersion((i) => i + 1))
@@ -443,12 +445,13 @@ function Component() {
           return;
         }
 
-        const { name, num } = data;
+        const { name, num: numStr } = data;
+        const num = parseFloat(numStr);
 
         if (!name) {
           throw new Error("名称不能为空");
         }
-        if (isNaN(parseInt(num))) {
+        if (isNaN(num)) {
           throw new Error("金额必须为数字");
         }
 
@@ -456,7 +459,7 @@ function Component() {
         req.setGroupId(groups[selectedIndex].id);
         req.setName(name);
         req.setSym("CNY");
-        req.setNum(parseInt(num));
+        req.setNum(num);
         return userService
           .addStockAccount(req, getAuthMD())
           .then(() => setStocksVersion((i) => i + 1))

@@ -3413,7 +3413,7 @@ proto.fayment.AddStockAccountReq.toObject = function(includeInstance, msg) {
     groupId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     sym: jspb.Message.getFieldWithDefault(msg, 2, ""),
     name: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    num: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    num: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0)
   };
 
   if (includeInstance) {
@@ -3463,7 +3463,7 @@ proto.fayment.AddStockAccountReq.deserializeBinaryFromReader = function(msg, rea
       msg.setName(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setNum(value);
       break;
     default:
@@ -3517,8 +3517,8 @@ proto.fayment.AddStockAccountReq.serializeBinaryToWriter = function(message, wri
     );
   }
   f = message.getNum();
-  if (f !== 0) {
-    writer.writeInt32(
+  if (f !== 0.0) {
+    writer.writeDouble(
       4,
       f
     );
@@ -3581,11 +3581,11 @@ proto.fayment.AddStockAccountReq.prototype.setName = function(value) {
 
 
 /**
- * optional int32 num = 4;
+ * optional double num = 4;
  * @return {number}
  */
 proto.fayment.AddStockAccountReq.prototype.getNum = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
 };
 
 
@@ -3594,7 +3594,7 @@ proto.fayment.AddStockAccountReq.prototype.getNum = function() {
  * @return {!proto.fayment.AddStockAccountReq} returns this
  */
 proto.fayment.AddStockAccountReq.prototype.setNum = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3FloatField(this, 4, value);
 };
 
 
@@ -3634,7 +3634,7 @@ proto.fayment.StockAccountDTO.toObject = function(includeInstance, msg) {
     site: jspb.Message.getFieldWithDefault(msg, 2, ""),
     sym: jspb.Message.getFieldWithDefault(msg, 3, ""),
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    num: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    num: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
   };
 
   if (includeInstance) {
@@ -3688,7 +3688,7 @@ proto.fayment.StockAccountDTO.deserializeBinaryFromReader = function(msg, reader
       msg.setName(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setNum(value);
       break;
     default:
@@ -3749,8 +3749,8 @@ proto.fayment.StockAccountDTO.serializeBinaryToWriter = function(message, writer
     );
   }
   f = message.getNum();
-  if (f !== 0) {
-    writer.writeInt32(
+  if (f !== 0.0) {
+    writer.writeDouble(
       5,
       f
     );
@@ -3831,11 +3831,11 @@ proto.fayment.StockAccountDTO.prototype.setName = function(value) {
 
 
 /**
- * optional int32 num = 5;
+ * optional double num = 5;
  * @return {number}
  */
 proto.fayment.StockAccountDTO.prototype.getNum = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
 };
 
 
@@ -3844,7 +3844,7 @@ proto.fayment.StockAccountDTO.prototype.getNum = function() {
  * @return {!proto.fayment.StockAccountDTO} returns this
  */
 proto.fayment.StockAccountDTO.prototype.setNum = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
@@ -4044,7 +4044,7 @@ proto.fayment.StockAccountLogDTO.toObject = function(includeInstance, msg) {
     site: jspb.Message.getFieldWithDefault(msg, 2, ""),
     name: jspb.Message.getFieldWithDefault(msg, 3, ""),
     sym: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    num: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    num: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     createdAt: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
@@ -4099,7 +4099,7 @@ proto.fayment.StockAccountLogDTO.deserializeBinaryFromReader = function(msg, rea
       msg.setSym(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setNum(value);
       break;
     case 6:
@@ -4164,8 +4164,8 @@ proto.fayment.StockAccountLogDTO.serializeBinaryToWriter = function(message, wri
     );
   }
   f = message.getNum();
-  if (f !== 0) {
-    writer.writeInt32(
+  if (f !== 0.0) {
+    writer.writeDouble(
       5,
       f
     );
@@ -4253,11 +4253,11 @@ proto.fayment.StockAccountLogDTO.prototype.setSym = function(value) {
 
 
 /**
- * optional int32 num = 5;
+ * optional double num = 5;
  * @return {number}
  */
 proto.fayment.StockAccountLogDTO.prototype.getNum = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
 };
 
 
@@ -4266,7 +4266,7 @@ proto.fayment.StockAccountLogDTO.prototype.getNum = function() {
  * @return {!proto.fayment.StockAccountLogDTO} returns this
  */
 proto.fayment.StockAccountLogDTO.prototype.setNum = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
