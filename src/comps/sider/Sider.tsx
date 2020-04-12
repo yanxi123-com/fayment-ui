@@ -17,6 +17,7 @@ const keyTitleMap: { [key: string]: string } = {
   trades: "数字币交易工具",
   stocks: "A股资产统计",
   "stock-trades": "A股交易工具",
+  "futures-trades": "期货交易工具",
   "eos-accounts": "EOS 多账号统计",
 };
 

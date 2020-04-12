@@ -722,3 +722,149 @@ export namespace StockTradesDTO {
   }
 }
 
+export class AddFuturesTradeReq extends jspb.Message {
+  getGroupId(): number;
+  setGroupId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getContractSym(): string;
+  setContractSym(value: string): void;
+
+  getContractPrice(): number;
+  setContractPrice(value: number): void;
+
+  getContractNum(): number;
+  setContractNum(value: number): void;
+
+  getDirection(): string;
+  setDirection(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddFuturesTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddFuturesTradeReq): AddFuturesTradeReq.AsObject;
+  static serializeBinaryToWriter(message: AddFuturesTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddFuturesTradeReq;
+  static deserializeBinaryFromReader(message: AddFuturesTradeReq, reader: jspb.BinaryReader): AddFuturesTradeReq;
+}
+
+export namespace AddFuturesTradeReq {
+  export type AsObject = {
+    groupId: number,
+    tradedAt: number,
+    contractSym: string,
+    contractPrice: number,
+    contractNum: number,
+    direction: string,
+  }
+}
+
+export class UpdateFuturesTradeReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getContractSym(): string;
+  setContractSym(value: string): void;
+
+  getContractPrice(): number;
+  setContractPrice(value: number): void;
+
+  getContractNum(): number;
+  setContractNum(value: number): void;
+
+  getDirection(): string;
+  setDirection(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateFuturesTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateFuturesTradeReq): UpdateFuturesTradeReq.AsObject;
+  static serializeBinaryToWriter(message: UpdateFuturesTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateFuturesTradeReq;
+  static deserializeBinaryFromReader(message: UpdateFuturesTradeReq, reader: jspb.BinaryReader): UpdateFuturesTradeReq;
+}
+
+export namespace UpdateFuturesTradeReq {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    contractSym: string,
+    contractPrice: number,
+    contractNum: number,
+    direction: string,
+  }
+}
+
+export class FuturesTradeDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getContractSym(): string;
+  setContractSym(value: string): void;
+
+  getContractName(): string;
+  setContractName(value: string): void;
+
+  getContractPrice(): number;
+  setContractPrice(value: number): void;
+
+  getContractNum(): number;
+  setContractNum(value: number): void;
+
+  getDirection(): string;
+  setDirection(value: string): void;
+
+  getTradingUnit(): number;
+  setTradingUnit(value: number): void;
+
+  getMarginPercent(): number;
+  setMarginPercent(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FuturesTradeDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: FuturesTradeDTO): FuturesTradeDTO.AsObject;
+  static serializeBinaryToWriter(message: FuturesTradeDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FuturesTradeDTO;
+  static deserializeBinaryFromReader(message: FuturesTradeDTO, reader: jspb.BinaryReader): FuturesTradeDTO;
+}
+
+export namespace FuturesTradeDTO {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    contractSym: string,
+    contractName: string,
+    contractPrice: number,
+    contractNum: number,
+    direction: string,
+    tradingUnit: number,
+    marginPercent: number,
+  }
+}
+
+export class FuturesTradesDTO extends jspb.Message {
+  getTradesList(): Array<FuturesTradeDTO>;
+  setTradesList(value: Array<FuturesTradeDTO>): void;
+  clearTradesList(): void;
+  addTrades(value?: FuturesTradeDTO, index?: number): FuturesTradeDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FuturesTradesDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: FuturesTradesDTO): FuturesTradesDTO.AsObject;
+  static serializeBinaryToWriter(message: FuturesTradesDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FuturesTradesDTO;
+  static deserializeBinaryFromReader(message: FuturesTradesDTO, reader: jspb.BinaryReader): FuturesTradesDTO;
+}
+
+export namespace FuturesTradesDTO {
+  export type AsObject = {
+    tradesList: Array<FuturesTradeDTO.AsObject>,
+  }
+}
+

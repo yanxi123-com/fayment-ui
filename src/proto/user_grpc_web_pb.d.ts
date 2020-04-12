@@ -4,6 +4,7 @@ import * as base_pb from './base_pb';
 
 import {
   AddCoinAccountReq,
+  AddFuturesTradeReq,
   AddGroupReq,
   AddStockAccountReq,
   AddStockTradeReq,
@@ -11,6 +12,7 @@ import {
   CoinAccountDTO,
   CoinAccountLogsDTO,
   CoinAccountsDTO,
+  FuturesTradesDTO,
   GetUserKvReq,
   GroupDTO,
   GroupsDTO,
@@ -27,6 +29,7 @@ import {
   SwitchOrderReq,
   TradeDTO,
   TradesDTO,
+  UpdateFuturesTradeReq,
   UserKvDTO} from './user_pb';
 
 export class UserServiceClient {
@@ -279,6 +282,41 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
+  addFuturesTrade(
+    request: AddFuturesTradeReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateFuturesTrade(
+    request: UpdateFuturesTradeReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listFuturesTrades(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: FuturesTradesDTO) => void
+  ): grpcWeb.ClientReadableStream<FuturesTradesDTO>;
+
+  deleteFuturesTrade(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  switchFuturesTrade(
+    request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
 }
 
 export class UserServicePromiseClient {
@@ -457,6 +495,31 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   switchStockTrade(
+    request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addFuturesTrade(
+    request: AddFuturesTradeReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateFuturesTrade(
+    request: UpdateFuturesTradeReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listFuturesTrades(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<FuturesTradesDTO>;
+
+  deleteFuturesTrade(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  switchFuturesTrade(
     request: SwitchOrderReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;

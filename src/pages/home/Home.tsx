@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import css from "./Home.module.scss";
-import { showInfo } from "comps/popup";
 
 export default function () {
   return (
@@ -25,11 +24,7 @@ export default function () {
         <Link to="/stock-trades/" className={css.item}>
           A股交易工具
         </Link>
-        <Link
-          to="/"
-          className={css.item}
-          onClick={() => showInfo("将于近期推出，尽情期待！")}
-        >
+        <Link to="/futures-trades/" className={css.item}>
           期货交易工具
         </Link>
       </div>
