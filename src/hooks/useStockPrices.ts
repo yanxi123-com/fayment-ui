@@ -1,26 +1,30 @@
 import { trackEvent } from "lib/gtag";
-import { uniqStrs } from "lib/util/array";
+import { uniqArray } from "lib/util/array";
 import { useCallback, useEffect, useState } from "react";
 
-type StockInfo = Array<{ stockSite: string; stockSym: string }>;
+type StockInfo = { site: string; sym: string };
 
 interface PriceHookResult {
   refreshPrice: () => void;
   prices: { [sym: string]: number };
-  addStocks: (trades: StockInfo) => void;
+  addStocks: (stocks: StockInfo[]) => void;
 }
 
 export function useStockPrices(): PriceHookResult {
-  const [fullSyms, setFullSyms] = useState<Array<string>>([]);
+  const [stocks, setStocks] = useState<Array<StockInfo>>([]);
   const [prices, setPrices] = useState<{ [sym: string]: number }>({});
 
   const fetchPrices = useCallback(() => {
-    if (fullSyms.length === 0) {
+    if (stocks.length === 0) {
       return;
     }
     trackEvent("fetch_stock_prices");
 
-    const syms = fullSyms.join(",");
+    const sinaSyms = stocks
+      .map((s) => {
+        return s.sym.length === 6 ? s.site + s.sym : "";
+      })
+      .filter((a) => a);
 
     const preScriptEle = document.getElementById("sina_stock_hq");
     if (preScriptEle != null) {
@@ -30,28 +34,28 @@ export function useStockPrices(): PriceHookResult {
     const scriptEle = document.createElement("script");
     scriptEle.id = "sina_stock_hq";
     scriptEle.async = true;
-    scriptEle.src = "https://hq.sinajs.cn/?list=" + syms;
+    scriptEle.src = "https://hq.sinajs.cn/?list=" + sinaSyms.join(",");
     scriptEle.onload = function () {
       setPrices((prices) => {
-        const newPrices = prices;
-        fullSyms.forEach((s) => {
-          const info = (window as any)[`hq_str_${s}`];
+        // 人民币
+        prices["CNY"] = 1;
+        // A 股
+        sinaSyms.forEach((sinaSym) => {
+          const info = (window as any)[`hq_str_${sinaSym}`];
           if (info) {
-            newPrices[s.substr(2)] = parseFloat(info.split(",")[3]);
+            prices[sinaSym.substr(2)] = parseFloat(info.split(",")[3]);
           }
         });
-        return { ...newPrices };
+        return { ...prices };
       });
     };
     document.body.appendChild(scriptEle);
-  }, [fullSyms]);
+  }, [stocks]);
 
-  const addStocks = useCallback((trades: StockInfo) => {
-    const newSyms = trades
-      .map(({ stockSite, stockSym }) => `${stockSite}${stockSym}`)
-      // 沪深股票长度都为8, 2(site) + 6(sym)
-      .filter((fullSym) => fullSym.length === 8);
-    setFullSyms((fullSyms) => uniqStrs([...fullSyms, ...newSyms]));
+  const addStocks = useCallback((newStocks: StockInfo[]) => {
+    setStocks((stocks) =>
+      uniqArray([...stocks, ...newStocks], (stock) => stock.site + stock.sym)
+    );
   }, []);
 
   useEffect(() => {

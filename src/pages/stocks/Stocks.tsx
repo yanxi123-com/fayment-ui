@@ -138,8 +138,8 @@ function Component() {
 
         addStocks(
           res.getAccountsList().map((a) => ({
-            stockSite: a.getSite(),
-            stockSym: a.getSym(),
+            site: a.getSite(),
+            sym: a.getSym(),
           }))
         );
       })
@@ -585,12 +585,8 @@ function Component() {
                     <tbody className="ant-table-tbody">
                       {stocks &&
                         stocks.map((stock, i) => {
-                          let stockPrice: number | undefined;
-                          if (stock.sym === "CNY") {
-                            stockPrice = 1;
-                          } else if (stock.sym.length === 6) {
-                            stockPrice = prices[stock.sym];
-                          }
+                          const stockPrice: number | undefined =
+                            prices[stock.sym];
                           if (stockPrice) {
                             totalAmount += stock.num * stockPrice;
                           }

@@ -73,7 +73,11 @@ function Component() {
     userService
       .listStockTrades(req, getAuthMD())
       .then((res) => {
-        addStocks(res.toObject().tradesList);
+        addStocks(
+          res
+            .getTradesList()
+            .map((t) => ({ site: t.getStockSite(), sym: t.getStockSym() }))
+        );
         setTrades(
           res.getTradesList().map((t) => {
             return {
