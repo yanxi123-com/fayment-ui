@@ -6661,7 +6661,7 @@ proto.fayment.FuturesTradeDTO.toObject = function(includeInstance, msg) {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
     tradedAt: jspb.Message.getFieldWithDefault(msg, 2, 0),
     contractSym: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    contractName: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    varietyName: jspb.Message.getFieldWithDefault(msg, 4, ""),
     contractPrice: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     contractNum: jspb.Message.getFieldWithDefault(msg, 6, 0),
     direction: jspb.Message.getFieldWithDefault(msg, 7, ""),
@@ -6717,7 +6717,7 @@ proto.fayment.FuturesTradeDTO.deserializeBinaryFromReader = function(msg, reader
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setContractName(value);
+      msg.setVarietyName(value);
       break;
     case 5:
       var value = /** @type {number} */ (reader.readDouble());
@@ -6789,7 +6789,7 @@ proto.fayment.FuturesTradeDTO.serializeBinaryToWriter = function(message, writer
       f
     );
   }
-  f = message.getContractName();
+  f = message.getVarietyName();
   if (f.length > 0) {
     writer.writeString(
       4,
@@ -6889,10 +6889,10 @@ proto.fayment.FuturesTradeDTO.prototype.setContractSym = function(value) {
 
 
 /**
- * optional string contract_name = 4;
+ * optional string variety_name = 4;
  * @return {string}
  */
-proto.fayment.FuturesTradeDTO.prototype.getContractName = function() {
+proto.fayment.FuturesTradeDTO.prototype.getVarietyName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -6901,7 +6901,7 @@ proto.fayment.FuturesTradeDTO.prototype.getContractName = function() {
  * @param {string} value
  * @return {!proto.fayment.FuturesTradeDTO} returns this
  */
-proto.fayment.FuturesTradeDTO.prototype.setContractName = function(value) {
+proto.fayment.FuturesTradeDTO.prototype.setVarietyName = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 

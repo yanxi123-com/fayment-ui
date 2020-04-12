@@ -808,8 +808,8 @@ export class FuturesTradeDTO extends jspb.Message {
   getContractSym(): string;
   setContractSym(value: string): void;
 
-  getContractName(): string;
-  setContractName(value: string): void;
+  getVarietyName(): string;
+  setVarietyName(value: string): void;
 
   getContractPrice(): number;
   setContractPrice(value: number): void;
@@ -839,7 +839,7 @@ export namespace FuturesTradeDTO {
     id: number,
     tradedAt: number,
     contractSym: string,
-    contractName: string,
+    varietyName: string,
     contractPrice: number,
     contractNum: number,
     direction: string,

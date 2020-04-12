@@ -129,7 +129,7 @@ function Component() {
 
   // fetch coin accounts
   useEffect(() => {
-    if (!groups) {
+    if (!groups || groups.length === 0) {
       return;
     }
     const req = new IdWrapper();

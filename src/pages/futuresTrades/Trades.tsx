@@ -13,25 +13,29 @@ import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
 import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
-import { useStockPrices } from "hooks/useStockPrices";
+import { useContractPrices } from "hooks/useFuturesPrices";
 import { userService } from "lib/grpcClient";
 import { formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
-import { AddStockTradeReq, StockTradeDTO, SwitchOrderReq } from "proto/user_pb";
+import {
+  SwitchOrderReq,
+  AddFuturesTradeReq,
+  UpdateFuturesTradeReq,
+} from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
-import { TradeForm, TradeInfo } from "./tradeForm";
+import { TradeForm, TradeInfo, EditTradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 
 let actionClicked = false;
 
 interface ModalInfo {
-  trade?: TradeInfo;
-  onSubmit?: (trade: TradeInfo) => void;
+  trade?: EditTradeInfo;
+  onSubmit?: (trade: EditTradeInfo) => void;
 }
 
 function formatCurrency(amount: number) {
@@ -51,7 +55,7 @@ function Component() {
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
 
-  const { refreshPrice, prices, addStocks } = useStockPrices();
+  const { refreshPrice, prices, addContracts } = useContractPrices();
 
   const {
     groups,
@@ -61,40 +65,38 @@ function Component() {
     moveGroup,
     deleteGroup,
     setSelectedIndex,
-  } = useGroups(GroupType.StockTrade);
+  } = useGroups(GroupType.FuturesTrade);
 
   // fetch coin accounts
   useEffect(() => {
-    if (!groups) {
+    if (!groups || groups.length === 0) {
       return;
     }
     const req = new IdWrapper();
     req.setId(groups[selectedIndex].id);
     userService
-      .listStockTrades(req, getAuthMD())
+      .listFuturesTrades(req, getAuthMD())
       .then((res) => {
-        addStocks(
-          res
-            .getTradesList()
-            .map((t) => ({ site: t.getStockSite(), sym: t.getStockSym() }))
-        );
+        addContracts(res.getTradesList().map((t) => t.getContractSym()));
         setTrades(
           res.getTradesList().map((t) => {
             return {
               id: t.getId(),
-              stockSym: t.getStockSym(),
-              stockName: t.getStockName(),
-              stockNum: t.getStockNum(),
+              contractSym: t.getContractSym(),
+              num: t.getContractNum(),
               direction: t.getDirection(),
-              amount: t.getAmount(),
+              price: t.getContractPrice(),
               tradedAt: t.getTradedAt(),
+              varietyName: t.getVarietyName(),
+              tradingUnit: t.getTradingUnit(),
+              marginPercent: t.getMarginPercent(),
             };
           })
         );
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, tradesVersion, addStocks]);
+  }, [selectedIndex, groups, tradesVersion, addContracts]);
 
   function addTrade() {
     if (!groups) {
@@ -106,16 +108,15 @@ function Component() {
           return;
         }
 
-        const req = new AddStockTradeReq();
+        const req = new AddFuturesTradeReq();
         req.setGroupId(groups[selectedIndex].id);
         req.setTradedAt(trade.tradedAt);
-        req.setStockSym(trade.stockSym);
-        req.setStockName(trade.stockName);
-        req.setStockNum(trade.stockNum);
+        req.setContractSym(trade.contractSym);
+        req.setContractPrice(trade.price);
+        req.setContractNum(trade.num);
         req.setDirection(trade.direction);
-        req.setAmount(trade.amount);
         userService
-          .addStockTrade(req, getAuthMD())
+          .addFuturesTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -137,16 +138,15 @@ function Component() {
         if (trade.id == null) {
           return;
         }
-        const req = new StockTradeDTO();
+        const req = new UpdateFuturesTradeReq();
         req.setId(trade.id);
         req.setTradedAt(trade.tradedAt);
-        req.setStockSym(trade.stockSym);
-        req.setStockName(trade.stockName);
-        req.setStockNum(trade.stockNum);
+        req.setContractSym(trade.contractSym);
+        req.setContractPrice(trade.price);
+        req.setContractNum(trade.num);
         req.setDirection(trade.direction);
-        req.setAmount(trade.amount);
         userService
-          .updateStockTrade(req, getAuthMD())
+          .updateFuturesTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -167,7 +167,7 @@ function Component() {
         const req = new IdWrapper();
         req.setId(trades[index].id);
         userService
-          .deleteStockTrade(req, getAuthMD())
+          .deleteFuturesTrade(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
           })
@@ -190,7 +190,7 @@ function Component() {
     req.setIdA(trades[index].id);
     req.setIdB(trades[otherIndex].id);
     userService
-      .switchStockTrade(req, getAuthMD())
+      .switchFuturesTrade(req, getAuthMD())
       .then(() => {
         setTradesVersion((i) => i + 1);
       })
@@ -305,7 +305,7 @@ function Component() {
                         <th>交易时间</th>
                         <th>方向</th>
                         <th>代码</th>
-                        <th>名称</th>
+                        <th>品种</th>
                         <th>数量</th>
                         <th>成交价</th>
                         <th>现价</th>
@@ -332,8 +332,8 @@ function Component() {
 
                             const findResult = [
                               tradeDate,
-                              trade.stockName,
-                              trade.stockSym,
+                              trade.contractSym,
+                              trade.varietyName,
                             ].find((s) => {
                               if (s == null) {
                                 return false;
@@ -346,38 +346,36 @@ function Component() {
                             }
                           }
 
-                          // 计算交易价格
-                          const tradePrice: number =
-                            trade.amount / trade.stockNum;
-
                           // 计算最新价格
                           const currentPrice: number | undefined =
-                            prices[trade.stockSym];
+                            prices[trade.contractSym];
 
                           // 计算盈亏比例
                           let earnPercent: number | undefined;
-                          if (tradePrice && currentPrice) {
+                          if (trade.price && currentPrice) {
                             if (trade.direction === "S") {
                               // 做空盈亏计算
                               earnPercent =
-                                ((tradePrice - currentPrice) / tradePrice) *
+                                ((trade.price - currentPrice) / trade.price) *
                                 100;
                             } else {
                               earnPercent =
-                                ((currentPrice - tradePrice) / tradePrice) *
+                                ((currentPrice - trade.price) / trade.price) *
                                 100;
                             }
                           }
 
                           // 盈亏数量
                           let earnAmount: number | undefined;
-                          if (tradePrice && currentPrice) {
+                          if (trade.price && currentPrice) {
                             if (trade.direction === "B") {
                               earnAmount =
-                                currentPrice * trade.stockNum - trade.amount;
+                                (currentPrice - trade.price) *
+                                trade.tradingUnit;
                             } else {
                               earnAmount =
-                                trade.amount - currentPrice * trade.stockNum;
+                                (trade.price - currentPrice) *
+                                trade.tradingUnit;
                             }
                             totalEarnAmount += earnAmount;
                           }
@@ -395,16 +393,16 @@ function Component() {
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
                               >
-                                {trade.stockSym}
+                                {trade.contractSym}
                               </td>
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
                               >
-                                {trade.stockName}
+                                {trade.varietyName}
                               </td>
-                              <td>{trade.stockNum}</td>
-                              <td>{tradePrice.toFixed(4)}</td>
-                              <td>{currentPrice && currentPrice.toFixed(4)}</td>
+                              <td>{trade.num}</td>
+                              <td>{trade.price}</td>
+                              <td>{currentPrice}</td>
                               <td>
                                 {trade.tradedAt > 0 && (
                                   <span

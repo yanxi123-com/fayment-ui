@@ -78,7 +78,10 @@ export function useGroups(groupType: GroupType) {
             return initCoinGroups().then(() => setGroupVersion((i) => i + 1));
           } else if (groupType === GroupType.CoinTrade) {
             return initTradeGroups().then(() => setGroupVersion((i) => i + 1));
-          } else if (groupType === GroupType.StockTrade) {
+          } else if (
+            groupType === GroupType.StockTrade ||
+            groupType === GroupType.FuturesTrade
+          ) {
             return callAddGroup("交易记录").then(() =>
               setGroupVersion((i) => i + 1)
             );

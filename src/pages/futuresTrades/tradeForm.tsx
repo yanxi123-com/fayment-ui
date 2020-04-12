@@ -3,14 +3,19 @@ import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 
-export interface TradeInfo {
+export interface EditTradeInfo {
   id: number;
-  stockSym: string;
-  stockName: string;
-  stockNum: number;
+  contractSym: string;
+  num: number;
   direction: string;
-  amount: number;
+  price: number;
   tradedAt: number;
+}
+
+export interface TradeInfo extends EditTradeInfo {
+  varietyName: string;
+  tradingUnit: number;
+  marginPercent: number;
 }
 
 const formItemLayout = {
@@ -23,17 +28,16 @@ const tailFormItemLayout = {
 };
 
 interface Props {
-  trade?: TradeInfo;
-  onSubmit: (trade: TradeInfo) => void;
+  trade?: EditTradeInfo;
+  onSubmit: (trade: EditTradeInfo) => void;
   onCancel: () => void;
 }
 
 interface FormValues {
-  stockName: string;
-  stockSym: string;
-  stockNum: number;
+  contractSym: string;
+  num: number;
   direction: "B" | "S";
-  amount: number;
+  price: number;
   tradedAt: Moment;
 }
 
@@ -50,41 +54,35 @@ export function TradeForm(props: Props) {
 
   function onFinish(values: { [name: string]: any }) {
     const {
-      stockName,
-      stockSym,
-      stockNum,
+      contractSym,
+      num,
       direction,
-      amount,
+      price,
       tradedAt,
     } = values as FormValues;
-
-    if (!stockSym || !stockSym.match(/^\d{6}$/)) {
-      return showError("股票代码必须为6位数字");
-    }
-
-    if (!stockName) {
-      return showError("股票名称不能为空");
-    }
-
-    if (!stockNum || stockNum === 0) {
-      return showError("股票数量不能为空");
-    }
-
-    if (!amount || amount === 0) {
-      return showError("总金额不能为空");
-    }
 
     if (isTraded && !tradedAt) {
       return showError("请填入日期");
     }
 
-    const submitTrade: TradeInfo = {
+    if (!contractSym) {
+      return showError("合约代码不能为空");
+    }
+
+    if (!num || num === 0) {
+      return showError("数量不能为空");
+    }
+
+    if (!price || price === 0) {
+      return showError("价格不能为空");
+    }
+
+    const submitTrade: EditTradeInfo = {
       id: trade ? trade.id : 0,
-      stockSym,
-      stockName,
-      stockNum,
+      contractSym: contractSym.toUpperCase(),
+      num,
       direction,
-      amount,
+      price,
       tradedAt: isTraded ? Math.round(tradedAt.toDate().getTime() / 1000) : 0,
     };
 
@@ -102,12 +100,9 @@ export function TradeForm(props: Props) {
         ? moment()
         : moment(trade.tradedAt * 1000),
     direction: trade != null ? trade.direction : "B",
-    stockSym: trade != null ? trade.stockSym : undefined,
-    stockName: trade != null ? trade.stockName : undefined,
-    stockNum: trade != null ? trade.stockNum : undefined,
-    stockPrice:
-      trade != null ? (trade.amount / trade.stockNum).toFixed(4) : undefined,
-    amount: trade != null ? trade.amount : undefined,
+    contractSym: trade != null ? trade.contractSym : undefined,
+    num: trade != null ? trade.num : undefined,
+    price: trade != null ? trade.price : undefined,
   };
 
   return (
@@ -129,16 +124,16 @@ export function TradeForm(props: Props) {
         onValuesChange={(changedValues, allValues) => {
           setIsTraded(allValues.traded === "yes");
 
-          if (allValues.stockNum) {
-            if (changedValues.stockPrice) {
-              const amount = allValues.stockNum * changedValues.stockPrice;
+          if (allValues.futuresNum) {
+            if (changedValues.futuresPrice) {
+              const amount = allValues.futuresNum * changedValues.futuresPrice;
               form.setFieldsValue({
                 amount: amount.toFixed(2),
               });
             } else if (changedValues.amount) {
-              const price = changedValues.amount / allValues.stockNum;
+              const price = changedValues.amount / allValues.futuresNum;
               form.setFieldsValue({
-                stockPrice: price.toFixed(4),
+                futuresPrice: price.toFixed(4),
               });
             }
           }
@@ -172,28 +167,18 @@ export function TradeForm(props: Props) {
           />
         </Form.Item>
         <Form.Item
-          label="股票代码"
+          label="合约代码"
           style={{ marginBottom: 10 }}
-          name="stockSym"
-        >
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item
-          label="股票名称"
-          style={{ marginBottom: 10 }}
-          name="stockName"
+          name="contractSym"
         >
           <Input type="text" />
         </Form.Item>
 
-        <Form.Item label="数量" style={{ marginBottom: 10 }} name="stockNum">
+        <Form.Item label="数量" style={{ marginBottom: 10 }} name="num">
           <Input type="number" autoComplete="off" />
         </Form.Item>
 
-        <Form.Item label="单价" style={{ marginBottom: 10 }} name="stockPrice">
-          <Input type="number" autoComplete="off" />
-        </Form.Item>
-        <Form.Item label="总金额" style={{ marginBottom: 10 }} name="amount">
+        <Form.Item label="单价" style={{ marginBottom: 10 }} name="price">
           <Input type="number" autoComplete="off" />
         </Form.Item>
 
