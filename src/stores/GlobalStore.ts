@@ -17,12 +17,14 @@ export interface BaseFieldSchema {
     | "boolean"
     | "datetime"
     | "image"
-    | "enum";
+    | "enum"
+    | "select";
   key: string;
   title: string;
   placeholder?: string;
   defaultValue?: string;
   enumValues?: string[];
+  selectOpts?: Array<{ text?: string; value: string | number }>;
 }
 
 export interface UserDataVersion {

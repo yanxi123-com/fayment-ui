@@ -198,6 +198,28 @@ export namespace SwitchOrderReq {
   }
 }
 
+export class ChangeGroupReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getToGroupId(): number;
+  setToGroupId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChangeGroupReq.AsObject;
+  static toObject(includeInstance: boolean, msg: ChangeGroupReq): ChangeGroupReq.AsObject;
+  static serializeBinaryToWriter(message: ChangeGroupReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChangeGroupReq;
+  static deserializeBinaryFromReader(message: ChangeGroupReq, reader: jspb.BinaryReader): ChangeGroupReq;
+}
+
+export namespace ChangeGroupReq {
+  export type AsObject = {
+    id: number,
+    toGroupId: number,
+  }
+}
+
 export class ImportGroupsReq extends jspb.Message {
   getGroups(): string;
   setGroups(value: string): void;

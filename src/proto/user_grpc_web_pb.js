@@ -2471,6 +2471,86 @@ proto.fayment.UserServicePromiseClient.prototype.switchTrade =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_ChangeTradeGroup = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ChangeTradeGroup',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ChangeGroupReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_ChangeTradeGroup = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.changeTradeGroup =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ChangeTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeTradeGroup,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.changeTradeGroup =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ChangeTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeTradeGroup);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.AddStockTradeReq,
  *   !proto.fayment.Empty>}
  */
@@ -2871,6 +2951,86 @@ proto.fayment.UserServicePromiseClient.prototype.switchStockTrade =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_ChangeStockTradeGroup = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ChangeStockTradeGroup',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ChangeGroupReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_ChangeStockTradeGroup = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.changeStockTradeGroup =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ChangeStockTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeStockTradeGroup,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.changeStockTradeGroup =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ChangeStockTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeStockTradeGroup);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.AddFuturesTradeReq,
  *   !proto.fayment.Empty>}
  */
@@ -3265,6 +3425,86 @@ proto.fayment.UserServicePromiseClient.prototype.switchFuturesTrade =
       request,
       metadata || {},
       methodDescriptor_UserService_SwitchFuturesTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_ChangeFuturesTradeGroup = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ChangeFuturesTradeGroup',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.ChangeGroupReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.ChangeGroupReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_ChangeFuturesTradeGroup = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.ChangeGroupReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.changeFuturesTradeGroup =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ChangeFuturesTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeFuturesTradeGroup,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.ChangeGroupReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.changeFuturesTradeGroup =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ChangeFuturesTradeGroup',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ChangeFuturesTradeGroup);
 };
 
 
