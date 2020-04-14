@@ -663,8 +663,8 @@ function Component() {
                         <th></th>
                         <th>
                           {totalAmountByBaseCoin &&
-                            `${totalAmountByBaseCoin.toPrecision(
-                              5
+                            `${parseFloat(
+                              totalAmountByBaseCoin.toFixed(2)
                             )} ${baseCoin}`}
                         </th>
                         <th></th>
