@@ -37,7 +37,6 @@ export function useContractPrices(): PriceHookResult {
             prices[sinaSym] = parseFloat(info.split(",")[8]);
           }
         });
-        console.log(prices);
         return { ...prices };
       });
     };
