@@ -109,7 +109,7 @@ export function TradeForm(props: Props) {
     <Modal
       width={600}
       visible
-      title={trade == null ? "添加记录" : "修改记录"}
+      title={trade == null || trade.id === 0 ? "添加记录" : "修改记录"}
       onCancel={close}
       footer={null}
       maskClosable={false}

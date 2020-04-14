@@ -8,6 +8,7 @@ import {
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -108,11 +109,12 @@ function Component() {
       .catch(showError);
   }, [selectedIndex, groups, tradesVersion, addStocks]);
 
-  function addTrade() {
+  function addTrade(copyFrom?: TradeInfo) {
     if (!groups) {
       return;
     }
     setModalInfo({
+      trade: copyFrom,
       onSubmit: (trade) => {
         if (!groups) {
           return;
@@ -136,6 +138,14 @@ function Component() {
           .catch(showError);
       },
     });
+  }
+
+  function copyTrade(tradeIndex: number) {
+    if (!trades) {
+      return;
+    }
+    const trade: TradeInfo = { ...trades[tradeIndex], id: 0 };
+    addTrade(trade);
   }
 
   function updateTrade(tradeIndex: number) {
@@ -403,6 +413,10 @@ function Component() {
                               <Menu.Item onClick={() => changeGroup(trade.id)}>
                                 <ArrowRightOutlined className={css.icon} />
                                 换组
+                              </Menu.Item>
+                              <Menu.Item onClick={() => copyTrade(i)}>
+                                <CopyOutlined className={css.icon} />
+                                复制
                               </Menu.Item>
                             </Menu>
                           );
