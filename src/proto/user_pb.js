@@ -2191,7 +2191,7 @@ proto.fayment.ChangeGroupReq.prototype.toObject = function(opt_includeInstance) 
 proto.fayment.ChangeGroupReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    toGroupId: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    toGroupId: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2232,7 +2232,7 @@ proto.fayment.ChangeGroupReq.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {number} */ (reader.readInt32());
       msg.setId(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setToGroupId(value);
       break;
@@ -2275,7 +2275,7 @@ proto.fayment.ChangeGroupReq.serializeBinaryToWriter = function(message, writer)
   f = message.getToGroupId();
   if (f !== 0) {
     writer.writeInt32(
-      2,
+      3,
       f
     );
   }
@@ -2301,11 +2301,11 @@ proto.fayment.ChangeGroupReq.prototype.setId = function(value) {
 
 
 /**
- * optional int32 to_group_id = 2;
+ * optional int32 to_group_id = 3;
  * @return {number}
  */
 proto.fayment.ChangeGroupReq.prototype.getToGroupId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -2314,7 +2314,7 @@ proto.fayment.ChangeGroupReq.prototype.getToGroupId = function() {
  * @return {!proto.fayment.ChangeGroupReq} returns this
  */
 proto.fayment.ChangeGroupReq.prototype.setToGroupId = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

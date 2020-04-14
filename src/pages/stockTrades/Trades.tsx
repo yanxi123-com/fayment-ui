@@ -1,23 +1,23 @@
 import {
+  ArrowRightOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
+  EllipsisOutlined,
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
-  EllipsisOutlined,
-  ArrowRightOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   Col,
   Divider,
+  Dropdown,
   Input,
   List as AntList,
-  Row,
   Menu,
-  Dropdown,
+  Row,
 } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
@@ -30,19 +30,13 @@ import { formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
-import {
-  AddStockTradeReq,
-  StockTradeDTO,
-  SwitchOrderReq,
-  ChangeGroupReq,
-} from "proto/user_pb";
+import { AddStockTradeReq, StockTradeDTO, SwitchOrderReq } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
-import { openPopupForm } from "comps/PopupForm";
 
 let actionClicked = false;
 
@@ -77,6 +71,7 @@ function Component() {
     updateGroup,
     moveGroup,
     deleteGroup,
+    changeGroup,
     setSelectedIndex,
   } = useGroups(GroupType.StockTrade);
 
@@ -191,43 +186,6 @@ function Component() {
           .catch(handleGrpcError)
           .catch(showError);
       }
-    });
-  }
-
-  function changeGroup(index: number) {
-    if (!groups) {
-      return;
-    }
-    openPopupForm({
-      title: "更换分组",
-      labelSpan: 3,
-      fields: [
-        {
-          type: "select",
-          selectOpts: groups
-            .filter((group, i) => i !== selectedIndex)
-            .map((group) => ({ value: group.id, text: group.name })),
-          key: "groupId",
-          title: "选择分组",
-        },
-      ],
-      onSubmit: (data: { [key: string]: any }) => {
-        if (!groups || !trades) {
-          return;
-        }
-        const groupId = data.groupId;
-        if (!groupId) {
-          throw new Error("请选择新的分组");
-        }
-
-        const req = new ChangeGroupReq();
-        req.setId(trades[index].id);
-        req.setToGroupId(groupId);
-        userService
-          .changeStockTradeGroup(req, getAuthMD())
-          .then(() => setTradesVersion((i) => i + 1))
-          .catch(handleGrpcError);
-      },
     });
   }
 
@@ -442,7 +400,7 @@ function Component() {
                                 <DeleteOutlined className={css.icon} />
                                 删除
                               </Menu.Item>
-                              <Menu.Item onClick={() => changeGroup(i)}>
+                              <Menu.Item onClick={() => changeGroup(trade.id)}>
                                 <ArrowRightOutlined className={css.icon} />
                                 换组
                               </Menu.Item>

@@ -6,8 +6,19 @@ import {
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
+  ArrowRightOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Divider, Input, List as AntList, Row } from "antd";
+import {
+  Button,
+  Col,
+  Divider,
+  Input,
+  List as AntList,
+  Row,
+  Menu,
+  Dropdown,
+} from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -64,6 +75,7 @@ function Component() {
     updateGroup,
     moveGroup,
     deleteGroup,
+    changeGroup,
     setSelectedIndex,
   } = useGroups(GroupType.FuturesTrade);
 
@@ -379,6 +391,20 @@ function Component() {
                             }
                             totalEarnAmount += earnAmount;
                           }
+
+                          const menu = (
+                            <Menu>
+                              <Menu.Item onClick={() => deleteTrade(i)}>
+                                <DeleteOutlined className={css.icon} />
+                                删除
+                              </Menu.Item>
+                              <Menu.Item onClick={() => changeGroup(trade.id)}>
+                                <ArrowRightOutlined className={css.icon} />
+                                换组
+                              </Menu.Item>
+                            </Menu>
+                          );
+
                           return (
                             <tr key={trade.id}>
                               <td>{i + 1}</td>
@@ -466,10 +492,9 @@ function Component() {
                                   </>
                                 )}
 
-                                <DeleteOutlined
-                                  className={css.icon}
-                                  onClick={() => deleteTrade(i)}
-                                />
+                                <Dropdown overlay={menu}>
+                                  <EllipsisOutlined />
+                                </Dropdown>
                               </td>
                             </tr>
                           );

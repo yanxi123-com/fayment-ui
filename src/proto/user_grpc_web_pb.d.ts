@@ -101,6 +101,13 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
+  changeGroup(
+    request: ChangeGroupReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
   importCoinGroups(
     request: ImportGroupsReq,
     metadata: grpcWeb.Metadata | undefined,
@@ -248,13 +255,6 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
-  changeTradeGroup(
-    request: ChangeGroupReq,
-    metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error,
-               response: base_pb.Empty) => void
-  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
-
   addStockTrade(
     request: AddStockTradeReq,
     metadata: grpcWeb.Metadata | undefined,
@@ -290,13 +290,6 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
-  changeStockTradeGroup(
-    request: ChangeGroupReq,
-    metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error,
-               response: base_pb.Empty) => void
-  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
-
   addFuturesTrade(
     request: AddFuturesTradeReq,
     metadata: grpcWeb.Metadata | undefined,
@@ -327,13 +320,6 @@ export class UserServiceClient {
 
   switchFuturesTrade(
     request: SwitchOrderReq,
-    metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error,
-               response: base_pb.Empty) => void
-  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
-
-  changeFuturesTradeGroup(
-    request: ChangeGroupReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -388,6 +374,11 @@ export class UserServicePromiseClient {
 
   switchGroup(
     request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  changeGroup(
+    request: ChangeGroupReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
@@ -496,11 +487,6 @@ export class UserServicePromiseClient {
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
-  changeTradeGroup(
-    request: ChangeGroupReq,
-    metadata?: grpcWeb.Metadata
-  ): Promise<base_pb.Empty>;
-
   addStockTrade(
     request: AddStockTradeReq,
     metadata?: grpcWeb.Metadata
@@ -526,11 +512,6 @@ export class UserServicePromiseClient {
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
-  changeStockTradeGroup(
-    request: ChangeGroupReq,
-    metadata?: grpcWeb.Metadata
-  ): Promise<base_pb.Empty>;
-
   addFuturesTrade(
     request: AddFuturesTradeReq,
     metadata?: grpcWeb.Metadata
@@ -553,11 +534,6 @@ export class UserServicePromiseClient {
 
   switchFuturesTrade(
     request: SwitchOrderReq,
-    metadata?: grpcWeb.Metadata
-  ): Promise<base_pb.Empty>;
-
-  changeFuturesTradeGroup(
-    request: ChangeGroupReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 

@@ -10,6 +10,7 @@ import {
   ImportGroupsReq,
   ListGroupsReq,
   SwitchOrderReq,
+  ChangeGroupReq,
 } from "proto/user_pb";
 import { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema, getAuthMD } from "stores/GlobalStore";
@@ -215,6 +216,44 @@ export function useGroups(groupType: GroupType) {
       .catch(showError);
   }
 
+  function changeGroup(id: number) {
+    if (!groups) {
+      return;
+    }
+    openPopupForm({
+      title: "更换分组",
+      labelSpan: 3,
+      fields: [
+        {
+          type: "select",
+          selectOpts: groups
+            .filter((group, i) => i !== selectedIndex)
+            .map((group) => ({ value: group.id, text: group.name })),
+          key: "groupId",
+          title: "选择分组",
+        },
+      ],
+      onSubmit: (data: { [key: string]: any }) => {
+        if (!groups) {
+          return;
+        }
+        const groupId = data.groupId;
+        if (!groupId) {
+          throw new Error("请选择新的分组");
+        }
+
+        const req = new ChangeGroupReq();
+        req.setId(id);
+        req.setToGroupId(groupId);
+        userService
+          .changeGroup(req, getAuthMD())
+          // 调用 setGroups 让记录列表部分刷新
+          .then(() => setGroups((groups) => groups && [...groups]))
+          .catch(handleGrpcError);
+      },
+    });
+  }
+
   return {
     groups,
     selectedIndex,
@@ -222,6 +261,7 @@ export function useGroups(groupType: GroupType) {
     updateGroup,
     moveGroup,
     deleteGroup,
+    changeGroup,
     setSelectedIndex,
   };
 }
