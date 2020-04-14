@@ -288,16 +288,16 @@ function Component() {
   function addCoin() {
     const fields: Array<BaseFieldSchema> = [
       {
-        type: "enum",
-        enumValues: getAccountNameEnum(),
+        type: "autoComplete",
+        autoCompleteValues: getAccountNameEnum(),
         key: "title",
         title: "账户",
         placeholder: "请填写账户名称",
         defaultValue: "默认",
       },
       {
-        type: "enum",
-        enumValues: Object.keys(pricesByBTC),
+        type: "autoComplete",
+        autoCompleteValues: Object.keys(pricesByBTC),
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH",
@@ -356,8 +356,8 @@ function Component() {
         defaultValue: coin.name,
       },
       {
-        type: "enum",
-        enumValues: Object.keys(pricesByBTC),
+        type: "autoComplete",
+        autoCompleteValues: Object.keys(pricesByBTC),
         key: "sym",
         title: "币种",
         placeholder: "请填写币种，比如 BTC, EOS, ETH",

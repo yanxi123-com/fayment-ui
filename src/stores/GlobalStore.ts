@@ -17,13 +17,13 @@ export interface BaseFieldSchema {
     | "boolean"
     | "datetime"
     | "image"
-    | "enum"
+    | "autoComplete"
     | "select";
   key: string;
   title: string;
   placeholder?: string;
   defaultValue?: string;
-  enumValues?: string[];
+  autoCompleteValues?: string[];
   selectOpts?: Array<{ text?: string; value: string | number }>;
 }
 

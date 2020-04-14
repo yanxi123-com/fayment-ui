@@ -79,16 +79,16 @@ function PopupForm() {
               label={field.title}
               style={{ marginBottom: 10 }}
             >
-              {field.type === "enum" ? (
+              {field.type === "autoComplete" ? (
                 <AutoComplete
                   value={formData[field.key]}
                   onChange={(value: string) => {
                     setData(field.key, value);
                   }}
                   options={
-                    field.enumValues == null
+                    field.autoCompleteValues == null
                       ? []
-                      : field.enumValues.map((value) => ({ value }))
+                      : field.autoCompleteValues.map((value) => ({ value }))
                   }
                   placeholder={field.placeholder}
                   filterOption
@@ -110,7 +110,7 @@ function PopupForm() {
               ) : (
                 <></>
               )}
-              {field.type !== "enum" && field.type !== "select" ? (
+              {field.type !== "autoComplete" && field.type !== "select" ? (
                 <Input
                   value={formData[field.key]}
                   type={field.type}
