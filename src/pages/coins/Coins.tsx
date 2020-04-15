@@ -6,6 +6,8 @@ import {
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
+  ArrowRightOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -17,6 +19,8 @@ import {
   Radio,
   Row,
   Table,
+  Menu,
+  Dropdown,
 } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
@@ -86,6 +90,7 @@ function Component() {
     updateGroup,
     moveGroup,
     deleteGroup,
+    changeGroup,
     setSelectedIndex,
   } = useGroups(GroupType.CoinAccount);
 
@@ -580,6 +585,20 @@ function Component() {
                             }
                           }
 
+                          const menu = (
+                            <Menu>
+                              <Menu.Item onClick={() => deleteCoin(i)}>
+                                <DeleteOutlined className={css.icon} />
+                                删除
+                              </Menu.Item>
+
+                              <Menu.Item onClick={() => changeGroup(coin.id)}>
+                                <ArrowRightOutlined className={css.icon} />
+                                换组
+                              </Menu.Item>
+                            </Menu>
+                          );
+
                           return (
                             <tr key={i}>
                               <td>
@@ -645,10 +664,12 @@ function Component() {
                                   </>
                                 )}
 
-                                <DeleteOutlined
-                                  className={css.icon}
-                                  onClick={() => deleteCoin(i)}
-                                />
+                                <Dropdown
+                                  overlay={menu}
+                                  placement="bottomCenter"
+                                >
+                                  <EllipsisOutlined />
+                                </Dropdown>
                               </td>
                             </tr>
                           );
