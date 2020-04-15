@@ -184,7 +184,10 @@ function Component() {
       return;
     }
 
-    confirmPromise("请确认", `确实要删除此交易吗？`).then((confirm) => {
+    confirmPromise(
+      "请确认",
+      `确实要删除这笔 [${trades[index].contractSym}] 交易吗？`
+    ).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
         req.setId(trades[index].id);

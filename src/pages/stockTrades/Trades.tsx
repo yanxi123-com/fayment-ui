@@ -184,7 +184,10 @@ function Component() {
       return;
     }
 
-    confirmPromise("请确认", `确实要删除此交易吗？`).then((confirm) => {
+    confirmPromise(
+      "请确认",
+      `确实要删除这笔 [${trades[index].stockName}] 交易吗？`
+    ).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
         req.setId(trades[index].id);
@@ -506,7 +509,10 @@ function Component() {
                                     <Divider type="vertical" />
                                   </>
                                 )}
-                                <Dropdown overlay={menu} placement="bottomCenter">
+                                <Dropdown
+                                  overlay={menu}
+                                  placement="bottomCenter"
+                                >
                                   <EllipsisOutlined />
                                 </Dropdown>
                               </td>
