@@ -506,7 +506,10 @@ function Component() {
                                   </>
                                 )}
 
-                                <Dropdown overlay={menu}>
+                                <Dropdown
+                                  overlay={menu}
+                                  placement="bottomCenter"
+                                >
                                   <EllipsisOutlined />
                                 </Dropdown>
                               </td>
