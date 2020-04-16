@@ -703,7 +703,7 @@ function Component() {
 
       {coins && coinLogs && (
         <Drawer
-          title={`${coins[selectedIndex].name} ${coins[selectedIndex].sym} 修改历史`}
+          title="修改历史"
           placement="right"
           closable={false}
           onClose={() => setCoinLogs(undefined)}

@@ -704,7 +704,7 @@ function Component() {
 
       {stocks && stockLogs && (
         <Drawer
-          title={`${stocks[selectedIndex].name} ${stocks[selectedIndex].sym} 修改历史`}
+          title="修改历史"
           placement="right"
           closable={false}
           onClose={() => setStockLogs(undefined)}
