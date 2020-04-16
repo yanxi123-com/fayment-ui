@@ -54,7 +54,7 @@ const useUserDataOpts = {
 };
 
 function Component() {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [accountMap, setAccountMap] = useState<AccountMap>({});
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
@@ -64,7 +64,7 @@ function Component() {
     }
     // 获取账号链上信息
     trackEvent("fetch_eos_accounts");
-    const accounts = groups[selectedIndex].accounts;
+    const accounts = groups[currentGroupIndex].accounts;
     Promise.all(
       accounts.map((account) => getAccountInfo(account).catch(() => null))
     ).then((infos) => {
@@ -94,7 +94,7 @@ function Component() {
         });
       });
     });
-  }, [groups, selectedIndex]);
+  }, [groups, currentGroupIndex]);
 
   useEffect(() => {
     fetchAccounts();
@@ -156,7 +156,7 @@ function Component() {
         const newAccounts = data.account.split(",");
         setGroups(
           List(groups)
-            .updateIn([selectedIndex, "accounts"], (list) => {
+            .updateIn([currentGroupIndex, "accounts"], (list) => {
               list.push(...newAccounts);
               return list;
             })
@@ -284,10 +284,10 @@ function Component() {
 
     if (parentIndex == null) {
       // 是否选中跟随移动
-      if (otherIndex === selectedIndex) {
-        setSelectedIndex(index);
-      } else if (index === selectedIndex) {
-        setSelectedIndex(otherIndex);
+      if (otherIndex === currentGroupIndex) {
+        setCurrentGroupIndex(index);
+      } else if (index === currentGroupIndex) {
+        setCurrentGroupIndex(otherIndex);
       }
     }
 
@@ -305,8 +305,8 @@ function Component() {
   let sum2 = 0;
   let sum3 = 0;
   let sumTotal = 0;
-  if (groups[selectedIndex] != null) {
-    groups[selectedIndex].accounts.forEach((account) => {
+  if (groups[currentGroupIndex] != null) {
+    groups[currentGroupIndex].accounts.forEach((account) => {
       sum1 += accountMap[account] ? accountMap[account].balance1 : 0;
       sum2 += accountMap[account] ? accountMap[account].balance2 : 0;
       sum3 += accountMap[account] ? accountMap[account].balance3 : 0;
@@ -367,11 +367,11 @@ function Component() {
                     return;
                   }
 
-                  setSelectedIndex(i);
+                  setCurrentGroupIndex(i);
                 }}
                 className={cx(
-                  i === selectedIndex && css.active,
-                  i === selectedIndex - 1 && css.preActive
+                  i === currentGroupIndex && css.active,
+                  i === currentGroupIndex - 1 && css.preActive
                 )}
               >
                 <div className={css.level1Title}>{item.title}</div>
@@ -380,7 +380,7 @@ function Component() {
           />
         </Col>
         <Col span={17}>
-          {groups[selectedIndex] != null && (
+          {groups[currentGroupIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">
@@ -407,7 +407,7 @@ function Component() {
                       </tr>
                     </thead>
                     <tbody className="ant-table-tbody">
-                      {groups[selectedIndex].accounts.map((account, i) => {
+                      {groups[currentGroupIndex].accounts.map((account, i) => {
                         const info = accountMap[account] || {
                           balance1: 0,
                           balance2: 0,
@@ -435,27 +435,31 @@ function Component() {
                             <td style={{ textAlign: "right" }}>
                               <EditOutlined
                                 className={css.icon}
-                                onClick={() => updateAccount(selectedIndex, i)}
+                                onClick={() =>
+                                  updateAccount(currentGroupIndex, i)
+                                }
                               />
                               <Divider type="vertical" />
 
                               <UpOutlined
                                 className={css.icon}
-                                onClick={() => moveItem("up", i, selectedIndex)}
+                                onClick={() =>
+                                  moveItem("up", i, currentGroupIndex)
+                                }
                               />
                               <Divider type="vertical" />
 
                               <DownOutlined
                                 className={css.icon}
                                 onClick={() =>
-                                  moveItem("down", i, selectedIndex)
+                                  moveItem("down", i, currentGroupIndex)
                                 }
                               />
                               <Divider type="vertical" />
 
                               <DeleteOutlined
                                 className={css.icon}
-                                onClick={() => deleteCate(i, selectedIndex)}
+                                onClick={() => deleteCate(i, currentGroupIndex)}
                               />
                             </td>
                           </tr>
@@ -468,7 +472,7 @@ function Component() {
                         <th>
                           <Clipboard
                             data-clipboard-text={groups[
-                              selectedIndex
+                              currentGroupIndex
                             ].accounts.join(",")}
                             component="span"
                             style={{ color: "#007bff", cursor: "pointer" }}

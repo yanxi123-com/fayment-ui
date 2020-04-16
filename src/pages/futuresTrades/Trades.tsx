@@ -71,13 +71,13 @@ function Component() {
 
   const {
     groups,
-    selectedIndex,
+    currentGroupIndex,
     addGroup,
     updateGroup,
     moveGroup,
     deleteGroup,
     changeGroup,
-    setSelectedIndex,
+    setCurrentGroupIndex,
   } = useGroups(GroupType.FuturesTrade);
 
   // fetch coin accounts
@@ -86,7 +86,7 @@ function Component() {
       return;
     }
     const req = new IdWrapper();
-    req.setId(groups[selectedIndex].id);
+    req.setId(groups[currentGroupIndex].id);
     userService
       .listFuturesTrades(req, getAuthMD())
       .then((res) => {
@@ -109,7 +109,7 @@ function Component() {
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, tradesVersion, addContracts]);
+  }, [currentGroupIndex, groups, tradesVersion, addContracts]);
 
   function addTrade(copyFrom?: EditTradeInfo) {
     if (!groups) {
@@ -123,7 +123,7 @@ function Component() {
         }
 
         const req = new AddFuturesTradeReq();
-        req.setGroupId(groups[selectedIndex].id);
+        req.setGroupId(groups[currentGroupIndex].id);
         req.setTradedAt(trade.tradedAt);
         req.setContractSym(trade.contractSym);
         req.setContractPrice(trade.price);
@@ -289,11 +289,11 @@ function Component() {
                     return;
                   }
 
-                  setSelectedIndex(i);
+                  setCurrentGroupIndex(i);
                 }}
                 className={cx(
-                  i === selectedIndex && css.active,
-                  i === selectedIndex - 1 && css.preActive
+                  i === currentGroupIndex && css.active,
+                  i === currentGroupIndex - 1 && css.preActive
                 )}
               >
                 <div className={css.level1Title}>{item.name}</div>
@@ -319,7 +319,7 @@ function Component() {
               allowClear
             />
           </div>
-          {groups[selectedIndex] != null && (
+          {groups[currentGroupIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">

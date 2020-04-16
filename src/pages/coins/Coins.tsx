@@ -85,13 +85,13 @@ function Component() {
 
   const {
     groups,
-    selectedIndex,
+    currentGroupIndex,
     addGroup,
     updateGroup,
     moveGroup,
     deleteGroup,
     changeGroup,
-    setSelectedIndex,
+    setCurrentGroupIndex,
   } = useGroups(GroupType.CoinAccount);
 
   const logTableColumns = [
@@ -138,7 +138,7 @@ function Component() {
       return;
     }
     const req = new IdWrapper();
-    req.setId(groups[selectedIndex].id);
+    req.setId(groups[currentGroupIndex].id);
     userService
       .listCoinAccounts(req, getAuthMD())
       .then((res) => {
@@ -153,7 +153,7 @@ function Component() {
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [selectedIndex, groups, coinsVersion]);
+  }, [currentGroupIndex, groups, coinsVersion]);
 
   function deleteCoinLog(log: CoinLog) {
     confirmPromise("请确认", `确实要删除此记录吗？`).then((confirm) => {
@@ -195,7 +195,7 @@ function Component() {
 
   // 饼图数据
   function computeChartOpt(): EChartOption | undefined {
-    if (!groups || groups[selectedIndex] == null) {
+    if (!groups || groups[currentGroupIndex] == null) {
       return;
     }
 
@@ -334,7 +334,7 @@ function Component() {
         const title = data.title || "默认";
 
         const req = new AddCoinAccountReq();
-        req.setGroupId(groups[selectedIndex].id);
+        req.setGroupId(groups[currentGroupIndex].id);
         req.setName(title);
         req.setSym(sym);
         req.setAmount(balance);
@@ -498,11 +498,11 @@ function Component() {
                     return;
                   }
 
-                  setSelectedIndex(i);
+                  setCurrentGroupIndex(i);
                 }}
                 className={cx(
-                  i === selectedIndex && css.active,
-                  i === selectedIndex - 1 && css.preActive
+                  i === currentGroupIndex && css.active,
+                  i === currentGroupIndex - 1 && css.preActive
                 )}
               >
                 <div className={css.level1Title}>{item.name}</div>
@@ -533,7 +533,7 @@ function Component() {
               allowClear
             />
           </div>
-          {groups[selectedIndex] != null && (
+          {groups[currentGroupIndex] != null && (
             <div className="ant-table ant-table-default ant-table-scroll-position-left">
               <div className="ant-table-content">
                 <div className="ant-table-body">

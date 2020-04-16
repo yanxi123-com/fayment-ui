@@ -25,7 +25,7 @@ export function useGroups(groupType: GroupType) {
   // 用来让 groups 自动更新
   const [groupVersion, setGroupVersion] = useState(0);
   // 分组选中的 index
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
 
   const [groups, setGroups] = useState<Group[]>();
 
@@ -174,11 +174,11 @@ export function useGroups(groupType: GroupType) {
         userService
           .deleteGroup(req, getAuthMD())
           .then(() => {
-            if (index < selectedIndex) {
-              setSelectedIndex((i) => i - 1);
+            if (index < currentGroupIndex) {
+              setCurrentGroupIndex((i) => i - 1);
             }
-            if (index === selectedIndex) {
-              setSelectedIndex(0);
+            if (index === currentGroupIndex) {
+              setCurrentGroupIndex(0);
             }
             setGroupVersion((i) => i + 1);
           })
@@ -206,10 +206,10 @@ export function useGroups(groupType: GroupType) {
         setGroupVersion((i) => i + 1);
 
         // 是否选中跟随移动
-        if (otherIndex === selectedIndex) {
-          setSelectedIndex(index);
-        } else if (index === selectedIndex) {
-          setSelectedIndex(otherIndex);
+        if (otherIndex === currentGroupIndex) {
+          setCurrentGroupIndex(index);
+        } else if (index === currentGroupIndex) {
+          setCurrentGroupIndex(otherIndex);
         }
       })
       .catch(handleGrpcError)
@@ -227,7 +227,7 @@ export function useGroups(groupType: GroupType) {
         {
           type: "select",
           selectOpts: groups
-            .filter((group, i) => i !== selectedIndex)
+            .filter((group, i) => i !== currentGroupIndex)
             .map((group) => ({ value: group.id, text: group.name })),
           key: "groupId",
           title: "选择分组",
@@ -256,12 +256,12 @@ export function useGroups(groupType: GroupType) {
 
   return {
     groups,
-    selectedIndex,
+    currentGroupIndex,
     addGroup,
     updateGroup,
     moveGroup,
     deleteGroup,
     changeGroup,
-    setSelectedIndex,
+    setCurrentGroupIndex,
   };
 }
