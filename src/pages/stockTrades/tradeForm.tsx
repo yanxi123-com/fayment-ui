@@ -129,18 +129,20 @@ export function TradeForm(props: Props) {
         onValuesChange={(changedValues, allValues) => {
           setIsTraded(allValues.traded === "yes");
 
-          if (allValues.stockNum) {
-            if (changedValues.stockPrice) {
-              const amount = allValues.stockNum * changedValues.stockPrice;
-              form.setFieldsValue({
-                amount: amount.toFixed(2),
-              });
-            } else if (changedValues.amount) {
-              const price = changedValues.amount / allValues.stockNum;
-              form.setFieldsValue({
-                stockPrice: price.toFixed(4),
-              });
-            }
+          if (changedValues.stockPrice && allValues.stockNum) {
+            const amount = allValues.stockNum * changedValues.stockPrice;
+            form.setFieldsValue({
+              amount: amount.toFixed(2),
+            });
+          } else if (changedValues.amount && allValues.stockNum) {
+            const price = changedValues.amount / allValues.stockNum;
+            form.setFieldsValue({
+              stockPrice: price.toFixed(4),
+            });
+          } else if (changedValues.stockNum && allValues.stockPrice) {
+            form.setFieldsValue({
+              amount: allValues.stockPrice * changedValues.stockNum,
+            });
           }
         }}
       >
