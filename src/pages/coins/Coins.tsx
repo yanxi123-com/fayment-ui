@@ -238,7 +238,17 @@ function Component() {
       },
       tooltip: {
         trigger: "item",
-        formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`,
+        // formatter: `{a} <br/>{b} 持仓: {c} ${baseCoin} ({d}%)`,
+        formatter(datas: any) {
+          return (
+            datas.seriesName +
+            "<br/>" +
+            datas.name +
+            " 持仓: " +
+            datas.data.value.toFixed(2) +
+            ` ${baseCoin} (${datas.percent}%)`
+          );
+        },
       },
       legend: {
         bottom: 10,
