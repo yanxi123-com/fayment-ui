@@ -21,7 +21,18 @@ interface Group {
   name: string;
 }
 
-export function useGroups(groupType: GroupType) {
+export interface GroupsProps {
+  groups?: Array<Group>;
+  currentGroupIndex: number;
+  addGroup: () => void;
+  updateGroup: (index: number) => void;
+  moveGroup: (direction: "up" | "down", index: number) => void;
+  deleteGroup: (index: number) => void;
+  changeGroup: (id: number) => void;
+  setCurrentGroupIndex: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export function useGroups(groupType: GroupType): GroupsProps {
   // 用来让 groups 自动更新
   const [groupVersion, setGroupVersion] = useState(0);
   // 分组选中的 index
