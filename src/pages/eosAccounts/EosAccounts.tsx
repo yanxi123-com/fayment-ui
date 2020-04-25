@@ -1,5 +1,4 @@
-import { Button, Col, Divider, List as AntList, Row } from "antd";
-import cx from "classnames";
+import { Button, Col, Divider, Row } from "antd";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError, showInfo } from "comps/popup";
 import { openPopupForm } from "comps/PopupForm";
@@ -23,8 +22,7 @@ import {
 } from "@ant-design/icons";
 import { useLocation, useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
-
-let actionClicked = false;
+import Groups from "comps/groups/Groups";
 
 interface Group {
   title: string;
@@ -236,6 +234,14 @@ function Component() {
         : `账号 [${groups[parentIndex].accounts[index]}] `;
     confirmPromise("请确认", `确实要删除${name}吗？`).then((confirm) => {
       if (confirm) {
+        if (parentIndex == null) {
+          if (index < currentGroupIndex) {
+            setCurrentGroupIndex((i) => i - 1);
+          }
+          if (index === currentGroupIndex) {
+            setCurrentGroupIndex(0);
+          }
+        }
         setGroups(
           List(groups)
             .deleteIn([...keyPath, index])
@@ -318,65 +324,15 @@ function Component() {
     <div className={css.container}>
       <Row>
         <Col span={7}>
-          <AntList
-            style={{ marginRight: 38 }}
-            header={
-              <div style={{ margin: 0, padding: 0 }}>
-                分组列表
-                <Button type="link" onClick={() => addCate()}>
-                  <PlusOutlined />
-                </Button>
-              </div>
-            }
-            dataSource={groups}
-            renderItem={(item, i) => (
-              <AntList.Item
-                actions={[
-                  <EditOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      updateGroup(i);
-                    }}
-                  />,
-                  <UpOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveItem("up", i);
-                    }}
-                  />,
-                  <DownOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveItem("down", i);
-                    }}
-                  />,
-                  <DeleteOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      deleteCate(i);
-                    }}
-                  />,
-                ]}
-                onClick={() => {
-                  if (actionClicked) {
-                    actionClicked = false;
-                    return;
-                  }
-
-                  setCurrentGroupIndex(i);
-                }}
-                className={cx(
-                  i === currentGroupIndex && css.active,
-                  i === currentGroupIndex - 1 && css.preActive
-                )}
-              >
-                <div className={css.level1Title}>{item.title}</div>
-              </AntList.Item>
-            )}
+          <Groups
+            addGroup={addCate}
+            groups={groups.map((g, i) => ({ id: i, name: g.title }))}
+            setCurrentGroupIndex={setCurrentGroupIndex}
+            currentGroupIndex={currentGroupIndex}
+            updateGroup={updateGroup}
+            moveGroup={moveItem}
+            deleteGroup={deleteCate}
+            changeGroup={() => {}}
           />
         </Col>
         <Col span={17}>

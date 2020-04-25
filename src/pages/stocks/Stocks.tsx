@@ -15,7 +15,6 @@ import {
   Divider,
   Drawer,
   Input,
-  List as AntList,
   Row,
   Table,
   Menu,
@@ -46,8 +45,7 @@ import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 
 import css from "./Stocks.module.scss";
-
-let actionClicked = false;
+import Groups from "comps/groups/Groups";
 
 interface StockInfo {
   id: number;
@@ -75,16 +73,8 @@ function Component() {
 
   const { refreshPrice, prices, addStocks } = useStockPrices();
 
-  const {
-    groups,
-    currentGroupIndex,
-    addGroup,
-    updateGroup,
-    moveGroup,
-    deleteGroup,
-    changeGroup,
-    setCurrentGroupIndex,
-  } = useGroups(GroupType.StockAccount);
+  const groupsProps = useGroups(GroupType.StockAccount);
+  const { groups, currentGroupIndex, changeGroup } = groupsProps;
 
   const logTableColumns = [
     { title: "名称", dataIndex: "name" },
@@ -484,66 +474,7 @@ function Component() {
     <div className={css.container}>
       <Row>
         <Col span={7}>
-          <AntList
-            style={{ marginRight: 38 }}
-            header={
-              <div style={{ margin: 0, padding: 0 }}>
-                分组列表
-                <Button type="link" onClick={() => addGroup()}>
-                  <PlusOutlined />
-                </Button>
-              </div>
-            }
-            dataSource={groups}
-            renderItem={(item, i) => (
-              <AntList.Item
-                actions={[
-                  <EditOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      updateGroup(i);
-                    }}
-                  />,
-                  <UpOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveGroup("up", i);
-                    }}
-                  />,
-                  <DownOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveGroup("down", i);
-                    }}
-                  />,
-                  <DeleteOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      deleteGroup(i);
-                    }}
-                  />,
-                ]}
-                onClick={() => {
-                  if (actionClicked) {
-                    actionClicked = false;
-                    return;
-                  }
-
-                  setCurrentGroupIndex(i);
-                }}
-                className={cx(
-                  i === currentGroupIndex && css.active,
-                  i === currentGroupIndex - 1 && css.preActive
-                )}
-              >
-                <div className={css.level1Title}>{item.name}</div>
-              </AntList.Item>
-            )}
-          />
+          <Groups {...groupsProps} />
         </Col>
         <Col span={17}>
           <div style={{ marginBottom: 20 }}>

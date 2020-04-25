@@ -10,16 +10,7 @@ import {
   UpOutlined,
   CopyOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Divider,
-  Dropdown,
-  Input,
-  List as AntList,
-  Menu,
-  Row,
-} from "antd";
+import { Button, Col, Divider, Dropdown, Input, Menu, Row } from "antd";
 import cx from "classnames";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
@@ -38,8 +29,7 @@ import { getAuthMD, globalContext } from "stores/GlobalStore";
 
 import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
-
-let actionClicked = false;
+import Groups from "comps/groups/Groups";
 
 interface ModalInfo {
   trade?: TradeInfo;
@@ -65,16 +55,8 @@ function Component() {
 
   const { refreshPrice, prices, addStocks } = useStockPrices();
 
-  const {
-    groups,
-    currentGroupIndex,
-    addGroup,
-    updateGroup,
-    moveGroup,
-    deleteGroup,
-    changeGroup,
-    setCurrentGroupIndex,
-  } = useGroups(GroupType.StockTrade);
+  const groupsProps = useGroups(GroupType.StockTrade);
+  const { groups, currentGroupIndex, changeGroup } = groupsProps;
 
   // fetch coin accounts
   useEffect(() => {
@@ -240,66 +222,7 @@ function Component() {
       )}
       <Row>
         <Col span={6}>
-          <AntList
-            style={{ marginRight: 38 }}
-            header={
-              <div style={{ margin: 0, padding: 0 }}>
-                分组列表
-                <Button type="link" onClick={() => addGroup()}>
-                  <PlusOutlined />
-                </Button>
-              </div>
-            }
-            dataSource={groups}
-            renderItem={(item, i) => (
-              <AntList.Item
-                actions={[
-                  <EditOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      updateGroup(i);
-                    }}
-                  />,
-                  <UpOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveGroup("up", i);
-                    }}
-                  />,
-                  <DownOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      moveGroup("down", i);
-                    }}
-                  />,
-                  <DeleteOutlined
-                    className={css.icon}
-                    onClick={() => {
-                      actionClicked = true;
-                      deleteGroup(i);
-                    }}
-                  />,
-                ]}
-                onClick={() => {
-                  if (actionClicked) {
-                    actionClicked = false;
-                    return;
-                  }
-
-                  setCurrentGroupIndex(i);
-                }}
-                className={cx(
-                  i === currentGroupIndex && css.active,
-                  i === currentGroupIndex - 1 && css.preActive
-                )}
-              >
-                <div className={css.level1Title}>{item.name}</div>
-              </AntList.Item>
-            )}
-          />
+          <Groups {...groupsProps} />
         </Col>
         <Col span={18}>
           <div style={{ marginBottom: 20 }}>

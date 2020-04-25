@@ -28,7 +28,7 @@ export function useUserData<Group>(
   const setGroups = useCallback(
     (groups: Array<Group>, initVersion?: UserDataVersion) => {
       // 去重
-      groups.forEach(group => {
+      groups.forEach((group) => {
         opts.uniqGroupInfo(group);
       });
 
@@ -63,15 +63,15 @@ export function useUserData<Group>(
         req.setKey(opts.dataKey);
         return userService.getUserKv(req, getAuthMD());
       })
-      .then(res => {
+      .then((res) => {
         groups = JSON.parse(res.getValue());
         version = {
           currentVersion: 1,
           cloudVersion: 1,
-          cloudUpdatedAt: new Date(res.getCreatedat())
+          cloudUpdatedAt: new Date(res.getUpdatedat()),
         };
       })
-      .catch(e => {
+      .catch((e) => {
         const grpcError = parseGrpcError(e);
         if (grpcError.code === "NOT_FOUND") {
           // 未登录，或者无云上数据
@@ -83,7 +83,7 @@ export function useUserData<Group>(
             groups = localGroups || oldLocalGroups || opts.defaultGroups;
           }
           version = {
-            currentVersion: 1
+            currentVersion: 1,
           };
         } else {
           throw grpcError;
@@ -123,7 +123,7 @@ export function useUserData<Group>(
       userKv.setValue(JSON.stringify(groups));
       userService
         .saveUserKv(userKv, getAuthMD())
-        .then(res => {
+        .then((res) => {
           version.cloudVersion = version.uploadingVersion;
           version.uploadingVersion = undefined;
           version.cloudUpdatedAt = new Date();
