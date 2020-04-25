@@ -37,14 +37,14 @@ export function useUserData<Group>(
         showError("清先登录");
         return;
       }
-
-      setGroupsOri(groups);
-      localStorage.set(opts.dataKey, groups);
       if (initVersion) {
         globalStore.currentGroupsVersion = initVersion;
       } else if (globalStore.currentGroupsVersion) {
         globalStore.currentGroupsVersion.currentVersion++;
       }
+
+      setGroupsOri(groups);
+      localStorage.set(opts.dataKey, groups);
     },
     [globalStore, opts]
   );
