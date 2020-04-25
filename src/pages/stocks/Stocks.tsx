@@ -62,10 +62,10 @@ interface StockLog {
   name: string;
   num: number;
   stockId: number;
+  createdAt: number;
 }
 
 function Component() {
-  // 用来让 stocks 自动更新
   const [stocksVersion, setStocksVersion] = useState(0);
   const [filerText, setFilterText] = useState("");
   const [stocks, setStocks] = useState<StockInfo[]>();
