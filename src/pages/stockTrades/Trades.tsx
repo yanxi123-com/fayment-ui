@@ -18,7 +18,7 @@ import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
 import { useStockPrices } from "hooks/useStockPrices";
 import { userService } from "lib/grpcClient";
-import { formatDate } from "lib/util/format";
+import { formatDate, formatCNY } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
@@ -34,15 +34,6 @@ import Groups from "comps/groups/Groups";
 interface ModalInfo {
   trade?: TradeInfo;
   onSubmit?: (trade: TradeInfo) => void;
-}
-
-function formatCurrency(amount: number) {
-  return Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "JPY",
-    currencyDisplay: "symbol",
-    minimumFractionDigits: 2,
-  }).format(amount);
 }
 
 function Component() {
@@ -406,7 +397,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnAmount && formatCurrency(earnAmount)}
+                                    {earnAmount && formatCNY(earnAmount)}
                                   </span>
                                 )}
                               </td>
@@ -455,7 +446,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{formatCurrency(totalEarnAmount)}</th>
+                        <th>{formatCNY(totalEarnAmount)}</th>
                         <th></th>
                       </tr>
                     </thead>

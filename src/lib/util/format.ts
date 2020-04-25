@@ -40,3 +40,12 @@ export function formatDate(
 
   return moment(d).format("YYYY-MM-DD");
 }
+
+export function formatCNY(amount: number) {
+  return Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "JPY",
+    currencyDisplay: "symbol",
+    minimumFractionDigits: 2,
+  }).format(amount);
+}
