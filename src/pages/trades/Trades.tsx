@@ -18,7 +18,7 @@ import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
 import { usePrices } from "hooks/usePrices";
 import { userService } from "lib/grpcClient";
-import { formatDate } from "lib/util/format";
+import { formatDate, formatAmount } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
@@ -200,7 +200,6 @@ function Component() {
   }
 
   let totalAmountByBaseCoin: number = 0;
-  let totalAmountByUSD: number = 0;
 
   return (
     <div className={css.container}>
@@ -374,15 +373,6 @@ function Component() {
                             }
                           }
 
-                          // 盈亏数据基于 USD
-                          if (earnBaseSymAmount && trade.tradedAt > 0) {
-                            const baseSymPrice = getBaseCoinPrice("USD");
-                            if (baseSymPrice) {
-                              totalAmountByUSD +=
-                                earnBaseSymAmount * baseSymPrice;
-                            }
-                          }
-
                           const menu = (
                             <Menu>
                               <Menu.Item onClick={() => deleteTrade(i)}>
@@ -462,13 +452,11 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnBaseCoinAmount && (
-                                      <>
-                                        {earnBaseCoinAmount.toPrecision(4)}
-                                        &nbsp;
-                                        {baseCoin}
-                                      </>
-                                    )}
+                                    {earnBaseCoinAmount &&
+                                      formatAmount(
+                                        earnBaseCoinAmount,
+                                        baseCoin
+                                      )}
                                   </span>
                                 )}
                               </td>
@@ -516,15 +504,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>
-                          {(totalAmountByUSD && (
-                            <>
-                              {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
-                              {baseCoin}
-                            </>
-                          )) ||
-                            null}
-                        </th>
+                        <th>{formatAmount(totalAmountByBaseCoin, baseCoin)}</th>
                         <th></th>
                       </tr>
                     </thead>

@@ -48,6 +48,7 @@ import { useHistory, useLocation } from "react-router";
 import { BaseFieldSchema, getAuthMD, globalContext } from "stores/GlobalStore";
 
 import css from "./Coins.module.scss";
+import { formatAmount } from "lib/util/format";
 
 const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
@@ -580,9 +581,7 @@ function Component() {
                               </td>
                               <td>
                                 {amountByBaseCoin &&
-                                  `${amountByBaseCoin.toPrecision(
-                                    5
-                                  )} ${baseCoin}`}
+                                  formatAmount(amountByBaseCoin, baseCoin)}
                               </td>
                               <td style={{ width: 150, textAlign: "center" }}>
                                 <EditOutlined
@@ -627,9 +626,7 @@ function Component() {
                         <th></th>
                         <th>
                           {totalAmountByBaseCoin &&
-                            `${parseFloat(
-                              totalAmountByBaseCoin.toFixed(2)
-                            )} ${baseCoin}`}
+                            formatAmount(totalAmountByBaseCoin, baseCoin)}
                         </th>
                         <th></th>
                       </tr>
