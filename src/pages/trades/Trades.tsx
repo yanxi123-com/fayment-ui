@@ -396,7 +396,7 @@ function Component() {
                               <td>
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
-                                  : "交易计划"}
+                                  : "未成交"}
                               </td>
                               <td>
                                 {trade.buyAmount}&nbsp;{trade.buySym}
