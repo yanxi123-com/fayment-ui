@@ -32,7 +32,7 @@ import { TradeForm, TradeInfo } from "./tradeForm";
 import css from "./Trades.module.scss";
 import Groups from "comps/groups/Groups";
 
-const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
+const baseCoins = ["BTC", "USD", "EOS", "ETH", "BNB", "CNY"];
 
 interface ModalInfo {
   trade?: TradeInfo;
@@ -52,7 +52,7 @@ function Component() {
     baseCoin,
     setBaseCoin,
     getBaseCoinPrice,
-  } = usePrices("自动");
+  } = usePrices("USD");
 
   const groupsProps = useGroups(GroupType.CoinTrade);
   const { groups, currentGroupIndex, changeGroup } = groupsProps;
@@ -462,14 +462,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnBaseSymAmount && baseCoin === "自动" && (
-                                      <>
-                                        {earnBaseSymAmount.toPrecision(4)}&nbsp;
-                                        {baseSym}
-                                      </>
-                                    )}
-
-                                    {earnBaseCoinAmount && baseCoin !== "自动" && (
+                                    {earnBaseCoinAmount && (
                                       <>
                                         {earnBaseCoinAmount.toPrecision(4)}
                                         &nbsp;
@@ -524,11 +517,7 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th>
-                          {(baseCoin === "自动" && totalAmountByUSD && (
-                            <>{totalAmountByUSD.toPrecision(4)} USD</>
-                          )) ||
-                            null}
-                          {(baseCoin !== "自动" && totalAmountByUSD && (
+                          {(totalAmountByUSD && (
                             <>
                               {totalAmountByBaseCoin.toPrecision(4)}&nbsp;
                               {baseCoin}
