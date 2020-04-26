@@ -40,7 +40,6 @@ interface ModalInfo {
 }
 
 function Component() {
-  // 用来让 coins 自动更新
   const [tradesVersion, setTradesVersion] = useState(0);
 
   const [filerText, setFilterText] = useState("");
@@ -53,7 +52,7 @@ function Component() {
     baseCoin,
     setBaseCoin,
     getBaseCoinPrice,
-  } = usePrices("USD");
+  } = usePrices("自动");
 
   const groupsProps = useGroups(GroupType.CoinTrade);
   const { groups, currentGroupIndex, changeGroup } = groupsProps;
@@ -231,9 +230,9 @@ function Component() {
             盈亏计价单位: &nbsp;
             <Radio.Group
               onChange={(e) => {
-                setBaseCoin(e.target.value === "自动" ? "USD" : e.target.value);
+                setBaseCoin(e.target.value);
               }}
-              defaultValue="自动"
+              value={baseCoin}
             >
               {baseCoins.map((coin) => (
                 <Radio.Button key={coin} value={coin}>

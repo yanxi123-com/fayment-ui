@@ -18,7 +18,7 @@ export function usePrices(defaultBaseCoin?: string): PriceHookResult {
   const fetchPrices = useCallback(() => {
     trackEvent("fetch_prices");
     httpGet("listPricesByBTC")
-      .then(data => {
+      .then((data) => {
         setPricesByBTC(data);
       })
       .catch(showError);
@@ -57,6 +57,6 @@ export function usePrices(defaultBaseCoin?: string): PriceHookResult {
     pricesByBTC,
     baseCoin,
     setBaseCoin,
-    getBaseCoinPrice
+    getBaseCoinPrice,
   };
 }

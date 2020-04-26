@@ -7,14 +7,14 @@ import Header from "comps/header/Header";
 import PopupForm from "comps/PopupForm";
 import Sider from "comps/sider/Sider";
 import { observer } from "mobx-react-lite";
-import EosAccounts from "pages/eosAccounts/EosAccounts";
-import Trades from "pages/trades/Trades";
-import StockTrades from "pages/stockTrades/Trades";
-import FuturesTrades from "pages/futuresTrades/Trades";
 import Coins from "pages/coins/Coins";
-import Stocks from "pages/stocks/Stocks";
+import EosAccounts from "pages/eosAccounts/EosAccounts";
+import FuturesTrades from "pages/futuresTrades/Trades";
 import Home from "pages/home/Home";
 import Login from "pages/login/Login";
+import Stocks from "pages/stocks/Stocks";
+import StockTrades from "pages/stockTrades/Trades";
+import Trades from "pages/trades/Trades";
 import React from "react";
 import {
   BrowserRouter as Router,
