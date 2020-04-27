@@ -324,7 +324,9 @@ function Component() {
                               earnAmount = -earnAmount;
                             }
 
-                            totalEarnAmount += earnAmount;
+                            if (trade.tradedAt > 0) {
+                              totalEarnAmount += earnAmount;
+                            }
                           }
 
                           const menu = (

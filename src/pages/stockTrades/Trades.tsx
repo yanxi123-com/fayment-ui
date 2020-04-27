@@ -317,7 +317,9 @@ function Component() {
                               earnAmount =
                                 trade.amount - currentPrice * trade.stockNum;
                             }
-                            totalEarnAmount += earnAmount;
+                            if (trade.tradedAt > 0) {
+                              totalEarnAmount += earnAmount;
+                            }
                           }
 
                           const menu = (
