@@ -138,8 +138,9 @@ export function TradeForm(props: Props) {
               stockPrice: price.toFixed(4),
             });
           } else if (changedValues.stockNum && allValues.stockPrice) {
+            const amount = allValues.stockPrice * changedValues.stockNum;
             form.setFieldsValue({
-              amount: allValues.stockPrice * changedValues.stockNum,
+              amount: amount.toFixed(2),
             });
           }
         }}
