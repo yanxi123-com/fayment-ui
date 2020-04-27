@@ -37,7 +37,6 @@ interface ModalInfo {
 }
 
 function Component() {
-  // 用来让 coins 自动更新
   const [tradesVersion, setTradesVersion] = useState(0);
 
   const [filerText, setFilterText] = useState("");

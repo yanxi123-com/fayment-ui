@@ -122,8 +122,6 @@ export function TradeForm(props: Props) {
         onFinish={onFinish}
         initialValues={initValues}
         onValuesChange={(changedValues, allValues) => {
-          setIsTraded(allValues.traded === "yes");
-
           if (allValues.futuresNum) {
             if (changedValues.futuresPrice) {
               const amount = allValues.futuresNum * changedValues.futuresPrice;
@@ -145,6 +143,9 @@ export function TradeForm(props: Props) {
               { label: "已成交", value: "yes" },
               { label: "未成交", value: "no" },
             ]}
+            onChange={(e) => {
+              setIsTraded(e.target.value === "yes");
+            }}
           />
         </Form.Item>
 
