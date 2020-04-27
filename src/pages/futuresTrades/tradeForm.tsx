@@ -7,7 +7,7 @@ export interface EditTradeInfo {
   id: number;
   contractSym: string;
   num: number;
-  direction: string;
+  direction: "B" | "S";
   price: number;
   tradedAt: number;
 }

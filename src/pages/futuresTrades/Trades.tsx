@@ -50,7 +50,6 @@ function formatCurrency(amount: number) {
 }
 
 function Component() {
-  // 用来让 coins 自动更新
   const [tradesVersion, setTradesVersion] = useState(0);
 
   const [filerText, setFilterText] = useState("");
@@ -79,7 +78,7 @@ function Component() {
               id: t.getId(),
               contractSym: t.getContractSym(),
               num: t.getContractNum(),
-              direction: t.getDirection(),
+              direction: t.getDirection() as "B" | "S",
               price: t.getContractPrice(),
               tradedAt: t.getTradedAt(),
               varietyName: t.getVarietyName(),
@@ -315,16 +314,16 @@ function Component() {
 
                           // 盈亏数量
                           let earnAmount: number | undefined;
+
                           if (trade.price && currentPrice) {
-                            if (trade.direction === "B") {
-                              earnAmount =
-                                (currentPrice - trade.price) *
-                                trade.tradingUnit;
-                            } else {
-                              earnAmount =
-                                (trade.price - currentPrice) *
-                                trade.tradingUnit;
+                            earnAmount =
+                              (currentPrice - trade.price) *
+                              trade.tradingUnit *
+                              trade.num;
+                            if (trade.direction === "S") {
+                              earnAmount = -earnAmount;
                             }
+
                             totalEarnAmount += earnAmount;
                           }
 

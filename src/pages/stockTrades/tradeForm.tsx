@@ -8,7 +8,7 @@ export interface TradeInfo {
   stockSym: string;
   stockName: string;
   stockNum: number;
-  direction: string;
+  direction: "B" | "S";
   amount: number;
   tradedAt: number;
 }

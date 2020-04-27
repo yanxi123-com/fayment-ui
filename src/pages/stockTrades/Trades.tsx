@@ -70,7 +70,7 @@ function Component() {
               stockSym: t.getStockSym(),
               stockName: t.getStockName(),
               stockNum: t.getStockNum(),
-              direction: t.getDirection(),
+              direction: t.getDirection() as "B" | "S",
               amount: t.getAmount(),
               tradedAt: t.getTradedAt(),
             };
