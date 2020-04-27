@@ -315,7 +315,11 @@ function Component() {
                           // 盈亏数量
                           let earnAmount: number | undefined;
 
-                          if (trade.price && currentPrice) {
+                          if (
+                            trade.price &&
+                            currentPrice &&
+                            trade.tradedAt > 0
+                          ) {
                             earnAmount =
                               (currentPrice - trade.price) *
                               trade.tradingUnit *
@@ -324,9 +328,7 @@ function Component() {
                               earnAmount = -earnAmount;
                             }
 
-                            if (trade.tradedAt > 0) {
-                              totalEarnAmount += earnAmount;
-                            }
+                            totalEarnAmount += earnAmount;
                           }
 
                           const menu = (
