@@ -43,7 +43,6 @@ function formatEosAmount(num: number, digits: number = 4): string {
 }
 
 const useUserDataOpts = {
-  oldLocalKey: "savedAssetsGroups",
   dataKey: "eosGroups",
   defaultGroups: [{ title: "我的资产", accounts: [] }],
   uniqGroupInfo: (group: Group) => {
@@ -57,9 +56,10 @@ function Component() {
   const { groups, setGroups } = useUserData<Group>(useUserDataOpts);
 
   const fetchAccounts = useCallback(() => {
-    if (groups == null) {
+    if (groups == null || groups.length === 0) {
       return;
     }
+
     // 获取账号链上信息
     trackEvent("fetch_eos_accounts");
     const accounts = groups[currentGroupIndex].accounts;

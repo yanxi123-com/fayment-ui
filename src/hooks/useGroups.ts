@@ -6,15 +6,13 @@ import { handleGrpcError } from "lib/util/grpcUtil";
 import { IdWrapper } from "proto/base_pb";
 import {
   AddGroupReq,
+  ChangeGroupReq,
   GroupDTO,
-  ImportGroupsReq,
   ListGroupsReq,
   SwitchOrderReq,
-  ChangeGroupReq,
 } from "proto/user_pb";
 import { useCallback, useEffect, useState } from "react";
 import { BaseFieldSchema, getAuthMD } from "stores/GlobalStore";
-import localStorage from "stores/local";
 
 interface Group {
   id: number;
@@ -31,6 +29,15 @@ export interface GroupsProps {
   changeGroup: (id: number) => void;
   setCurrentGroupIndex: React.Dispatch<React.SetStateAction<number>>;
 }
+
+const defaultGroupName: { [type in GroupType]: string } = {
+  [GroupType.CoinAccount]: "我的资产",
+  [GroupType.EosAccount]: "我的资产",
+  [GroupType.StockAccount]: "我的股票",
+  [GroupType.CoinTrade]: "交易记录",
+  [GroupType.StockTrade]: "交易记录",
+  [GroupType.FuturesTrade]: "交易记录",
+};
 
 export function useGroups(groupType: GroupType): GroupsProps {
   // 用来让 groups 自动更新
@@ -50,33 +57,6 @@ export function useGroups(groupType: GroupType): GroupsProps {
     [groupType]
   );
 
-  const initCoinGroups = useCallback(() => {
-    const localGroups = localStorage.get("coinGroups");
-    const oldLocalGroups = localStorage.get("savedCoinsGroups");
-    if (localGroups || oldLocalGroups) {
-      // 导入数据
-      const importReq = new ImportGroupsReq();
-      importReq.setGroups(JSON.stringify(localGroups || oldLocalGroups));
-      return userService.importCoinGroups(importReq, getAuthMD());
-    } else {
-      // 添加默认 group
-      return callAddGroup("我的资产");
-    }
-  }, [callAddGroup]);
-
-  const initTradeGroups = useCallback(() => {
-    const localGroups = localStorage.get("tradeGroups");
-    if (localGroups) {
-      // 导入数据
-      const importReq = new ImportGroupsReq();
-      importReq.setGroups(JSON.stringify(localGroups));
-      return userService.importTradeGroups(importReq, getAuthMD());
-    } else {
-      // 添加默认 group
-      return callAddGroup("交易记录");
-    }
-  }, [callAddGroup]);
-
   // fetch groups
   useEffect(() => {
     const req = new ListGroupsReq();
@@ -86,22 +66,9 @@ export function useGroups(groupType: GroupType): GroupsProps {
       .then((res) => {
         if (res.getGroupsList().length === 0) {
           // 初始化 group
-          if (groupType === GroupType.CoinAccount) {
-            return initCoinGroups().then(() => setGroupVersion((i) => i + 1));
-          } else if (groupType === GroupType.CoinTrade) {
-            return initTradeGroups().then(() => setGroupVersion((i) => i + 1));
-          } else if (
-            groupType === GroupType.StockTrade ||
-            groupType === GroupType.FuturesTrade
-          ) {
-            return callAddGroup("交易记录").then(() =>
-              setGroupVersion((i) => i + 1)
-            );
-          } else if (groupType === GroupType.StockAccount) {
-            return callAddGroup("我的股票").then(() =>
-              setGroupVersion((i) => i + 1)
-            );
-          }
+          return callAddGroup(defaultGroupName[groupType]).then(() =>
+            setGroupVersion((i) => i + 1)
+          );
         }
         setGroups(
           res.getGroupsList().map((g) => ({
@@ -112,7 +79,7 @@ export function useGroups(groupType: GroupType): GroupsProps {
       })
       .catch(handleGrpcError)
       .catch(showError);
-  }, [groupVersion, groupType, initCoinGroups, initTradeGroups, callAddGroup]);
+  }, [groupVersion, groupType, callAddGroup]);
 
   function addGroup() {
     if (!groups) {

@@ -5,10 +5,8 @@ import { parseGrpcError, handleGrpcError } from "lib/util/grpcUtil";
 import { GetUserKvReq, UserKvDTO } from "proto/user_pb";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getAuthMD, globalContext, UserDataVersion } from "stores/GlobalStore";
-import localStorage from "stores/local";
 
 interface UserDataOpts<Group> {
-  oldLocalKey: string;
   dataKey: string;
   defaultGroups: Array<Group>;
   uniqGroupInfo: (group: Group) => void;
@@ -44,7 +42,6 @@ export function useUserData<Group>(
       }
 
       setGroupsOri(groups);
-      localStorage.set(opts.dataKey, groups);
     },
     [globalStore, opts]
   );
@@ -75,13 +72,7 @@ export function useUserData<Group>(
         const grpcError = parseGrpcError(e);
         if (grpcError.code === "NOT_FOUND") {
           // 未登录，或者无云上数据
-          const localGroups = localStorage.get(opts.dataKey);
-          const oldLocalGroups = localStorage.get(opts.oldLocalKey);
-          if (localGroups && !globalStore.user) {
-            groups = opts.defaultGroups;
-          } else {
-            groups = localGroups || oldLocalGroups || opts.defaultGroups;
-          }
+          groups = opts.defaultGroups;
           version = {
             currentVersion: 1,
           };
