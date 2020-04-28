@@ -17,7 +17,6 @@ import {
   GetUserKvReq,
   GroupDTO,
   GroupsDTO,
-  ImportGroupsReq,
   ListAccountLogsReq,
   ListGroupsReq,
   LoginReq,
@@ -103,13 +102,6 @@ export class UserServiceClient {
 
   changeGroup(
     request: ChangeGroupReq,
-    metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error,
-               response: base_pb.Empty) => void
-  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
-
-  importCoinGroups(
-    request: ImportGroupsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -208,13 +200,6 @@ export class UserServiceClient {
 
   deleteStockAccountLog(
     request: base_pb.IdWrapper,
-    metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error,
-               response: base_pb.Empty) => void
-  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
-
-  importTradeGroups(
-    request: ImportGroupsReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -382,11 +367,6 @@ export class UserServicePromiseClient {
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
-  importCoinGroups(
-    request: ImportGroupsReq,
-    metadata?: grpcWeb.Metadata
-  ): Promise<base_pb.Empty>;
-
   addCoinAccount(
     request: AddCoinAccountReq,
     metadata?: grpcWeb.Metadata
@@ -454,11 +434,6 @@ export class UserServicePromiseClient {
 
   deleteStockAccountLog(
     request: base_pb.IdWrapper,
-    metadata?: grpcWeb.Metadata
-  ): Promise<base_pb.Empty>;
-
-  importTradeGroups(
-    request: ImportGroupsReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 

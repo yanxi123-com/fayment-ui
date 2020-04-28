@@ -220,24 +220,6 @@ export namespace ChangeGroupReq {
   }
 }
 
-export class ImportGroupsReq extends jspb.Message {
-  getGroups(): string;
-  setGroups(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ImportGroupsReq.AsObject;
-  static toObject(includeInstance: boolean, msg: ImportGroupsReq): ImportGroupsReq.AsObject;
-  static serializeBinaryToWriter(message: ImportGroupsReq, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ImportGroupsReq;
-  static deserializeBinaryFromReader(message: ImportGroupsReq, reader: jspb.BinaryReader): ImportGroupsReq;
-}
-
-export namespace ImportGroupsReq {
-  export type AsObject = {
-    groups: string,
-  }
-}
-
 export class AddCoinAccountReq extends jspb.Message {
   getGroupId(): number;
   setGroupId(value: number): void;
