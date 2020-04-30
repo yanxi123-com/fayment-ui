@@ -2951,6 +2951,86 @@ proto.fayment.UserServicePromiseClient.prototype.updateFuturesTrade =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.CloseFuturesTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_CloseFuturesTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/CloseFuturesTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.CloseFuturesTradeReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseFuturesTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.CloseFuturesTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_CloseFuturesTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseFuturesTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.CloseFuturesTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.closeFuturesTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/CloseFuturesTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseFuturesTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.CloseFuturesTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.closeFuturesTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/CloseFuturesTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseFuturesTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.IdWrapper,
  *   !proto.fayment.FuturesTradesDTO>}
  */

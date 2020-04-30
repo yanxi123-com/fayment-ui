@@ -1,43 +1,47 @@
 import {
+  ArrowRightOutlined,
+  CopyOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
+  EllipsisOutlined,
+  EnterOutlined,
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
-  ArrowRightOutlined,
-  EllipsisOutlined,
-  CopyOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Divider, Input, Row, Menu, Dropdown } from "antd";
+import { Button, Col, Divider, Dropdown, Input, Menu, Row } from "antd";
 import cx from "classnames";
+import Groups from "comps/groups/Groups";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
 import { GroupType } from "constant";
-import { useGroups } from "hooks/useGroups";
 import { useContractPrices } from "hooks/useFuturesPrices";
+import { useGroups } from "hooks/useGroups";
 import { userService } from "lib/grpcClient";
 import { formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
 import {
-  SwitchOrderReq,
   AddFuturesTradeReq,
+  CloseFuturesTradeReq,
+  SwitchOrderReq,
   UpdateFuturesTradeReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
-import { TradeForm, TradeInfo, EditTradeInfo } from "./tradeForm";
+import { CloseModalInfo, CloseTradeForm, CloseTradeInfo } from "./closeForm";
+import { EditTradeInfo, ModalInfo, TradeForm } from "./tradeForm";
 import css from "./Trades.module.scss";
-import Groups from "comps/groups/Groups";
 
-interface ModalInfo {
-  trade?: EditTradeInfo;
-  onSubmit?: (trade: EditTradeInfo) => void;
+export interface TradeInfo extends EditTradeInfo, CloseTradeInfo {
+  varietyName: string;
+  tradingUnit: number;
+  marginPercent: number;
 }
 
 function formatCurrency(amount: number) {
@@ -51,13 +55,11 @@ function formatCurrency(amount: number) {
 
 function Component() {
   const [tradesVersion, setTradesVersion] = useState(0);
-
   const [filerText, setFilterText] = useState("");
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
+  const [closeModalInfo, setCloseModalInfo] = useState<CloseModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
-
   const { refreshPrice, prices, addContracts } = useContractPrices();
-
   const groupsProps = useGroups(GroupType.FuturesTrade);
   const { groups, currentGroupIndex, changeGroup } = groupsProps;
 
@@ -84,6 +86,8 @@ function Component() {
               varietyName: t.getVarietyName(),
               tradingUnit: t.getTradingUnit(),
               marginPercent: t.getMarginPercent(),
+              closeAt: t.getCloseAt(),
+              closePrice: t.getClosePrice(),
             };
           })
         );
@@ -160,6 +164,30 @@ function Component() {
     });
   }
 
+  function updateCloseInfo(tradeIndex: number) {
+    if (!trades) {
+      return;
+    }
+    const trade: TradeInfo = trades[tradeIndex];
+    setCloseModalInfo({
+      trade,
+      onSubmit: (trade) => {
+        const req = new CloseFuturesTradeReq();
+        req.setId(trade.id);
+        req.setCloseAt(trade.closeAt);
+        req.setClosePrice(trade.closePrice);
+        userService
+          .closeFuturesTrade(req, getAuthMD())
+          .then(() => {
+            setTradesVersion((i) => i + 1);
+            setCloseModalInfo({});
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
+      },
+    });
+  }
+
   function deleteTrade(index: number) {
     if (!trades) {
       return;
@@ -217,6 +245,13 @@ function Component() {
           trade={modalInfo.trade}
           onSubmit={modalInfo.onSubmit}
           onCancel={() => setModalInfo({})}
+        />
+      )}
+      {closeModalInfo.onSubmit && closeModalInfo.trade && (
+        <CloseTradeForm
+          trade={closeModalInfo.trade}
+          onSubmit={closeModalInfo.onSubmit}
+          onCancel={() => setCloseModalInfo({})}
         />
       )}
       <Row>
@@ -299,44 +334,49 @@ function Component() {
 
                           // 计算盈亏比例
                           let earnPercent: number | undefined;
-                          if (trade.price && currentPrice) {
+                          if (
+                            trade.tradedAt > 0 &&
+                            trade.closeAt > 0 &&
+                            trade.price &&
+                            trade.closePrice
+                          ) {
+                            // 直接计算盈亏
+                            earnPercent =
+                              ((trade.closePrice - trade.price) / trade.price) *
+                              100;
                             if (trade.direction === "S") {
-                              // 做空盈亏计算
-                              earnPercent =
-                                ((trade.price - currentPrice) / trade.price) *
-                                100;
-                            } else {
-                              earnPercent =
-                                ((currentPrice - trade.price) / trade.price) *
-                                100;
+                              earnPercent = -earnPercent;
+                            }
+                          } else if (trade.price && currentPrice) {
+                            // 根据现价计算盈亏
+                            earnPercent =
+                              ((currentPrice - trade.price) / trade.price) *
+                              100;
+                            if (trade.direction === "S") {
+                              earnPercent = -earnPercent;
                             }
                           }
 
                           // 盈亏数量
                           let earnAmount: number | undefined;
-
-                          if (
-                            trade.price &&
-                            currentPrice &&
-                            trade.tradedAt > 0
-                          ) {
+                          if (earnPercent != null) {
                             earnAmount =
-                              (currentPrice - trade.price) *
-                              trade.tradingUnit *
-                              trade.num;
-                            if (trade.direction === "S") {
-                              earnAmount = -earnAmount;
-                            }
-
+                              (trade.price *
+                                trade.tradingUnit *
+                                trade.num *
+                                earnPercent) /
+                              100;
                             totalEarnAmount += earnAmount;
                           }
 
                           const menu = (
                             <Menu>
-                              <Menu.Item onClick={() => deleteTrade(i)}>
-                                <DeleteOutlined className={css.icon} />
-                                删除
-                              </Menu.Item>
+                              {trade.tradedAt > 0 && (
+                                <Menu.Item onClick={() => updateCloseInfo(i)}>
+                                  <EnterOutlined className={css.icon} />
+                                  平仓
+                                </Menu.Item>
+                              )}
                               <Menu.Item onClick={() => changeGroup(trade.id)}>
                                 <ArrowRightOutlined className={css.icon} />
                                 换组
@@ -344,6 +384,10 @@ function Component() {
                               <Menu.Item onClick={() => copyTrade(i)}>
                                 <CopyOutlined className={css.icon} />
                                 复制
+                              </Menu.Item>
+                              <Menu.Item onClick={() => deleteTrade(i)}>
+                                <DeleteOutlined className={css.icon} />
+                                删除
                               </Menu.Item>
                             </Menu>
                           );
@@ -355,9 +399,21 @@ function Component() {
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
+                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                  <>
+                                    <br />
+                                    {formatDate(trade.closeAt * 1000)}
+                                  </>
+                                )}
                               </td>
                               <td>
                                 {trade.direction === "B" ? "买入" : "卖出"}
+                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                  <>
+                                    <br />
+                                    {trade.direction === "S" ? "买入" : "卖出"}
+                                  </>
+                                )}
                               </td>
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
@@ -370,7 +426,15 @@ function Component() {
                                 {trade.varietyName}
                               </td>
                               <td>{trade.num}</td>
-                              <td>{trade.price}</td>
+                              <td>
+                                {trade.price}
+                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                  <>
+                                    <br />
+                                    {trade.closePrice}
+                                  </>
+                                )}
+                              </td>
                               <td>{currentPrice}</td>
                               <td>
                                 {trade.tradedAt > 0 && (

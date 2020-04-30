@@ -12,10 +12,9 @@ export interface EditTradeInfo {
   tradedAt: number;
 }
 
-export interface TradeInfo extends EditTradeInfo {
-  varietyName: string;
-  tradingUnit: number;
-  marginPercent: number;
+export interface ModalInfo {
+  trade?: EditTradeInfo;
+  onSubmit?: (trade: EditTradeInfo) => void;
 }
 
 const formItemLayout = {
@@ -27,7 +26,7 @@ const tailFormItemLayout = {
   wrapperCol: { span: 20, offset: 4 },
 };
 
-interface Props {
+interface TradeProps {
   trade?: EditTradeInfo;
   onSubmit: (trade: EditTradeInfo) => void;
   onCancel: () => void;
@@ -41,7 +40,7 @@ interface FormValues {
   tradedAt: Moment;
 }
 
-export function TradeForm(props: Props) {
+export function TradeForm(props: TradeProps) {
   const { trade, onSubmit, onCancel } = props;
   const [isTraded, setIsTraded] = useState(false);
   const [form] = Form.useForm();
@@ -69,11 +68,11 @@ export function TradeForm(props: Props) {
       return showError("合约代码不能为空");
     }
 
-    if (!num || num === 0) {
+    if (!num) {
       return showError("数量不能为空");
     }
 
-    if (!price || price === 0) {
+    if (!price) {
       return showError("价格不能为空");
     }
 
@@ -121,21 +120,6 @@ export function TradeForm(props: Props) {
         style={{ maxWidth: 800 }}
         onFinish={onFinish}
         initialValues={initValues}
-        onValuesChange={(changedValues, allValues) => {
-          if (allValues.futuresNum) {
-            if (changedValues.futuresPrice) {
-              const amount = allValues.futuresNum * changedValues.futuresPrice;
-              form.setFieldsValue({
-                amount: amount.toFixed(2),
-              });
-            } else if (changedValues.amount) {
-              const price = changedValues.amount / allValues.futuresNum;
-              form.setFieldsValue({
-                futuresPrice: price.toFixed(4),
-              });
-            }
-          }
-        }}
       >
         <Form.Item label="是否成交" style={{ marginBottom: 10 }} name="traded">
           <Radio.Group

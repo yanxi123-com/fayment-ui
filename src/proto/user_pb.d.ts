@@ -802,6 +802,32 @@ export namespace UpdateFuturesTradeReq {
   }
 }
 
+export class CloseFuturesTradeReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getClosePrice(): number;
+  setClosePrice(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseFuturesTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseFuturesTradeReq): CloseFuturesTradeReq.AsObject;
+  static serializeBinaryToWriter(message: CloseFuturesTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseFuturesTradeReq;
+  static deserializeBinaryFromReader(message: CloseFuturesTradeReq, reader: jspb.BinaryReader): CloseFuturesTradeReq;
+}
+
+export namespace CloseFuturesTradeReq {
+  export type AsObject = {
+    id: number,
+    closeAt: number,
+    closePrice: number,
+  }
+}
+
 export class FuturesTradeDTO extends jspb.Message {
   getId(): number;
   setId(value: number): void;
@@ -830,6 +856,12 @@ export class FuturesTradeDTO extends jspb.Message {
   getMarginPercent(): number;
   setMarginPercent(value: number): void;
 
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getClosePrice(): number;
+  setClosePrice(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FuturesTradeDTO.AsObject;
   static toObject(includeInstance: boolean, msg: FuturesTradeDTO): FuturesTradeDTO.AsObject;
@@ -849,6 +881,8 @@ export namespace FuturesTradeDTO {
     direction: string,
     tradingUnit: number,
     marginPercent: number,
+    closeAt: number,
+    closePrice: number,
   }
 }
 
