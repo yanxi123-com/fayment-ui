@@ -69,10 +69,9 @@ export function CloseTradeForm(props: TradeProps) {
 
   const initValues = {
     closeAt: trade.closeAt === 0 ? moment() : moment(trade.closeAt * 1000),
-    closePrice:
-      trade.closeAmount != null
-        ? (trade.closeAmount / trade.stockNum).toFixed(4)
-        : undefined,
+    closePrice: trade.closeAmount
+      ? (trade.closeAmount / trade.stockNum).toFixed(4)
+      : undefined,
     closeAmount: trade.closeAmount || undefined,
   };
 
