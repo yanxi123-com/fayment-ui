@@ -93,7 +93,6 @@ export function TradeForm(props: TradeProps) {
   }
 
   const initValues = {
-    traded: isTraded ? "yes" : "no",
     tradedAt:
       trade == null || trade.tradedAt === 0
         ? moment()
@@ -121,12 +120,13 @@ export function TradeForm(props: TradeProps) {
         onFinish={onFinish}
         initialValues={initValues}
       >
-        <Form.Item label="是否成交" style={{ marginBottom: 10 }} name="traded">
+        <Form.Item label="是否成交" style={{ marginBottom: 10 }}>
           <Radio.Group
             options={[
               { label: "已成交", value: "yes" },
               { label: "未成交", value: "no" },
             ]}
+            value={isTraded ? "yes" : "no"}
             onChange={(e) => {
               setIsTraded(e.target.value === "yes");
             }}

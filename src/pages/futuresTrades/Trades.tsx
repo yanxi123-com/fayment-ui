@@ -359,7 +359,7 @@ function Component() {
 
                           // 盈亏数量
                           let earnAmount: number | undefined;
-                          if (earnPercent != null) {
+                          if (earnPercent != null && trade.tradedAt > 0) {
                             earnAmount =
                               (trade.price *
                                 trade.tradingUnit *
