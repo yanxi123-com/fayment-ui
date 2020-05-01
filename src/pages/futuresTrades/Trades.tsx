@@ -332,7 +332,7 @@ function Component() {
                           const currentPrice: number | undefined =
                             prices[trade.contractSym];
 
-                          // 计算盈亏比例
+                          // 计算盈亏比例，无论是否成交都计算
                           let earnPercent: number | undefined;
                           if (
                             trade.tradedAt > 0 &&
@@ -344,20 +344,17 @@ function Component() {
                             earnPercent =
                               ((trade.closePrice - trade.price) / trade.price) *
                               100;
-                            if (trade.direction === "S") {
-                              earnPercent = -earnPercent;
-                            }
                           } else if (trade.price && currentPrice) {
                             // 根据现价计算盈亏
                             earnPercent =
                               ((currentPrice - trade.price) / trade.price) *
                               100;
-                            if (trade.direction === "S") {
-                              earnPercent = -earnPercent;
-                            }
+                          }
+                          if (earnPercent && trade.direction === "S") {
+                            earnPercent = -earnPercent;
                           }
 
-                          // 盈亏数量
+                          // 盈亏金额，只计算成交的
                           let earnAmount: number | undefined;
                           if (earnPercent != null && trade.tradedAt > 0) {
                             earnAmount =
@@ -368,6 +365,9 @@ function Component() {
                               100;
                             totalEarnAmount += earnAmount;
                           }
+
+                          const isTradeClosed =
+                            trade.tradedAt > 0 && trade.closeAt > 0;
 
                           const menu = (
                             <Menu>
@@ -399,7 +399,7 @@ function Component() {
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
-                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                {isTradeClosed && (
                                   <>
                                     <br />
                                     {formatDate(trade.closeAt * 1000)}
@@ -408,7 +408,7 @@ function Component() {
                               </td>
                               <td>
                                 {trade.direction === "B" ? "买入" : "卖出"}
-                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                {isTradeClosed && (
                                   <>
                                     <br />
                                     {trade.direction === "S" ? "买入" : "卖出"}
@@ -428,7 +428,7 @@ function Component() {
                               <td>{trade.num}</td>
                               <td>
                                 {trade.price}
-                                {trade.tradedAt > 0 && trade.closeAt > 0 && (
+                                {isTradeClosed && (
                                   <>
                                     <br />
                                     {trade.closePrice}

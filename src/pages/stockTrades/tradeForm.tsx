@@ -3,7 +3,7 @@ import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 
-export interface TradeInfo {
+export interface EditTradeInfo {
   id: number;
   stockSym: string;
   stockName: string;
@@ -11,6 +11,11 @@ export interface TradeInfo {
   direction: "B" | "S";
   amount: number;
   tradedAt: number;
+}
+
+export interface ModalInfo {
+  trade?: EditTradeInfo;
+  onSubmit?: (trade: EditTradeInfo) => void;
 }
 
 const formItemLayout = {
@@ -23,8 +28,8 @@ const tailFormItemLayout = {
 };
 
 interface Props {
-  trade?: TradeInfo;
-  onSubmit: (trade: TradeInfo) => void;
+  trade?: EditTradeInfo;
+  onSubmit: (trade: EditTradeInfo) => void;
   onCancel: () => void;
 }
 
@@ -78,7 +83,7 @@ export function TradeForm(props: Props) {
       return showError("请填入日期");
     }
 
-    const submitTrade: TradeInfo = {
+    const submitTrade: EditTradeInfo = {
       id: trade ? trade.id : 0,
       stockSym,
       stockName,
@@ -96,7 +101,6 @@ export function TradeForm(props: Props) {
   }
 
   const initValues = {
-    traded: isTraded ? "yes" : "no",
     tradedAt:
       trade == null || trade.tradedAt === 0
         ? moment()
@@ -145,12 +149,13 @@ export function TradeForm(props: Props) {
           }
         }}
       >
-        <Form.Item label="是否成交" style={{ marginBottom: 10 }} name="traded">
+        <Form.Item label="是否成交" style={{ marginBottom: 10 }}>
           <Radio.Group
             options={[
               { label: "已成交", value: "yes" },
               { label: "未成交", value: "no" },
             ]}
+            value={isTraded ? "yes" : "no"}
             onChange={(e) => {
               setIsTraded(e.target.value === "yes");
             }}

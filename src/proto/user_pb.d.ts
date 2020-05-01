@@ -660,6 +660,32 @@ export namespace AddStockTradeReq {
   }
 }
 
+export class CloseStockTradeReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseAmount(): number;
+  setCloseAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseStockTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseStockTradeReq): CloseStockTradeReq.AsObject;
+  static serializeBinaryToWriter(message: CloseStockTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseStockTradeReq;
+  static deserializeBinaryFromReader(message: CloseStockTradeReq, reader: jspb.BinaryReader): CloseStockTradeReq;
+}
+
+export namespace CloseStockTradeReq {
+  export type AsObject = {
+    id: number,
+    closeAt: number,
+    closeAmount: number,
+  }
+}
+
 export class StockTradeDTO extends jspb.Message {
   getId(): number;
   setId(value: number): void;
@@ -685,6 +711,12 @@ export class StockTradeDTO extends jspb.Message {
   getAmount(): number;
   setAmount(value: number): void;
 
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseAmount(): number;
+  setCloseAmount(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StockTradeDTO.AsObject;
   static toObject(includeInstance: boolean, msg: StockTradeDTO): StockTradeDTO.AsObject;
@@ -703,6 +735,8 @@ export namespace StockTradeDTO {
     stockNum: number,
     direction: string,
     amount: number,
+    closeAt: number,
+    closeAmount: number,
   }
 }
 

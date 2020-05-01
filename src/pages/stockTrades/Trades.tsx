@@ -1,5 +1,6 @@
 import {
   ArrowRightOutlined,
+  CopyOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
@@ -8,43 +9,44 @@ import {
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
-  CopyOutlined,
+  EnterOutlined,
 } from "@ant-design/icons";
 import { Button, Col, Divider, Dropdown, Input, Menu, Row } from "antd";
 import cx from "classnames";
+import Groups from "comps/groups/Groups";
 import { Loading } from "comps/loading/Loading";
 import { confirmPromise, showError } from "comps/popup";
 import { GroupType } from "constant";
 import { useGroups } from "hooks/useGroups";
 import { useStockPrices } from "hooks/useStockPrices";
 import { userService } from "lib/grpcClient";
-import { formatDate, formatCNY } from "lib/util/format";
+import { formatCNY, formatDate } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
-import { AddStockTradeReq, StockTradeDTO, SwitchOrderReq } from "proto/user_pb";
+import {
+  AddStockTradeReq,
+  StockTradeDTO,
+  SwitchOrderReq,
+  CloseStockTradeReq,
+} from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
-import { TradeForm, TradeInfo } from "./tradeForm";
+import { CloseTradeInfo, CloseModalInfo, CloseTradeForm } from "./closeForm";
+import { EditTradeInfo, ModalInfo, TradeForm } from "./tradeForm";
 import css from "./Trades.module.scss";
-import Groups from "comps/groups/Groups";
 
-interface ModalInfo {
-  trade?: TradeInfo;
-  onSubmit?: (trade: TradeInfo) => void;
-}
+export interface TradeInfo extends EditTradeInfo, CloseTradeInfo {}
 
 function Component() {
   const [tradesVersion, setTradesVersion] = useState(0);
-
   const [filerText, setFilterText] = useState("");
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
+  const [closeModalInfo, setCloseModalInfo] = useState<CloseModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
-
   const { refreshPrice, prices, addStocks } = useStockPrices();
-
   const groupsProps = useGroups(GroupType.StockTrade);
   const { groups, currentGroupIndex, changeGroup } = groupsProps;
 
@@ -73,6 +75,8 @@ function Component() {
               direction: t.getDirection() as "B" | "S",
               amount: t.getAmount(),
               tradedAt: t.getTradedAt(),
+              closeAt: t.getCloseAt(),
+              closeAmount: t.getCloseAmount(),
             };
           })
         );
@@ -151,6 +155,30 @@ function Component() {
     });
   }
 
+  function updateCloseInfo(tradeIndex: number) {
+    if (!trades) {
+      return;
+    }
+    const trade: TradeInfo = trades[tradeIndex];
+    setCloseModalInfo({
+      trade,
+      onSubmit: (trade) => {
+        const req = new CloseStockTradeReq();
+        req.setId(trade.id);
+        req.setCloseAt(trade.closeAt);
+        req.setCloseAmount(trade.closeAmount);
+        userService
+          .closeStockTrade(req, getAuthMD())
+          .then(() => {
+            setTradesVersion((i) => i + 1);
+            setCloseModalInfo({});
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
+      },
+    });
+  }
+
   function deleteTrade(index: number) {
     if (!trades) {
       return;
@@ -208,6 +236,13 @@ function Component() {
           trade={modalInfo.trade}
           onSubmit={modalInfo.onSubmit}
           onCancel={() => setModalInfo({})}
+        />
+      )}
+      {closeModalInfo.onSubmit && closeModalInfo.trade && (
+        <CloseTradeForm
+          trade={closeModalInfo.trade}
+          onSubmit={closeModalInfo.onSubmit}
+          onCancel={() => setCloseModalInfo({})}
         />
       )}
       <Row>
@@ -284,6 +319,10 @@ function Component() {
                             }
                           }
 
+                          // 是否已平仓
+                          const isTradeClosed =
+                            trade.tradedAt > 0 && trade.closeAt > 0;
+
                           // 计算交易价格
                           const tradePrice: number =
                             trade.amount / trade.stockNum;
@@ -292,45 +331,39 @@ function Component() {
                           const currentPrice: number | undefined =
                             prices[trade.stockSym];
 
-                          // 计算盈亏比例
+                          // 计算盈亏比例，无论是否成交都计算
                           let earnPercent: number | undefined;
-                          if (tradePrice && currentPrice) {
-                            if (trade.direction === "S") {
-                              // 做空盈亏计算
-                              earnPercent =
-                                ((tradePrice - currentPrice) / tradePrice) *
-                                100;
-                            } else {
-                              earnPercent =
-                                ((currentPrice - tradePrice) / tradePrice) *
-                                100;
-                            }
+                          if (isTradeClosed && tradePrice && currentPrice) {
+                            // 直接计算盈亏
+                            earnPercent =
+                              ((trade.closeAmount - trade.amount) /
+                                trade.amount) *
+                              100;
+                          } else if (tradePrice && currentPrice) {
+                            // 根据现价计算盈亏
+                            earnPercent =
+                              ((currentPrice - tradePrice) / tradePrice) * 100;
+                          }
+                          if (earnPercent && trade.direction === "S") {
+                            earnPercent = -earnPercent;
                           }
 
-                          // 盈亏数量
+                          // 盈亏金额，只计算成交的
                           let earnAmount: number | undefined;
-                          if (
-                            tradePrice &&
-                            currentPrice &&
-                            trade.tradedAt > 0
-                          ) {
-                            if (trade.direction === "B") {
-                              earnAmount =
-                                currentPrice * trade.stockNum - trade.amount;
-                            } else {
-                              earnAmount =
-                                trade.amount - currentPrice * trade.stockNum;
-                            }
-
+                          if (earnPercent != null && trade.tradedAt > 0) {
+                            earnAmount =
+                              (tradePrice * trade.stockNum * earnPercent) / 100;
                             totalEarnAmount += earnAmount;
                           }
 
                           const menu = (
                             <Menu>
-                              <Menu.Item onClick={() => deleteTrade(i)}>
-                                <DeleteOutlined className={css.icon} />
-                                删除
-                              </Menu.Item>
+                              {trade.tradedAt > 0 && (
+                                <Menu.Item onClick={() => updateCloseInfo(i)}>
+                                  <EnterOutlined className={css.icon} />
+                                  平仓
+                                </Menu.Item>
+                              )}
                               <Menu.Item onClick={() => changeGroup(trade.id)}>
                                 <ArrowRightOutlined className={css.icon} />
                                 换组
@@ -338,6 +371,10 @@ function Component() {
                               <Menu.Item onClick={() => copyTrade(i)}>
                                 <CopyOutlined className={css.icon} />
                                 复制
+                              </Menu.Item>
+                              <Menu.Item onClick={() => deleteTrade(i)}>
+                                <DeleteOutlined className={css.icon} />
+                                删除
                               </Menu.Item>
                             </Menu>
                           );
@@ -348,9 +385,21 @@ function Component() {
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
+                                {isTradeClosed && (
+                                  <>
+                                    <br />
+                                    {formatDate(trade.closeAt * 1000)}
+                                  </>
+                                )}
                               </td>
                               <td>
                                 {trade.direction === "B" ? "买入" : "卖出"}
+                                {isTradeClosed && (
+                                  <>
+                                    <br />
+                                    {trade.direction === "S" ? "买入" : "卖出"}
+                                  </>
+                                )}
                               </td>
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
@@ -363,7 +412,17 @@ function Component() {
                                 {trade.stockName}
                               </td>
                               <td>{trade.stockNum}</td>
-                              <td>{tradePrice.toFixed(4)}</td>
+                              <td>
+                                {tradePrice.toFixed(3)}
+                                {isTradeClosed && (
+                                  <>
+                                    <br />
+                                    {(
+                                      trade.closeAmount / trade.stockNum
+                                    ).toFixed(3)}
+                                  </>
+                                )}
+                              </td>
                               <td>{currentPrice && currentPrice.toFixed(4)}</td>
                               <td>
                                 {trade.tradedAt > 0 && (
