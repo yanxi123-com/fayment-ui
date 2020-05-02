@@ -12,6 +12,7 @@ import {
   ChangeGroupReq,
   CloseFuturesTradeReq,
   CloseStockTradeReq,
+  CloseTradeReq,
   CoinAccountDTO,
   CoinAccountLogsDTO,
   CoinAccountsDTO,
@@ -216,6 +217,13 @@ export class UserServiceClient {
 
   updateTrade(
     request: TradeDTO,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  closeTrade(
+    request: CloseTradeReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
                response: base_pb.Empty) => void
@@ -460,6 +468,11 @@ export class UserServicePromiseClient {
 
   updateTrade(
     request: TradeDTO,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  closeTrade(
+    request: CloseTradeReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 

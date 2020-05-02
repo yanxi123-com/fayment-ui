@@ -3,15 +3,19 @@ import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 
-import { getBaseSym } from "./priceUtil";
-
-export interface TradeInfo {
+export interface EditTradeInfo {
   id: number;
-  buySym: string;
-  buyAmount: number;
-  sellSym: string;
-  sellAmount: number;
   tradedAt: number;
+  tradeSym: string;
+  baseSym: string;
+  direction: "B" | "S";
+  tradeAmount: number;
+  baseAmount: number;
+}
+
+export interface ModalInfo {
+  trade?: EditTradeInfo;
+  onSubmit?: (trade: EditTradeInfo) => void;
 }
 
 const formItemLayout = {
@@ -35,9 +39,9 @@ function parseQuantity(str: string): { amount: number; sym: string } {
 }
 
 interface Props {
-  trade?: TradeInfo;
+  trade?: EditTradeInfo;
   symPriceMap: { [sym: string]: number };
-  onSubmit: (trade: TradeInfo) => void;
+  onSubmit: (trade: EditTradeInfo) => void;
   onCancel: () => void;
 }
 
@@ -54,8 +58,8 @@ export function TradeForm(props: Props) {
 
   useEffect(() => {
     if (trade) {
-      setInputBuy(`${trade.buyAmount} ${trade.buySym}`);
-      setInputSell(`${trade.sellAmount} ${trade.sellSym}`);
+      // setInputBuy(`${trade.buyAmount} ${trade.buySym}`);
+      // setInputSell(`${trade.sellAmount} ${trade.sellSym}`);
       if (trade.tradedAt > 0) {
         setTradeStatus("yes");
         setTradeDate(moment(trade.tradedAt * 1000));
@@ -64,22 +68,22 @@ export function TradeForm(props: Props) {
   }, [trade]);
 
   function submit() {
-    if (!computePrice()) {
-      showError("买入或者卖出设置有误");
-      return;
-    }
-    const submitTrade: TradeInfo = {
-      id: trade ? trade.id : 0,
-      buySym: parseQuantity(inputBuy).sym,
-      buyAmount: parseQuantity(inputBuy).amount,
-      sellSym: parseQuantity(inputSell).sym,
-      sellAmount: parseQuantity(inputSell).amount,
-      tradedAt:
-        tradeStatus === "yes"
-          ? Math.round(tradeDate.toDate().getTime() / 1000)
-          : 0,
-    };
-    onSubmit(submitTrade);
+    // if (!computePrice()) {
+    //   showError("买入或者卖出设置有误");
+    //   return;
+    // }
+    // const submitTrade: EditTradeInfo = {
+    //   id: trade ? trade.id : 0,
+    //   buySym: parseQuantity(inputBuy).sym,
+    //   buyAmount: parseQuantity(inputBuy).amount,
+    //   sellSym: parseQuantity(inputSell).sym,
+    //   sellAmount: parseQuantity(inputSell).amount,
+    //   tradedAt:
+    //     tradeStatus === "yes"
+    //       ? Math.round(tradeDate.toDate().getTime() / 1000)
+    //       : 0,
+    // };
+    // onSubmit(submitTrade);
   }
 
   function close() {
@@ -104,30 +108,30 @@ export function TradeForm(props: Props) {
       .map((a) => ({ value: `${quantity.amount} ${a}` }));
   }
 
-  function computePrice(): string | undefined {
-    const buyQuantity = parseQuantity(inputBuy);
-    const sellQuantity = parseQuantity(inputSell);
-    if (
-      !buyQuantity.amount ||
-      !sellQuantity.amount ||
-      isNaN(buyQuantity.amount) ||
-      isNaN(sellQuantity.amount)
-    ) {
-      return;
-    }
+  // function computePrice(): string | undefined {
+  //   const buyQuantity = parseQuantity(inputBuy);
+  //   const sellQuantity = parseQuantity(inputSell);
+  //   if (
+  //     !buyQuantity.amount ||
+  //     !sellQuantity.amount ||
+  //     isNaN(buyQuantity.amount) ||
+  //     isNaN(sellQuantity.amount)
+  //   ) {
+  //     return;
+  //   }
 
-    const baseSym = getBaseSym(symPriceMap, buyQuantity.sym, sellQuantity.sym);
+  //   const baseSym = getBaseSym(symPriceMap, buyQuantity.sym, sellQuantity.sym);
 
-    if (baseSym === buyQuantity.sym) {
-      return `${(buyQuantity.amount / sellQuantity.amount).toPrecision(5)} ${
-        buyQuantity.sym
-      }/${sellQuantity.sym}`;
-    }
+  //   if (baseSym === buyQuantity.sym) {
+  //     return `${(buyQuantity.amount / sellQuantity.amount).toPrecision(5)} ${
+  //       buyQuantity.sym
+  //     }/${sellQuantity.sym}`;
+  //   }
 
-    return `${(sellQuantity.amount / buyQuantity.amount).toPrecision(5)} ${
-      sellQuantity.sym
-    }/${buyQuantity.sym}`;
-  }
+  //   return `${(sellQuantity.amount / buyQuantity.amount).toPrecision(5)} ${
+  //     sellQuantity.sym
+  //   }/${buyQuantity.sym}`;
+  // }
 
   return (
     <Modal
@@ -189,7 +193,7 @@ export function TradeForm(props: Props) {
           ></AutoComplete>
         </Form.Item>
         <Form.Item label="单价" style={{ marginBottom: 10 }}>
-          <>{computePrice() || "根据买入和卖出值自动计算"}</>
+          {/* <>{computePrice() || "根据买入和卖出值自动计算"}</> */}
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout} style={{ marginBottom: 10 }}>

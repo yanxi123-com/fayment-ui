@@ -2151,6 +2151,86 @@ proto.fayment.UserServicePromiseClient.prototype.updateTrade =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.CloseTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_CloseTrade = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/CloseTrade',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.CloseTradeReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.CloseTradeReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_CloseTrade = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseTradeReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.CloseTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.closeTrade =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/CloseTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseTrade,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.CloseTradeReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.closeTrade =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/CloseTrade',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseTrade);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.fayment.IdWrapper,
  *   !proto.fayment.TradesDTO>}
  */

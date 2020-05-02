@@ -529,17 +529,20 @@ export class AddTradeReq extends jspb.Message {
   getTradedAt(): number;
   setTradedAt(value: number): void;
 
-  getBuySym(): string;
-  setBuySym(value: string): void;
+  getTradeSym(): string;
+  setTradeSym(value: string): void;
 
-  getBuyAmount(): number;
-  setBuyAmount(value: number): void;
+  getBaseSym(): string;
+  setBaseSym(value: string): void;
 
-  getSellSym(): string;
-  setSellSym(value: string): void;
+  getDirection(): string;
+  setDirection(value: string): void;
 
-  getSellAmount(): number;
-  setSellAmount(value: number): void;
+  getTradeAmount(): number;
+  setTradeAmount(value: number): void;
+
+  getBaseAmount(): number;
+  setBaseAmount(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddTradeReq.AsObject;
@@ -553,10 +556,37 @@ export namespace AddTradeReq {
   export type AsObject = {
     groupId: number,
     tradedAt: number,
-    buySym: string,
-    buyAmount: number,
-    sellSym: string,
-    sellAmount: number,
+    tradeSym: string,
+    baseSym: string,
+    direction: string,
+    tradeAmount: number,
+    baseAmount: number,
+  }
+}
+
+export class CloseTradeReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseBaseAmount(): number;
+  setCloseBaseAmount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseTradeReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseTradeReq): CloseTradeReq.AsObject;
+  static serializeBinaryToWriter(message: CloseTradeReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseTradeReq;
+  static deserializeBinaryFromReader(message: CloseTradeReq, reader: jspb.BinaryReader): CloseTradeReq;
+}
+
+export namespace CloseTradeReq {
+  export type AsObject = {
+    id: number,
+    closeAt: number,
+    closeBaseAmount: number,
   }
 }
 
@@ -567,17 +597,26 @@ export class TradeDTO extends jspb.Message {
   getTradedAt(): number;
   setTradedAt(value: number): void;
 
-  getBuySym(): string;
-  setBuySym(value: string): void;
+  getTradeSym(): string;
+  setTradeSym(value: string): void;
 
-  getBuyAmount(): number;
-  setBuyAmount(value: number): void;
+  getBaseSym(): string;
+  setBaseSym(value: string): void;
 
-  getSellSym(): string;
-  setSellSym(value: string): void;
+  getDirection(): string;
+  setDirection(value: string): void;
 
-  getSellAmount(): number;
-  setSellAmount(value: number): void;
+  getTradeAmount(): number;
+  setTradeAmount(value: number): void;
+
+  getBaseAmount(): number;
+  setBaseAmount(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseBaseAmount(): number;
+  setCloseBaseAmount(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradeDTO.AsObject;
@@ -591,10 +630,13 @@ export namespace TradeDTO {
   export type AsObject = {
     id: number,
     tradedAt: number,
-    buySym: string,
-    buyAmount: number,
-    sellSym: string,
-    sellAmount: number,
+    tradeSym: string,
+    baseSym: string,
+    direction: string,
+    tradeAmount: number,
+    baseAmount: number,
+    closeAt: number,
+    closeBaseAmount: number,
   }
 }
 

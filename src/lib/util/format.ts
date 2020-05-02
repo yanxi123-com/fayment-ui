@@ -62,23 +62,31 @@ export function formatAmount(amount: number, sym: string) {
     return formatCNY(amount, 4).replace("¥", "฿");
   }
 
-  return `${amount.toFixed(2).replace(/0+$/, "").replace(/[.]$/, "")} ${sym}`;
+  return `${removeEndingZero(amount.toFixed(2))} ${sym}`;
 }
 
 // 格式化单价，金额较小
-export function formatPrice(price: number, sym: string) {
+export function formatPrice(
+  price: number,
+  sym: string,
+  fractionDigits?: number
+) {
   if (sym === "CNY") {
-    return formatCNY(price, 5).replace(/0+$/, "").replace(/[.]$/, "");
+    return removeEndingZero(formatCNY(price, fractionDigits || 5));
   }
   if (sym === "USD") {
-    return formatCNY(price, 5)
-      .replace("¥", "$")
-      .replace(/0+$/, "")
-      .replace(/[.]$/, "");
+    return removeEndingZero(formatCNY(price, 5).replace("¥", "$"));
   }
   if (sym === "BTC") {
-    return "฿" + price.toPrecision(5);
+    return "฿" + removeEndingZero(price.toPrecision(fractionDigits || 5));
   }
 
-  return `${price.toPrecision(5)} ${sym}`;
+  return `${removeEndingZero(price.toPrecision(fractionDigits || 5))} ${sym}`;
+}
+
+export function removeEndingZero(numStr: string) {
+  if (numStr.indexOf(".") === -1) {
+    return numStr;
+  }
+  return numStr.replace(/0+$/, "").replace(/[.]$/, "");
 }
