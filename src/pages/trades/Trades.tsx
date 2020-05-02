@@ -419,6 +419,12 @@ function Component() {
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
+                                {isTradeClosed && (
+                                  <>
+                                    <br />
+                                    {formatDate(trade.closeAt * 1000)}
+                                  </>
+                                )}
                               </td>
                               <td>
                                 {trade.tradeSym}/{trade.baseSym}

@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export interface EditTradeInfo {
   id: number;
@@ -25,15 +25,6 @@ export interface ModalInfo {
   trade?: EditTradeInfo;
   onSubmit?: (trade: EditTradeInfo) => void;
 }
-
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
-};
-
-const tailFormItemLayout = {
-  wrapperCol: { span: 20, offset: 4 },
-};
 
 interface Props {
   trade?: EditTradeInfo;
@@ -51,11 +42,24 @@ interface FormValues {
   baseAmount: number | string;
 }
 
+const formItemLayout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+};
+
+const tailFormItemLayout = {
+  wrapperCol: { span: 20, offset: 4 },
+};
+
 export function TradeForm(props: Props) {
   const { trade, allSyms, onSubmit, onCancel } = props;
   const [isTraded, setIsTraded] = useState(false);
   const [form] = Form.useForm();
   const [optsPair, setOptsPair] = useState<{ value: string }[]>([]);
+
+  useEffect(() => {
+    setIsTraded(trade != null && trade.tradedAt > 0);
+  }, [trade]);
 
   function onFinish(values: { [name: string]: any }) {
     let {
