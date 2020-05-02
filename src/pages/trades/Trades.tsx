@@ -9,6 +9,7 @@ import {
   ReloadOutlined,
   SearchOutlined,
   UpOutlined,
+  EnterOutlined,
 } from "@ant-design/icons";
 import { Button, Col, Divider, Dropdown, Input, Menu, Radio, Row } from "antd";
 import cx from "classnames";
@@ -23,12 +24,17 @@ import { formatAmount, formatDate, formatPrice } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
-import { AddTradeReq, SwitchOrderReq, TradeDTO } from "proto/user_pb";
+import {
+  AddTradeReq,
+  SwitchOrderReq,
+  TradeDTO,
+  CloseTradeReq,
+} from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { getAuthMD, globalContext } from "stores/GlobalStore";
 
-import { CloseTradeInfo } from "./closeForm";
+import { CloseTradeInfo, CloseModalInfo, CloseTradeForm } from "./closeForm";
 import { EditTradeInfo, ModalInfo, TradeForm } from "./tradeForm";
 import css from "./Trades.module.scss";
 
@@ -38,11 +44,10 @@ const baseCoins = ["自动", "BTC", "USD", "EOS", "ETH", "CNY"];
 
 function Component() {
   const [tradesVersion, setTradesVersion] = useState(0);
-
   const [filerText, setFilterText] = useState("");
   const [modalInfo, setModalInfo] = useState<ModalInfo>({});
+  const [closeModalInfo, setCloseModalInfo] = useState<CloseModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
-
   const {
     refreshPrice,
     pricesByBTC,
@@ -153,6 +158,30 @@ function Component() {
     });
   }
 
+  function updateCloseInfo(tradeIndex: number) {
+    if (!trades) {
+      return;
+    }
+    const trade: TradeInfo = trades[tradeIndex];
+    setCloseModalInfo({
+      trade,
+      onSubmit: (trade) => {
+        const req = new CloseTradeReq();
+        req.setId(trade.id);
+        req.setCloseAt(trade.closeAt);
+        req.setCloseBaseAmount(trade.closeBaseAmount);
+        userService
+          .closeTrade(req, getAuthMD())
+          .then(() => {
+            setTradesVersion((i) => i + 1);
+            setCloseModalInfo({});
+          })
+          .catch(handleGrpcError)
+          .catch(showError);
+      },
+    });
+  }
+
   function deleteTrade(index: number) {
     if (!trades) {
       return;
@@ -211,6 +240,13 @@ function Component() {
           allSyms={Object.keys(pricesByBTC)}
           onSubmit={modalInfo.onSubmit}
           onCancel={() => setModalInfo({})}
+        />
+      )}
+      {closeModalInfo.onSubmit && closeModalInfo.trade && (
+        <CloseTradeForm
+          trade={closeModalInfo.trade}
+          onSubmit={closeModalInfo.onSubmit}
+          onCancel={() => setCloseModalInfo({})}
         />
       )}
       <Row>
@@ -355,10 +391,12 @@ function Component() {
 
                           const menu = (
                             <Menu>
-                              <Menu.Item onClick={() => deleteTrade(i)}>
-                                <DeleteOutlined className={css.icon} />
-                                删除
-                              </Menu.Item>
+                              {trade.tradedAt > 0 && (
+                                <Menu.Item onClick={() => updateCloseInfo(i)}>
+                                  <EnterOutlined className={css.icon} />
+                                  平仓
+                                </Menu.Item>
+                              )}
                               <Menu.Item onClick={() => changeGroup(trade.id)}>
                                 <ArrowRightOutlined className={css.icon} />
                                 换组
@@ -366,6 +404,10 @@ function Component() {
                               <Menu.Item onClick={() => copyTrade(i)}>
                                 <CopyOutlined className={css.icon} />
                                 复制
+                              </Menu.Item>
+                              <Menu.Item onClick={() => deleteTrade(i)}>
+                                <DeleteOutlined className={css.icon} />
+                                删除
                               </Menu.Item>
                             </Menu>
                           );
@@ -392,6 +434,16 @@ function Component() {
                               </td>
                               <td>
                                 {formatPrice(tradePrice, trade.baseSym, 3)}
+                                {isTradeClosed && (
+                                  <>
+                                    <br />
+                                    {formatPrice(
+                                      trade.closeBaseAmount / trade.tradeAmount,
+                                      trade.baseSym,
+                                      3
+                                    )}
+                                  </>
+                                )}
                               </td>
                               <td>
                                 {formatAmount(

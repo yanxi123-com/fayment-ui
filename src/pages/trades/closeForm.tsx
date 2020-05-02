@@ -70,10 +70,7 @@ export function CloseTradeForm(props: TradeProps) {
   const initValues = {
     closeAt: trade.closeAt === 0 ? moment() : moment(trade.closeAt * 1000),
     closePrice: trade.closeBaseAmount
-      ? (
-          trade.closeBaseAmount /
-          (trade.baseAmount / trade.tradeAmount)
-        ).toFixed(8)
+      ? trade.closeBaseAmount / trade.tradeAmount
       : undefined,
     closeBaseAmount: trade.closeBaseAmount || undefined,
   };
@@ -94,19 +91,6 @@ export function CloseTradeForm(props: TradeProps) {
         style={{ maxWidth: 800 }}
         onFinish={onFinish}
         initialValues={initValues}
-        onValuesChange={(changedValues) => {
-          if (changedValues.closePrice) {
-            // const amount = trade.stockNum * changedValues.closePrice;
-            // form.setFieldsValue({
-            //   closeBaseAmount: amount.toFixed(2),
-            // });
-          } else if (changedValues.closeBaseAmount) {
-            // const price = changedValues.closeBaseAmount / trade.stockNum;
-            // form.setFieldsValue({
-            //   closePrice: price.toFixed(3),
-            // });
-          }
-        }}
       >
         <Form.Item label="是否平仓" style={{ marginBottom: 10 }}>
           <Radio.Group
@@ -137,17 +121,43 @@ export function CloseTradeForm(props: TradeProps) {
             style={{ marginBottom: 10 }}
             name="closePrice"
           >
-            <Input type="number" autoComplete="off" />
+            <Input
+              type="number"
+              autoComplete="off"
+              onChange={(e) => {
+                const closePrice = parseFloat(e.currentTarget.value);
+                if (isNaN(closePrice)) {
+                  return;
+                }
+
+                form.setFieldsValue({
+                  closeBaseAmount: trade.tradeAmount * closePrice,
+                });
+              }}
+            />
           </Form.Item>
         )}
 
         {isTradeClosed && (
           <Form.Item
-            label="平仓总金额"
+            label="成交额"
             style={{ marginBottom: 10 }}
             name="closeBaseAmount"
           >
-            <Input type="number" autoComplete="off" />
+            <Input
+              type="number"
+              autoComplete="off"
+              onChange={(e) => {
+                const closeBaseAmount = parseFloat(e.currentTarget.value);
+                if (isNaN(closeBaseAmount)) {
+                  return;
+                }
+
+                form.setFieldsValue({
+                  closePrice: (closeBaseAmount / trade.tradeAmount).toFixed(4),
+                });
+              }}
+            />
           </Form.Item>
         )}
 
