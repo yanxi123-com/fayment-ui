@@ -71,11 +71,11 @@ export function TradeForm(props: Props) {
       return showError("股票名称不能为空");
     }
 
-    if (!stockNum || stockNum === 0) {
+    if (!stockNum) {
       return showError("股票数量不能为空");
     }
 
-    if (!amount || amount === 0) {
+    if (!amount) {
       return showError("总金额不能为空");
     }
 
@@ -125,8 +125,8 @@ export function TradeForm(props: Props) {
       destroyOnClose
     >
       <Form
-        form={form}
         {...formItemLayout}
+        form={form}
         style={{ maxWidth: 800 }}
         onFinish={onFinish}
         initialValues={initValues}

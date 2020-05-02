@@ -208,7 +208,7 @@ function Component() {
       {modalInfo.onSubmit && (
         <TradeForm
           trade={modalInfo.trade}
-          symPriceMap={pricesByBTC}
+          allSyms={Object.keys(pricesByBTC)}
           onSubmit={modalInfo.onSubmit}
           onCancel={() => setModalInfo({})}
         />
