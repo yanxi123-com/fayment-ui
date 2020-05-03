@@ -1,10 +1,10 @@
-import React from "react";
-import { Menu, Layout } from "antd";
-import qrcode from "./qrcode_cfms.jpg";
-import { trackPageview } from "lib/gtag";
+import { Layout, Menu } from "antd";
 import { Location } from "history";
+import { trackPageview } from "lib/gtag";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import qrcode from "./qrcode_cfms.jpg";
 
 const { Sider } = Layout;
 
@@ -46,9 +46,17 @@ function SiderComp(props: Props) {
         selectedKeys={[getCurrentKey(location)]}
         onClick={handleClick}
       >
-        {Object.keys(keyTitleMap).map((key) => (
-          <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
-        ))}
+        <Menu.ItemGroup key="digitalCurrency" title="数字货币">
+          {["coins", "trades", "eos-accounts"].map((key) => (
+            <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+          ))}
+        </Menu.ItemGroup>
+
+        <Menu.ItemGroup key="cnyAssets" title="人民币资产">
+          {["stocks", "stock-trades", "futures-trades"].map((key) => (
+            <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+          ))}
+        </Menu.ItemGroup>
 
         <div
           style={{
