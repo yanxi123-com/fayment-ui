@@ -509,7 +509,10 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{formatCNY(totalEarnAmount)}</th>
+                        <th>
+                          {totalEarnAmount > 0 ? "+" : ""}
+                          {formatCNY(totalEarnAmount)}
+                        </th>
                         <th></th>
                       </tr>
                     </thead>

@@ -559,8 +559,8 @@ function Component() {
                           <th></th>
                           <th></th>
                           <th>
-                            {totalAmountByBaseCoin &&
-                              formatAmount(totalAmountByBaseCoin, baseCoin)}
+                            {totalAmountByBaseCoin > 0 ? "+" : ""}
+                            {formatAmount(totalAmountByBaseCoin, baseCoin)}
                           </th>
                           <th></th>
                         </tr>

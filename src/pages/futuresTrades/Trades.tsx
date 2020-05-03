@@ -522,7 +522,10 @@ function Component() {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{formatCurrency(totalEarnAmount)}</th>
+                        <th>
+                          {totalEarnAmount > 0 ? "+" : ""}
+                          {formatCurrency(totalEarnAmount)}
+                        </th>
                         <th></th>
                       </tr>
                     </thead>
