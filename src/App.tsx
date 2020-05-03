@@ -11,6 +11,7 @@ import Coins from "pages/coins/Coins";
 import EosAccounts from "pages/eosAccounts/EosAccounts";
 import FuturesTrades from "pages/futuresTrades/Trades";
 import Home from "pages/home/Home";
+import Tools from "pages/tools/Tools";
 import Login from "pages/login/Login";
 import Stocks from "pages/stocks/Stocks";
 import StockTrades from "pages/stockTrades/Trades";
@@ -44,6 +45,7 @@ const App: React.FC = () => {
               <Route exact path="/stock-trades/" component={StockTrades} />
               <Route exact path="/futures-trades/" component={FuturesTrades} />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
+              <Route path="/tools/" component={Tools} />
               <Route exact path="/" component={Home} />
               <Route exact path="/login" component={Login} />
 

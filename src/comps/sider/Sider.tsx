@@ -19,6 +19,7 @@ const keyTitleMap: { [key: string]: string } = {
   "stock-trades": "A股交易工具",
   "futures-trades": "期货交易工具",
   "eos-accounts": "EOS 多账号统计",
+  tools: "工具集",
 };
 
 function getCurrentKey(location: Location) {
