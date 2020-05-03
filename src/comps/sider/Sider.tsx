@@ -19,6 +19,7 @@ const keyTitleMap: { [key: string]: string } = {
   "stock-trades": "A股交易工具",
   "futures-trades": "期货交易工具",
   "eos-accounts": "EOS 多账号统计",
+  "futures-arbitrage": "期货套利工具",
 };
 
 function getCurrentKey(location: Location) {
@@ -53,7 +54,12 @@ function SiderComp(props: Props) {
         </Menu.ItemGroup>
 
         <Menu.ItemGroup key="cnyAssets" title="人民币资产">
-          {["stocks", "stock-trades", "futures-trades"].map((key) => (
+          {[
+            "stocks",
+            "stock-trades",
+            "futures-trades",
+            "futures-arbitrage",
+          ].map((key) => (
             <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
           ))}
         </Menu.ItemGroup>
