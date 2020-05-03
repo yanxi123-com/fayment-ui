@@ -34,7 +34,7 @@ export default function Tools() {
             )}
           />
         </Col>
-        <Col span={20}>
+        <Col span={20} className={css.main}>
           <Grid />
         </Col>
       </Row>
