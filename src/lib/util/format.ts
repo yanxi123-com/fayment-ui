@@ -75,7 +75,9 @@ export function formatPrice(
     return removeEndingZero(formatCNY(price, fractionDigits || 5));
   }
   if (sym === "USD") {
-    return removeEndingZero(formatCNY(price, 5).replace("¥", "$"));
+    return removeEndingZero(
+      formatCNY(price, fractionDigits || 5).replace("¥", "$")
+    );
   }
   if (sym === "BTC") {
     return "฿" + removeEndingZero(price.toPrecision(fractionDigits || 5));
