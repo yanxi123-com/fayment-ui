@@ -275,10 +275,10 @@ function Component() {
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
-                        <th>交易时间</th>
-                        <th>方向</th>
                         <th>代码</th>
                         <th>名称</th>
+                        <th>交易时间</th>
+                        <th>方向</th>
                         <th>数量</th>
                         <th>成交价</th>
                         <th>现价</th>
@@ -381,6 +381,16 @@ function Component() {
                           return (
                             <tr key={trade.id}>
                               <td>{i + 1}</td>
+                              <td
+                                className={cx(trade.tradedAt === 0 && css.gray)}
+                              >
+                                {trade.stockSym}
+                              </td>
+                              <td
+                                className={cx(trade.tradedAt === 0 && css.gray)}
+                              >
+                                {trade.stockName}
+                              </td>
                               <td>
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
@@ -400,16 +410,6 @@ function Component() {
                                     {trade.direction === "S" ? "买入" : "卖出"}
                                   </>
                                 )}
-                              </td>
-                              <td
-                                className={cx(trade.tradedAt === 0 && css.gray)}
-                              >
-                                {trade.stockSym}
-                              </td>
-                              <td
-                                className={cx(trade.tradedAt === 0 && css.gray)}
-                              >
-                                {trade.stockName}
                               </td>
                               <td>{trade.stockNum}</td>
                               <td>

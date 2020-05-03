@@ -293,8 +293,8 @@ function Component() {
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
-                        <th>交易时间</th>
                         <th>交易对</th>
+                        <th>交易时间</th>
                         <th>方向</th>
                         <th>成交价</th>
                         <th>成交量</th>
@@ -416,6 +416,9 @@ function Component() {
                             <tr key={i}>
                               <td>{i + 1}</td>
                               <td>
+                                {trade.tradeSym}/{trade.baseSym}
+                              </td>
+                              <td>
                                 {trade.tradedAt > 0
                                   ? formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
@@ -425,9 +428,6 @@ function Component() {
                                     {formatDate(trade.closeAt * 1000)}
                                   </>
                                 )}
-                              </td>
-                              <td>
-                                {trade.tradeSym}/{trade.baseSym}
                               </td>
                               <td>
                                 {trade.direction === "B" ? "买入" : "卖出"}
