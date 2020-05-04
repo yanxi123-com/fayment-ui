@@ -5,11 +5,15 @@ import React, { useEffect, useState } from "react";
 
 export interface EditTradeInfo {
   id: number;
-  contractSym: string;
-  num: number;
-  direction: "B" | "S";
-  price: number;
   tradedAt: number;
+
+  longContractSym: string;
+  longNum: number;
+  longPrice: number;
+
+  shortContractSym: string;
+  shortNum: number;
+  shortPrice: number;
 }
 
 export interface ModalInfo {
@@ -18,12 +22,12 @@ export interface ModalInfo {
 }
 
 const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  labelCol: { span: 5 },
+  wrapperCol: { span: 19 },
 };
 
 const tailFormItemLayout = {
-  wrapperCol: { span: 20, offset: 4 },
+  wrapperCol: { span: 19, offset: 5 },
 };
 
 interface TradeProps {
@@ -33,11 +37,15 @@ interface TradeProps {
 }
 
 interface FormValues {
-  contractSym: string;
-  num: number;
-  direction: "B" | "S";
-  price: number;
   tradedAt: Moment;
+
+  longContractSym: string;
+  longNum: number;
+  longPrice: number;
+
+  shortContractSym: string;
+  shortNum: number;
+  shortPrice: number;
 }
 
 export function TradeForm(props: TradeProps) {
@@ -53,35 +61,39 @@ export function TradeForm(props: TradeProps) {
 
   function onFinish(values: { [name: string]: any }) {
     const {
-      contractSym,
-      num,
-      direction,
-      price,
       tradedAt,
+      longContractSym,
+      longNum,
+      longPrice,
+      shortContractSym,
+      shortPrice,
+      shortNum,
     } = values as FormValues;
 
     if (isTraded && !tradedAt) {
       return showError("请填入日期");
     }
 
-    if (!contractSym) {
+    if (!longContractSym || !shortContractSym) {
       return showError("合约代码不能为空");
     }
 
-    if (!num) {
+    if (!longNum || !shortNum) {
       return showError("数量不能为空");
     }
 
-    if (!price) {
+    if (!longPrice || !shortPrice) {
       return showError("价格不能为空");
     }
 
     const submitTrade: EditTradeInfo = {
       id: trade ? trade.id : 0,
-      contractSym: contractSym.toUpperCase(),
-      num,
-      direction,
-      price,
+      longContractSym,
+      longPrice,
+      longNum,
+      shortContractSym,
+      shortPrice,
+      shortNum,
       tradedAt: isTraded ? Math.round(tradedAt.toDate().getTime() / 1000) : 0,
     };
 
@@ -97,10 +109,12 @@ export function TradeForm(props: TradeProps) {
       trade == null || trade.tradedAt === 0
         ? moment()
         : moment(trade.tradedAt * 1000),
-    direction: trade != null ? trade.direction : "B",
-    contractSym: trade != null ? trade.contractSym : undefined,
-    num: trade != null ? trade.num : 1,
-    price: trade != null ? trade.price : undefined,
+    longContractSym: trade != null ? trade.longContractSym : undefined,
+    longNum: trade != null ? trade.longNum : 1,
+    longPrice: trade != null ? trade.longPrice : undefined,
+    shortContractSym: trade != null ? trade.shortContractSym : undefined,
+    shortNum: trade != null ? trade.shortNum : 1,
+    shortPrice: trade != null ? trade.shortPrice : undefined,
   };
 
   return (
@@ -143,27 +157,47 @@ export function TradeForm(props: TradeProps) {
           </Form.Item>
         )}
 
-        <Form.Item label="方向" style={{ marginBottom: 10 }} name="direction">
-          <Radio.Group
-            options={[
-              { label: "买入", value: "B" },
-              { label: "卖出", value: "S" },
-            ]}
-          />
-        </Form.Item>
         <Form.Item
-          label="合约代码"
+          label="做多合约代码"
           style={{ marginBottom: 10 }}
-          name="contractSym"
+          name="longContractSym"
         >
           <Input type="text" />
         </Form.Item>
 
-        <Form.Item label="数量" style={{ marginBottom: 10 }} name="num">
+        <Form.Item label="做多数量" style={{ marginBottom: 10 }} name="longNum">
           <Input type="number" autoComplete="off" />
         </Form.Item>
 
-        <Form.Item label="单价" style={{ marginBottom: 10 }} name="price">
+        <Form.Item
+          label="做多单价"
+          style={{ marginBottom: 10 }}
+          name="longPrice"
+        >
+          <Input type="number" autoComplete="off" />
+        </Form.Item>
+
+        <Form.Item
+          label="做空合约代码"
+          style={{ marginBottom: 10 }}
+          name="shortContractSym"
+        >
+          <Input type="text" />
+        </Form.Item>
+
+        <Form.Item
+          label="做空数量"
+          style={{ marginBottom: 10 }}
+          name="shortNum"
+        >
+          <Input type="number" autoComplete="off" />
+        </Form.Item>
+
+        <Form.Item
+          label="做空单价"
+          style={{ marginBottom: 10 }}
+          name="shortPrice"
+        >
           <Input type="number" autoComplete="off" />
         </Form.Item>
 

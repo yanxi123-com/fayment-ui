@@ -20,15 +20,15 @@ import { GroupType } from "constant";
 import { useContractPrices } from "hooks/useFuturesPrices";
 import { useGroups } from "hooks/useGroups";
 import { userService } from "lib/grpcClient";
-import { formatDate } from "lib/util/format";
+import { formatDate, formatCNY } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
 import {
-  AddFuturesTradeReq,
-  CloseFuturesTradeReq,
+  AddFuturesArbitrageReq,
+  CloseFuturesArbitrageReq,
   SwitchOrderReq,
-  UpdateFuturesTradeReq,
+  UpdateFuturesArbitrageReq,
 } from "proto/user_pb";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -39,9 +39,13 @@ import { EditTradeInfo, ModalInfo, TradeForm } from "./tradeForm";
 import css from "./Trades.module.scss";
 
 export interface TradeInfo extends EditTradeInfo, CloseTradeInfo {
-  varietyName: string;
-  tradingUnit: number;
-  marginPercent: number;
+  longVarietyName: string;
+  longTradingUnit: number;
+  longMarginPercent: number;
+
+  shortVarietyName: string;
+  shortTradingUnit: number;
+  shortMarginPercent: number;
 }
 
 function formatCurrency(amount: number) {
@@ -60,7 +64,7 @@ function Component() {
   const [closeModalInfo, setCloseModalInfo] = useState<CloseModalInfo>({});
   const [trades, setTrades] = useState<TradeInfo[]>();
   const { refreshPrice, prices, addContracts } = useContractPrices();
-  const groupsProps = useGroups(GroupType.FuturesTrade);
+  const groupsProps = useGroups(GroupType.FuturesArbitrage);
   const { groups, currentGroupIndex, changeGroup } = groupsProps;
 
   // fetch coin accounts
@@ -71,23 +75,42 @@ function Component() {
     const req = new IdWrapper();
     req.setId(groups[currentGroupIndex].id);
     userService
-      .listFuturesTrades(req, getAuthMD())
+      .listFuturesArbitrage(req, getAuthMD())
       .then((res) => {
-        addContracts(res.getTradesList().map((t) => t.getContractSym()));
+        // 获取价格
+        const relatedContracts: string[] = [];
+        res.getTradesList().forEach((t) => {
+          relatedContracts.push(t.getLongContractSym());
+          relatedContracts.push(t.getShortContractSym());
+        });
+        addContracts(relatedContracts);
+
+        // 设置 trades
         setTrades(
           res.getTradesList().map((t) => {
             return {
               id: t.getId(),
-              contractSym: t.getContractSym(),
-              num: t.getContractNum(),
-              direction: t.getDirection() as "B" | "S",
-              price: t.getContractPrice(),
               tradedAt: t.getTradedAt(),
-              varietyName: t.getVarietyName(),
-              tradingUnit: t.getTradingUnit(),
-              marginPercent: t.getMarginPercent(),
+
+              longContractSym: t.getLongContractSym(),
+              longNum: t.getLongContractNum(),
+              longPrice: t.getLongContractPrice(),
+
+              shortContractSym: t.getShortContractSym(),
+              shortNum: t.getShortContractNum(),
+              shortPrice: t.getShortContractPrice(),
+
+              longVarietyName: t.getLongVarietyName(),
+              longTradingUnit: t.getLongTradingUnit(),
+              longMarginPercent: t.getLongMarginPercent(),
+
+              shortVarietyName: t.getShortVarietyName(),
+              shortTradingUnit: t.getShortTradingUnit(),
+              shortMarginPercent: t.getShortMarginPercent(),
+
               closeAt: t.getCloseAt(),
-              closePrice: t.getClosePrice(),
+              closeLongPrice: t.getCloseLongPrice(),
+              closeShortPrice: t.getCloseShortPrice(),
             };
           })
         );
@@ -107,15 +130,20 @@ function Component() {
           return;
         }
 
-        const req = new AddFuturesTradeReq();
+        const req = new AddFuturesArbitrageReq();
         req.setGroupId(groups[currentGroupIndex].id);
         req.setTradedAt(trade.tradedAt);
-        req.setContractSym(trade.contractSym);
-        req.setContractPrice(trade.price);
-        req.setContractNum(trade.num);
-        req.setDirection(trade.direction);
+
+        req.setLongContractSym(trade.longContractSym);
+        req.setLongContractPrice(trade.longPrice);
+        req.setLongContractNum(trade.longNum);
+
+        req.setShortContractSym(trade.shortContractSym);
+        req.setShortContractPrice(trade.shortPrice);
+        req.setShortContractNum(trade.shortNum);
+
         userService
-          .addFuturesTrade(req, getAuthMD())
+          .addFuturesArbitrage(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -145,15 +173,20 @@ function Component() {
         if (trade.id == null) {
           return;
         }
-        const req = new UpdateFuturesTradeReq();
+        const req = new UpdateFuturesArbitrageReq();
         req.setId(trade.id);
         req.setTradedAt(trade.tradedAt);
-        req.setContractSym(trade.contractSym);
-        req.setContractPrice(trade.price);
-        req.setContractNum(trade.num);
-        req.setDirection(trade.direction);
+
+        req.setLongContractSym(trade.longContractSym);
+        req.setLongContractPrice(trade.longPrice);
+        req.setLongContractNum(trade.longNum);
+
+        req.setShortContractSym(trade.shortContractSym);
+        req.setShortContractPrice(trade.shortPrice);
+        req.setShortContractNum(trade.shortNum);
+
         userService
-          .updateFuturesTrade(req, getAuthMD())
+          .updateFuturesArbitrage(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setModalInfo({});
@@ -172,12 +205,14 @@ function Component() {
     setCloseModalInfo({
       trade,
       onSubmit: (trade) => {
-        const req = new CloseFuturesTradeReq();
+        const req = new CloseFuturesArbitrageReq();
         req.setId(trade.id);
         req.setCloseAt(trade.closeAt);
-        req.setClosePrice(trade.closePrice);
+        req.setCloseLongPrice(trade.closeLongPrice);
+        req.setCloseShortPrice(trade.closeShortPrice);
+
         userService
-          .closeFuturesTrade(req, getAuthMD())
+          .closeFuturesArbitrage(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
             setCloseModalInfo({});
@@ -195,13 +230,13 @@ function Component() {
 
     confirmPromise(
       "请确认",
-      `确实要删除这笔 [${trades[index].contractSym}] 交易吗？`
+      `确实要删除这笔 [${trades[index].longContractSym}/${trades[index].shortContractSym}] 对冲交易吗？`
     ).then((confirm) => {
       if (confirm) {
         const req = new IdWrapper();
         req.setId(trades[index].id);
         userService
-          .deleteFuturesTrade(req, getAuthMD())
+          .deleteFuturesArbitrage(req, getAuthMD())
           .then(() => {
             setTradesVersion((i) => i + 1);
           })
@@ -224,7 +259,7 @@ function Component() {
     req.setIdA(trades[index].id);
     req.setIdB(trades[otherIndex].id);
     userService
-      .switchFuturesTrade(req, getAuthMD())
+      .switchFuturesArbitrage(req, getAuthMD())
       .then(() => {
         setTradesVersion((i) => i + 1);
       })
@@ -284,14 +319,11 @@ function Component() {
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>序号</th>
-                        <th>代码</th>
-                        <th>品种</th>
                         <th>交易时间</th>
-                        <th>方向</th>
-                        <th>数量</th>
-                        <th>成交价</th>
-                        <th>现价</th>
-                        <th>盈亏比例</th>
+                        <th>开仓买入</th>
+                        <th>开仓卖出</th>
+                        <th>价差</th>
+                        <th>实时价差</th>
                         <th>盈亏额度</th>
                         <th style={{ textAlign: "center" }}>
                           操作
@@ -314,8 +346,10 @@ function Component() {
 
                             const findResult = [
                               tradeDate,
-                              trade.contractSym,
-                              trade.varietyName,
+                              trade.longContractSym,
+                              trade.longVarietyName,
+                              trade.shortContractSym,
+                              trade.shortVarietyName,
                             ].find((s) => {
                               if (s == null) {
                                 return false;
@@ -328,46 +362,59 @@ function Component() {
                             }
                           }
 
-                          // 计算最新价格
-                          const currentPrice: number | undefined =
-                            prices[trade.contractSym];
-
-                          // 计算盈亏比例，无论是否成交都计算
-                          let earnPercent: number | undefined;
-                          if (
-                            trade.tradedAt > 0 &&
-                            trade.closeAt > 0 &&
-                            trade.price &&
-                            trade.closePrice
-                          ) {
-                            // 直接计算盈亏
-                            earnPercent =
-                              ((trade.closePrice - trade.price) / trade.price) *
-                              100;
-                          } else if (trade.price && currentPrice) {
-                            // 根据现价计算盈亏
-                            earnPercent =
-                              ((currentPrice - trade.price) / trade.price) *
-                              100;
-                          }
-                          if (earnPercent && trade.direction === "S") {
-                            earnPercent = -earnPercent;
-                          }
-
-                          // 盈亏金额，只计算成交的
-                          let earnAmount: number | undefined;
-                          if (earnPercent != null && trade.tradedAt > 0) {
-                            earnAmount =
-                              (trade.price *
-                                trade.tradingUnit *
-                                trade.num *
-                                earnPercent) /
-                              100;
-                            totalEarnAmount += earnAmount;
-                          }
-
                           const isTradeClosed =
                             trade.tradedAt > 0 && trade.closeAt > 0;
+
+                          // 计算价差
+                          const enterPriceDiff =
+                            trade.longPrice *
+                              trade.longTradingUnit *
+                              trade.longNum -
+                            trade.shortPrice *
+                              trade.shortTradingUnit *
+                              trade.shortNum;
+
+                          // 计算最新价差
+                          let currentPriceDiff: number | undefined;
+                          const currentLongPrice: number | undefined =
+                            prices[trade.longContractSym];
+                          const currentShortPrice: number | undefined =
+                            prices[trade.shortContractSym];
+                          if (currentLongPrice && currentShortPrice) {
+                            currentPriceDiff =
+                              currentLongPrice *
+                                trade.longTradingUnit *
+                                trade.longNum -
+                              currentShortPrice *
+                                trade.shortTradingUnit *
+                                trade.shortNum;
+                          }
+
+                          // 平仓价差
+                          let closePriceDiff: number | undefined;
+                          if (isTradeClosed) {
+                            closePriceDiff =
+                              trade.closeLongPrice *
+                                trade.longTradingUnit *
+                                trade.longNum -
+                              trade.closeShortPrice *
+                                trade.shortTradingUnit *
+                                trade.shortNum;
+                          }
+
+                          // 相对开仓盈亏金额，无论是否开仓都会计算
+                          let earnAmount: number | undefined;
+                          if (closePriceDiff != null) {
+                            earnAmount = closePriceDiff - enterPriceDiff;
+                          } else if (
+                            enterPriceDiff != null &&
+                            currentPriceDiff != null
+                          ) {
+                            earnAmount = currentPriceDiff - enterPriceDiff;
+                          }
+                          if (trade.tradedAt > 0 && earnAmount) {
+                            totalEarnAmount += earnAmount;
+                          }
 
                           const menu = (
                             <Menu>
@@ -398,84 +445,59 @@ function Component() {
                               <td
                                 className={cx(trade.tradedAt === 0 && css.gray)}
                               >
-                                {trade.contractSym}
-                              </td>
-                              <td
-                                className={cx(trade.tradedAt === 0 && css.gray)}
-                              >
-                                {trade.varietyName}
-                              </td>
-                              <td>
                                 {trade.tradedAt > 0
-                                  ? formatDate(trade.tradedAt * 1000)
+                                  ? "开 " + formatDate(trade.tradedAt * 1000)
                                   : "未成交"}
                                 {isTradeClosed && (
                                   <>
-                                    <br />
-                                    {formatDate(trade.closeAt * 1000)}
+                                    <br />平 {formatDate(trade.closeAt * 1000)}
                                   </>
                                 )}
                               </td>
                               <td>
-                                {trade.direction === "B" ? "买入" : "卖出"}
-                                {isTradeClosed && (
-                                  <>
-                                    <br />
-                                    {trade.direction === "S" ? "买入" : "卖出"}
-                                  </>
-                                )}
+                                {trade.longVarietyName}
+                                &nbsp;
+                                {trade.longContractSym} * {trade.longNum}
                               </td>
-                              <td>{trade.num}</td>
                               <td>
-                                {trade.price}
+                                {trade.shortVarietyName}
+                                &nbsp;
+                                {trade.shortContractSym} * {trade.shortNum}
+                              </td>
+                              <td>
+                                开: {enterPriceDiff}
                                 {isTradeClosed && (
                                   <>
                                     <br />
-                                    {trade.closePrice}
+                                    平: {closePriceDiff}
                                   </>
                                 )}
                               </td>
-                              <td>{currentPrice}</td>
+                              <td>{currentPriceDiff}</td>
                               <td>
                                 {trade.tradedAt > 0 && (
                                   <span
                                     className={cx(
-                                      earnPercent &&
-                                        earnPercent > 0 &&
-                                        css.earn,
-                                      earnPercent && earnPercent < 0 && css.lose
+                                      earnAmount && earnAmount > 0 && css.earn,
+                                      earnAmount && earnAmount < 0 && css.lose
                                     )}
                                   >
-                                    {earnPercent &&
-                                      `${earnPercent.toFixed(2)}%`}
+                                    {earnAmount && formatCNY(earnAmount)}
                                   </span>
                                 )}
                                 {trade.tradedAt === 0 && (
                                   <>
-                                    {earnPercent &&
-                                      earnPercent > 0 &&
-                                      `距离 ${earnPercent.toFixed(2)}%`}
+                                    {earnAmount != null &&
+                                      earnAmount > 0 &&
+                                      `距离 ${earnAmount}`}
 
-                                    {earnPercent &&
-                                      earnPercent < 0 &&
+                                    {earnAmount != null &&
+                                      earnAmount < 0 &&
                                       "**可交易**"}
                                   </>
                                 )}
                               </td>
-                              <td>
-                                {trade.tradedAt > 0 && (
-                                  <span
-                                    className={cx(
-                                      earnPercent &&
-                                        earnPercent > 0 &&
-                                        css.earn,
-                                      earnPercent && earnPercent < 0 && css.lose
-                                    )}
-                                  >
-                                    {earnAmount && formatCurrency(earnAmount)}
-                                  </span>
-                                )}
-                              </td>
+
                               <td style={{ width: 150, textAlign: "center" }}>
                                 <EditOutlined
                                   className={css.icon}
@@ -514,9 +536,6 @@ function Component() {
                     <thead className="ant-table-thead">
                       <tr className="ant-table-row ant-table-row-level-0">
                         <th>汇总</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>

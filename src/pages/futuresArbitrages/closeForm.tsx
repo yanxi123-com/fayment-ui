@@ -16,12 +16,14 @@ const tailFormItemLayout = {
 export interface CloseTradeInfo {
   id: number;
   closeAt: number;
-  closePrice: number;
+  closeLongPrice: number;
+  closeShortPrice: number;
 }
 
 interface FormValues {
   closeAt: Moment;
-  closePrice: number;
+  closeLongPrice: number;
+  closeShortPrice: number;
 }
 
 export interface CloseModalInfo {
@@ -41,22 +43,23 @@ export function CloseTradeForm(props: TradeProps) {
   const [form] = Form.useForm();
 
   function onFinish(values: { [name: string]: any }) {
-    const { closeAt, closePrice } = values as FormValues;
+    const { closeAt, closeLongPrice, closeShortPrice } = values as FormValues;
 
     if (isTradeClosed && !closeAt) {
       return showError("请填入日期");
     }
 
-    if (isTradeClosed && !closePrice) {
+    if (isTradeClosed && (!closeLongPrice || !closeShortPrice)) {
       return showError("平仓单价不能为空");
     }
 
     const submitTrade: CloseTradeInfo = {
       id: trade.id,
-      closePrice,
       closeAt: isTradeClosed
         ? Math.round(closeAt.toDate().getTime() / 1000)
         : 0,
+      closeLongPrice,
+      closeShortPrice,
     };
 
     onSubmit(submitTrade);
@@ -68,7 +71,8 @@ export function CloseTradeForm(props: TradeProps) {
 
   const initValues = {
     closeAt: trade.closeAt === 0 ? moment() : moment(trade.closeAt * 1000),
-    closePrice: trade.closePrice || undefined,
+    closeLongPrice: trade.closeLongPrice || undefined,
+    closeShortPrice: trade.closeShortPrice || undefined,
   };
 
   return (
@@ -113,9 +117,19 @@ export function CloseTradeForm(props: TradeProps) {
 
         {isTradeClosed && (
           <Form.Item
-            label="平仓单价"
+            label="平多单价"
             style={{ marginBottom: 10 }}
-            name="closePrice"
+            name="closeLongPrice"
+          >
+            <Input type="number" autoComplete="off" />
+          </Form.Item>
+        )}
+
+        {isTradeClosed && (
+          <Form.Item
+            label="平空单价"
+            style={{ marginBottom: 10 }}
+            name="closeShortPrice"
           >
             <Input type="number" autoComplete="off" />
           </Form.Item>

@@ -37,6 +37,7 @@ const defaultGroupName: { [type in GroupType]: string } = {
   [GroupType.CoinTrade]: "交易记录",
   [GroupType.StockTrade]: "交易记录",
   [GroupType.FuturesTrade]: "交易记录",
+  [GroupType.FuturesArbitrage]: "交易记录",
 };
 
 export function useGroups(groupType: GroupType): GroupsProps {

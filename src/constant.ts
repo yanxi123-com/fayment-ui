@@ -5,4 +5,5 @@ export enum GroupType {
   StockTrade = 4,
   StockAccount = 5,
   FuturesTrade = 6,
+  FuturesArbitrage = 7,
 }

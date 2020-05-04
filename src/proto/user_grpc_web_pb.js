@@ -3514,8 +3514,8 @@ proto.fayment.UserServicePromiseClient.prototype.addFuturesArbitrage =
  *   !proto.fayment.UpdateFuturesArbitrageReq,
  *   !proto.fayment.Empty>}
  */
-const methodDescriptor_UserService_UpdateArbitrageTrade = new grpc.web.MethodDescriptor(
-  '/fayment.UserService/UpdateArbitrageTrade',
+const methodDescriptor_UserService_UpdateFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/UpdateFuturesArbitrage',
   grpc.web.MethodType.UNARY,
   proto.fayment.UpdateFuturesArbitrageReq,
   base_pb.Empty,
@@ -3536,7 +3536,7 @@ const methodDescriptor_UserService_UpdateArbitrageTrade = new grpc.web.MethodDes
  *   !proto.fayment.UpdateFuturesArbitrageReq,
  *   !proto.fayment.Empty>}
  */
-const methodInfo_UserService_UpdateArbitrageTrade = new grpc.web.AbstractClientBase.MethodInfo(
+const methodInfo_UserService_UpdateFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
   base_pb.Empty,
   /**
    * @param {!proto.fayment.UpdateFuturesArbitrageReq} request
@@ -3559,13 +3559,13 @@ const methodInfo_UserService_UpdateArbitrageTrade = new grpc.web.AbstractClientB
  * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.fayment.UserServiceClient.prototype.updateArbitrageTrade =
+proto.fayment.UserServiceClient.prototype.updateFuturesArbitrage =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/fayment.UserService/UpdateArbitrageTrade',
+      '/fayment.UserService/UpdateFuturesArbitrage',
       request,
       metadata || {},
-      methodDescriptor_UserService_UpdateArbitrageTrade,
+      methodDescriptor_UserService_UpdateFuturesArbitrage,
       callback);
 };
 
@@ -3578,13 +3578,13 @@ proto.fayment.UserServiceClient.prototype.updateArbitrageTrade =
  * @return {!Promise<!proto.fayment.Empty>}
  *     A native promise that resolves to the response
  */
-proto.fayment.UserServicePromiseClient.prototype.updateArbitrageTrade =
+proto.fayment.UserServicePromiseClient.prototype.updateFuturesArbitrage =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/fayment.UserService/UpdateArbitrageTrade',
+      '/fayment.UserService/UpdateFuturesArbitrage',
       request,
       metadata || {},
-      methodDescriptor_UserService_UpdateArbitrageTrade);
+      methodDescriptor_UserService_UpdateFuturesArbitrage);
 };
 
 

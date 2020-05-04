@@ -345,7 +345,7 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
-  updateArbitrageTrade(
+  updateFuturesArbitrage(
     request: UpdateFuturesArbitrageReq,
     metadata: grpcWeb.Metadata | undefined,
     callback: (err: grpcWeb.Error,
@@ -602,7 +602,7 @@ export class UserServicePromiseClient {
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
 
-  updateArbitrageTrade(
+  updateFuturesArbitrage(
     request: UpdateFuturesArbitrageReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
