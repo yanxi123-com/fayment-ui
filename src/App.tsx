@@ -10,6 +10,7 @@ import { observer } from "mobx-react-lite";
 import Coins from "pages/coins/Coins";
 import EosAccounts from "pages/eosAccounts/EosAccounts";
 import FuturesTrades from "pages/futuresTrades/Trades";
+import FuturesArbitrages from "pages/futuresArbitrages/Trades";
 import Home from "pages/home/Home";
 import Login from "pages/login/Login";
 import Stocks from "pages/stocks/Stocks";
@@ -43,6 +44,11 @@ const App: React.FC = () => {
               <Route exact path="/stocks/" component={Stocks} />
               <Route exact path="/stock-trades/" component={StockTrades} />
               <Route exact path="/futures-trades/" component={FuturesTrades} />
+              <Route
+                exact
+                path="/futures-arbitrages/"
+                component={FuturesArbitrages}
+              />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
               <Route exact path="/" component={Home} />
               <Route exact path="/login" component={Login} />
