@@ -4,18 +4,21 @@ import * as base_pb from './base_pb';
 
 import {
   AddCoinAccountReq,
+  AddFuturesArbitrageReq,
   AddFuturesTradeReq,
   AddGroupReq,
   AddStockAccountReq,
   AddStockTradeReq,
   AddTradeReq,
   ChangeGroupReq,
+  CloseFuturesArbitrageReq,
   CloseFuturesTradeReq,
   CloseStockTradeReq,
   CloseTradeReq,
   CoinAccountDTO,
   CoinAccountLogsDTO,
   CoinAccountsDTO,
+  FuturesArbitragesDTO,
   FuturesTradesDTO,
   GetUserKvReq,
   GroupDTO,
@@ -32,6 +35,7 @@ import {
   SwitchOrderReq,
   TradeDTO,
   TradesDTO,
+  UpdateFuturesArbitrageReq,
   UpdateFuturesTradeReq,
   UserKvDTO} from './user_pb';
 
@@ -334,6 +338,48 @@ export class UserServiceClient {
                response: base_pb.Empty) => void
   ): grpcWeb.ClientReadableStream<base_pb.Empty>;
 
+  addFuturesArbitrage(
+    request: AddFuturesArbitrageReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  updateArbitrageTrade(
+    request: UpdateFuturesArbitrageReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  closeFuturesArbitrage(
+    request: CloseFuturesArbitrageReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  listFuturesArbitrage(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: FuturesArbitragesDTO) => void
+  ): grpcWeb.ClientReadableStream<FuturesArbitragesDTO>;
+
+  deleteFuturesArbitrage(
+    request: base_pb.IdWrapper,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
+  switchFuturesArbitrage(
+    request: SwitchOrderReq,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: base_pb.Empty) => void
+  ): grpcWeb.ClientReadableStream<base_pb.Empty>;
+
 }
 
 export class UserServicePromiseClient {
@@ -547,6 +593,36 @@ export class UserServicePromiseClient {
   ): Promise<base_pb.Empty>;
 
   switchFuturesTrade(
+    request: SwitchOrderReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  addFuturesArbitrage(
+    request: AddFuturesArbitrageReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  updateArbitrageTrade(
+    request: UpdateFuturesArbitrageReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  closeFuturesArbitrage(
+    request: CloseFuturesArbitrageReq,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  listFuturesArbitrage(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<FuturesArbitragesDTO>;
+
+  deleteFuturesArbitrage(
+    request: base_pb.IdWrapper,
+    metadata?: grpcWeb.Metadata
+  ): Promise<base_pb.Empty>;
+
+  switchFuturesArbitrage(
     request: SwitchOrderReq,
     metadata?: grpcWeb.Metadata
   ): Promise<base_pb.Empty>;
