@@ -3,6 +3,15 @@ import { showError } from "comps/popup";
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 
+const formItemLayout = {
+  labelCol: { span: 5 },
+  wrapperCol: { span: 19 },
+};
+
+const tailFormItemLayout = {
+  wrapperCol: { span: 19, offset: 5 },
+};
+
 export interface EditTradeInfo {
   id: number;
   tradedAt: number;
@@ -20,15 +29,6 @@ export interface ModalInfo {
   trade?: EditTradeInfo;
   onSubmit?: (trade: EditTradeInfo) => void;
 }
-
-const formItemLayout = {
-  labelCol: { span: 5 },
-  wrapperCol: { span: 19 },
-};
-
-const tailFormItemLayout = {
-  wrapperCol: { span: 19, offset: 5 },
-};
 
 interface TradeProps {
   trade?: EditTradeInfo;
