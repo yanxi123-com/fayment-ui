@@ -20,7 +20,7 @@ import { GroupType } from "constant";
 import { useContractPrices } from "hooks/useFuturesPrices";
 import { useGroups } from "hooks/useGroups";
 import { userService } from "lib/grpcClient";
-import { formatDate } from "lib/util/format";
+import { formatDate, formatCNY } from "lib/util/format";
 import { handleGrpcError } from "lib/util/grpcUtil";
 import { observer } from "mobx-react-lite";
 import { IdWrapper } from "proto/base_pb";
@@ -42,15 +42,6 @@ export interface TradeInfo extends EditTradeInfo, CloseTradeInfo {
   varietyName: string;
   tradingUnit: number;
   marginPercent: number;
-}
-
-function formatCurrency(amount: number) {
-  return Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "JPY",
-    currencyDisplay: "symbol",
-    minimumFractionDigits: 2,
-  }).format(amount);
 }
 
 function Component() {
@@ -472,7 +463,7 @@ function Component() {
                                       earnPercent && earnPercent < 0 && css.lose
                                     )}
                                   >
-                                    {earnAmount && formatCurrency(earnAmount)}
+                                    {earnAmount && formatCNY(earnAmount)}
                                   </span>
                                 )}
                               </td>
@@ -524,7 +515,7 @@ function Component() {
                         <th></th>
                         <th>
                           {totalEarnAmount > 0 ? "+" : ""}
-                          {formatCurrency(totalEarnAmount)}
+                          {formatCNY(totalEarnAmount)}
                         </th>
                         <th></th>
                       </tr>

@@ -48,15 +48,6 @@ export interface TradeInfo extends EditTradeInfo, CloseTradeInfo {
   shortMarginPercent: number;
 }
 
-function formatCurrency(amount: number) {
-  return Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "JPY",
-    currencyDisplay: "symbol",
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
-
 function Component() {
   const [tradesVersion, setTradesVersion] = useState(0);
   const [filerText, setFilterText] = useState("");
@@ -543,7 +534,7 @@ function Component() {
                         <th></th>
                         <th>
                           {totalEarnAmount > 0 ? "+" : ""}
-                          {formatCurrency(totalEarnAmount)}
+                          {formatCNY(totalEarnAmount)}
                         </th>
                         <th></th>
                       </tr>
