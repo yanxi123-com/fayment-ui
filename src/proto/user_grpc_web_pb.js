@@ -3428,5 +3428,485 @@ proto.fayment.UserServicePromiseClient.prototype.switchFuturesTrade =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.AddFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_AddFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/AddFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.AddFuturesArbitrageReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.AddFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_AddFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.AddFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.AddFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.addFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/AddFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.AddFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.addFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/AddFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_AddFuturesArbitrage);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.UpdateFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_UpdateFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/UpdateFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.UpdateFuturesArbitrageReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.UpdateFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.UpdateFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_UpdateFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.UpdateFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.UpdateFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.updateFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/UpdateFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.UpdateFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.updateFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/UpdateFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_UpdateFuturesArbitrage);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.CloseFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_CloseFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/CloseFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.CloseFuturesArbitrageReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.CloseFuturesArbitrageReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_CloseFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.CloseFuturesArbitrageReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.CloseFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.closeFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/CloseFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.CloseFuturesArbitrageReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.closeFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/CloseFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_CloseFuturesArbitrage);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.FuturesArbitragesDTO>}
+ */
+const methodDescriptor_UserService_ListFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/ListFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  proto.fayment.FuturesArbitragesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.FuturesArbitragesDTO.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.FuturesArbitragesDTO>}
+ */
+const methodInfo_UserService_ListFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.fayment.FuturesArbitragesDTO,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.fayment.FuturesArbitragesDTO.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.FuturesArbitragesDTO)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.FuturesArbitragesDTO>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.listFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/ListFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.FuturesArbitragesDTO>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.listFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/ListFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_ListFuturesArbitrage);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_DeleteFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/DeleteFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  base_pb.IdWrapper,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.IdWrapper,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_DeleteFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.IdWrapper} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.deleteFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/DeleteFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.IdWrapper} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.deleteFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/DeleteFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_DeleteFuturesArbitrage);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodDescriptor_UserService_SwitchFuturesArbitrage = new grpc.web.MethodDescriptor(
+  '/fayment.UserService/SwitchFuturesArbitrage',
+  grpc.web.MethodType.UNARY,
+  proto.fayment.SwitchOrderReq,
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.fayment.SwitchOrderReq,
+ *   !proto.fayment.Empty>}
+ */
+const methodInfo_UserService_SwitchFuturesArbitrage = new grpc.web.AbstractClientBase.MethodInfo(
+  base_pb.Empty,
+  /**
+   * @param {!proto.fayment.SwitchOrderReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  base_pb.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.fayment.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.fayment.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.fayment.UserServiceClient.prototype.switchFuturesArbitrage =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/fayment.UserService/SwitchFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchFuturesArbitrage,
+      callback);
+};
+
+
+/**
+ * @param {!proto.fayment.SwitchOrderReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.fayment.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.fayment.UserServicePromiseClient.prototype.switchFuturesArbitrage =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/fayment.UserService/SwitchFuturesArbitrage',
+      request,
+      metadata || {},
+      methodDescriptor_UserService_SwitchFuturesArbitrage);
+};
+
+
 module.exports = proto.fayment;
 

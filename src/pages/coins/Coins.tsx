@@ -81,7 +81,7 @@ function Component() {
     getBaseCoinPrice,
     baseCoin,
     setBaseCoin,
-  } = usePrices();
+  } = usePrices("USD");
 
   const groupsProps = useGroups(GroupType.CoinAccount);
 
@@ -461,7 +461,7 @@ function Component() {
               onChange={(e) => {
                 setBaseCoin(e.target.value);
               }}
-              defaultValue="BTC"
+              defaultValue="USD"
             >
               {baseCoins.map((coin) => (
                 <Radio.Button key={coin} value={coin}>

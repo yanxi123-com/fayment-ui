@@ -1,10 +1,10 @@
-import React from "react";
-import { Menu, Layout } from "antd";
-import qrcode from "./qrcode_cfms.jpg";
-import { trackPageview } from "lib/gtag";
+import { Layout, Menu } from "antd";
 import { Location } from "history";
+import { trackPageview } from "lib/gtag";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import qrcode from "./qrcode_cfms.jpg";
 
 const { Sider } = Layout;
 
@@ -19,7 +19,8 @@ const keyTitleMap: { [key: string]: string } = {
   "stock-trades": "A股交易工具",
   "futures-trades": "期货交易工具",
   "eos-accounts": "EOS 多账号统计",
-  tools: "工具集",
+  tools: "网格交易工具",
+  "futures-arbitrages": "期货套利工具",
 };
 
 function getCurrentKey(location: Location) {
@@ -47,9 +48,28 @@ function SiderComp(props: Props) {
         selectedKeys={[getCurrentKey(location)]}
         onClick={handleClick}
       >
-        {Object.keys(keyTitleMap).map((key) => (
-          <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
-        ))}
+        <Menu.ItemGroup key="digitalCurrency" title="数字货币">
+          {["coins", "trades", "eos-accounts"].map((key) => (
+            <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+          ))}
+        </Menu.ItemGroup>
+
+        <Menu.ItemGroup key="cnyAssets" title="人民币资产">
+          {[
+            "stocks",
+            "stock-trades",
+            "futures-trades",
+            "futures-arbitrages",
+          ].map((key) => (
+            <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+          ))}
+        </Menu.ItemGroup>
+
+        <Menu.ItemGroup key="tools" title="工具箱">
+          {["tools"].map((key) => (
+            <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
+          ))}
+        </Menu.ItemGroup>
 
         <div
           style={{

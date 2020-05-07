@@ -982,3 +982,227 @@ export namespace FuturesTradesDTO {
   }
 }
 
+export class AddFuturesArbitrageReq extends jspb.Message {
+  getGroupId(): number;
+  setGroupId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getLongContractSym(): string;
+  setLongContractSym(value: string): void;
+
+  getLongContractPrice(): number;
+  setLongContractPrice(value: number): void;
+
+  getLongContractNum(): number;
+  setLongContractNum(value: number): void;
+
+  getShortContractSym(): string;
+  setShortContractSym(value: string): void;
+
+  getShortContractPrice(): number;
+  setShortContractPrice(value: number): void;
+
+  getShortContractNum(): number;
+  setShortContractNum(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddFuturesArbitrageReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AddFuturesArbitrageReq): AddFuturesArbitrageReq.AsObject;
+  static serializeBinaryToWriter(message: AddFuturesArbitrageReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddFuturesArbitrageReq;
+  static deserializeBinaryFromReader(message: AddFuturesArbitrageReq, reader: jspb.BinaryReader): AddFuturesArbitrageReq;
+}
+
+export namespace AddFuturesArbitrageReq {
+  export type AsObject = {
+    groupId: number,
+    tradedAt: number,
+    longContractSym: string,
+    longContractPrice: number,
+    longContractNum: number,
+    shortContractSym: string,
+    shortContractPrice: number,
+    shortContractNum: number,
+  }
+}
+
+export class UpdateFuturesArbitrageReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getLongContractSym(): string;
+  setLongContractSym(value: string): void;
+
+  getLongContractPrice(): number;
+  setLongContractPrice(value: number): void;
+
+  getLongContractNum(): number;
+  setLongContractNum(value: number): void;
+
+  getShortContractSym(): string;
+  setShortContractSym(value: string): void;
+
+  getShortContractPrice(): number;
+  setShortContractPrice(value: number): void;
+
+  getShortContractNum(): number;
+  setShortContractNum(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateFuturesArbitrageReq.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateFuturesArbitrageReq): UpdateFuturesArbitrageReq.AsObject;
+  static serializeBinaryToWriter(message: UpdateFuturesArbitrageReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateFuturesArbitrageReq;
+  static deserializeBinaryFromReader(message: UpdateFuturesArbitrageReq, reader: jspb.BinaryReader): UpdateFuturesArbitrageReq;
+}
+
+export namespace UpdateFuturesArbitrageReq {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    longContractSym: string,
+    longContractPrice: number,
+    longContractNum: number,
+    shortContractSym: string,
+    shortContractPrice: number,
+    shortContractNum: number,
+  }
+}
+
+export class CloseFuturesArbitrageReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseLongPrice(): number;
+  setCloseLongPrice(value: number): void;
+
+  getCloseShortPrice(): number;
+  setCloseShortPrice(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseFuturesArbitrageReq.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseFuturesArbitrageReq): CloseFuturesArbitrageReq.AsObject;
+  static serializeBinaryToWriter(message: CloseFuturesArbitrageReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseFuturesArbitrageReq;
+  static deserializeBinaryFromReader(message: CloseFuturesArbitrageReq, reader: jspb.BinaryReader): CloseFuturesArbitrageReq;
+}
+
+export namespace CloseFuturesArbitrageReq {
+  export type AsObject = {
+    id: number,
+    closeAt: number,
+    closeLongPrice: number,
+    closeShortPrice: number,
+  }
+}
+
+export class FuturesArbitrageDTO extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getTradedAt(): number;
+  setTradedAt(value: number): void;
+
+  getLongContractSym(): string;
+  setLongContractSym(value: string): void;
+
+  getLongContractPrice(): number;
+  setLongContractPrice(value: number): void;
+
+  getLongContractNum(): number;
+  setLongContractNum(value: number): void;
+
+  getShortContractSym(): string;
+  setShortContractSym(value: string): void;
+
+  getShortContractPrice(): number;
+  setShortContractPrice(value: number): void;
+
+  getShortContractNum(): number;
+  setShortContractNum(value: number): void;
+
+  getCloseAt(): number;
+  setCloseAt(value: number): void;
+
+  getCloseLongPrice(): number;
+  setCloseLongPrice(value: number): void;
+
+  getCloseShortPrice(): number;
+  setCloseShortPrice(value: number): void;
+
+  getLongVarietyName(): string;
+  setLongVarietyName(value: string): void;
+
+  getLongTradingUnit(): number;
+  setLongTradingUnit(value: number): void;
+
+  getLongMarginPercent(): number;
+  setLongMarginPercent(value: number): void;
+
+  getShortVarietyName(): string;
+  setShortVarietyName(value: string): void;
+
+  getShortTradingUnit(): number;
+  setShortTradingUnit(value: number): void;
+
+  getShortMarginPercent(): number;
+  setShortMarginPercent(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FuturesArbitrageDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: FuturesArbitrageDTO): FuturesArbitrageDTO.AsObject;
+  static serializeBinaryToWriter(message: FuturesArbitrageDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FuturesArbitrageDTO;
+  static deserializeBinaryFromReader(message: FuturesArbitrageDTO, reader: jspb.BinaryReader): FuturesArbitrageDTO;
+}
+
+export namespace FuturesArbitrageDTO {
+  export type AsObject = {
+    id: number,
+    tradedAt: number,
+    longContractSym: string,
+    longContractPrice: number,
+    longContractNum: number,
+    shortContractSym: string,
+    shortContractPrice: number,
+    shortContractNum: number,
+    closeAt: number,
+    closeLongPrice: number,
+    closeShortPrice: number,
+    longVarietyName: string,
+    longTradingUnit: number,
+    longMarginPercent: number,
+    shortVarietyName: string,
+    shortTradingUnit: number,
+    shortMarginPercent: number,
+  }
+}
+
+export class FuturesArbitragesDTO extends jspb.Message {
+  getTradesList(): Array<FuturesArbitrageDTO>;
+  setTradesList(value: Array<FuturesArbitrageDTO>): void;
+  clearTradesList(): void;
+  addTrades(value?: FuturesArbitrageDTO, index?: number): FuturesArbitrageDTO;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FuturesArbitragesDTO.AsObject;
+  static toObject(includeInstance: boolean, msg: FuturesArbitragesDTO): FuturesArbitragesDTO.AsObject;
+  static serializeBinaryToWriter(message: FuturesArbitragesDTO, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FuturesArbitragesDTO;
+  static deserializeBinaryFromReader(message: FuturesArbitragesDTO, reader: jspb.BinaryReader): FuturesArbitragesDTO;
+}
+
+export namespace FuturesArbitragesDTO {
+  export type AsObject = {
+    tradesList: Array<FuturesArbitrageDTO.AsObject>,
+  }
+}
+
