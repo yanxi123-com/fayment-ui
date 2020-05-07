@@ -1,9 +1,10 @@
 import { Button, Col, Form, Input, Row, Tabs, Table, Select } from "antd";
 import React, { useState } from "react";
+import { showError } from "comps/popup";
 
 type LongMode = "SameCurrency"; // 每次买入，使用相等数量货币，随着价格下跌，每次购买标的物会增加
 
-type ShortMode = "SameLeftRate"; // 每次卖出剩余标的固定比例，直到还剩 10%
+type ShortMode = "SameCurrency"; // 每次卖出相同金额的标的
 
 interface LongOpts {
   startPrice: number;
@@ -29,10 +30,38 @@ interface ShortOpts {
   endPrice: number;
   gridPercent: number;
   initTargetNum: number;
-  mode: LongMode;
+  mode: ShortMode;
 }
 
-interface ShortRecord {}
+interface ShortRecord {
+  key: string | number;
+  sellTargetNum: number;
+  leftTargetNum: number;
+  sellAmount: number;
+  sellTotalAmount: number;
+  sellPrice: number;
+  marketValue: number;
+  gridProfit: number;
+}
+
+function getLastLeftTargetNum(
+  opts: ShortOpts,
+  gridNum: number,
+  guessMin: number,
+  guessMax: number
+): number {
+  const guess = (guessMax + guessMin) / 2;
+  let leftNum = opts.initTargetNum;
+  let tradePrice = opts.startPrice;
+  for (let i = 0; i < gridNum; i++) {
+    const sellNum = guess / tradePrice;
+    leftNum = leftNum - sellNum;
+    tradePrice = tradePrice * (1 + opts.gridPercent / 100);
+  }
+
+  console.log("guess=", guess, "leftNum", leftNum);
+  return leftNum;
+}
 
 export default function Grid() {
   const [formLong] = Form.useForm();
@@ -43,6 +72,10 @@ export default function Grid() {
   function listLongResult(values: { [name: string]: any }) {
     const opts: LongOpts = values as LongOpts;
     const records: LongRecord[] = [];
+
+    if (opts.startPrice <= opts.endPrice) {
+      return showError("做空时，起始价格应大于结束价格");
+    }
 
     const gridNum =
       Math.ceil(
@@ -55,7 +88,7 @@ export default function Grid() {
     let targetTotal = 0;
 
     for (let i = 0; i < gridNum; i++) {
-      const buyAmount = opts.initCurrency / gridNum;
+      const buyAmount = Math.min(opts.initCurrency / gridNum, leftAmount);
       const buyTargetNum = buyAmount / tradePrice;
 
       targetTotal += buyTargetNum;
@@ -77,8 +110,91 @@ export default function Grid() {
     setLongRecords(records);
   }
 
+  function renderNumber(num: number) {
+    return num.toFixed(2);
+  }
+
   function listShortResult(values: { [name: string]: any }) {
-    console.log(values);
+    const opts: ShortOpts = {
+      startPrice: Number(values.startPrice),
+      endPrice: Number(values.endPrice),
+      gridPercent: Number(values.gridPercent),
+      initTargetNum: Number(values.initTargetNum),
+      mode: values.mode,
+    };
+    const records: ShortRecord[] = [];
+
+    if (opts.startPrice >= opts.endPrice) {
+      return showError("做空时，起始价格应小于结束价格");
+    }
+
+    // startPrice * (1 + percent/100) ^ n = endPrice
+    // (1+percent/100)^n = (endPrice / startPrice)
+    const gridNum =
+      Math.ceil(
+        Math.log(opts.endPrice / opts.startPrice) /
+          Math.log(1 + opts.gridPercent / 100)
+      ) + 1;
+
+    let guessMin = opts.startPrice * (opts.initTargetNum / gridNum);
+    let guessMax = opts.startPrice * opts.initTargetNum;
+    let tryNum = 0;
+    let sellAmount: number = 0;
+    while (true) {
+      if (tryNum++ > 100) {
+        break;
+      }
+
+      const lastLeftTargetNum = getLastLeftTargetNum(
+        opts,
+        gridNum,
+        guessMin,
+        guessMax
+      );
+
+      if (Math.abs(lastLeftTargetNum / opts.initTargetNum) < 0.0001) {
+        sellAmount = (guessMin + guessMax) / 2;
+        break;
+      }
+
+      if (lastLeftTargetNum > 0) {
+        guessMin = (guessMin + guessMax) / 2;
+      } else {
+        guessMax = (guessMin + guessMax) / 2;
+      }
+    }
+
+    let sellPrice = opts.startPrice;
+    let leftTargetNum = opts.initTargetNum;
+    let sellTotalAmount = 0;
+
+    if (!sellAmount) {
+      showError("sellAmount 错误");
+    }
+
+    for (let i = 0; i < gridNum; i++) {
+      let sellTargetNum = Math.min(leftTargetNum, sellAmount / sellPrice);
+
+      leftTargetNum = leftTargetNum - sellTargetNum;
+      const thisSellAmount = sellTargetNum * sellPrice;
+      sellTotalAmount += thisSellAmount;
+
+      const marketValue = sellTotalAmount + leftTargetNum * sellPrice;
+
+      records.push({
+        key: i,
+        sellTargetNum,
+        leftTargetNum,
+        sellAmount: thisSellAmount,
+        sellTotalAmount,
+        sellPrice,
+        marketValue,
+        gridProfit: (thisSellAmount * opts.gridPercent) / 100,
+      });
+      sellPrice = sellPrice * (1 + opts.gridPercent / 100);
+    }
+
+    setShortRecords(records);
   }
 
   const longColumns = [
@@ -132,23 +248,34 @@ export default function Grid() {
       },
     },
   ];
+
   const shortColumns = [
     {
       title: "卖出标的数量",
+      dataIndex: "sellTargetNum",
+      render: renderNumber,
     },
     {
       title: "剩余标的数量",
+      dataIndex: "leftTargetNum",
+      render: renderNumber,
     },
     {
       title: "卖出金额",
+      dataIndex: "sellAmount",
+      render: renderNumber,
     },
     {
       title: "卖出总金额",
+      dataIndex: "sellTotalAmount",
+      render: renderNumber,
     },
-    { title: "卖出价格" },
-    { title: "市值" },
+    { title: "卖出价格", dataIndex: "sellPrice", render: renderNumber },
+    { title: "市值", dataIndex: "marketValue", render: renderNumber },
     {
       title: "本格盈利",
+      dataIndex: "gridProfit",
+      render: renderNumber,
     },
   ];
 
@@ -281,11 +408,11 @@ export default function Grid() {
             onFinish={listShortResult}
             labelCol={{ span: 8 }}
             initialValues={{
-              startPrice: 10,
-              endPrice: 5,
+              startPrice: 5,
+              endPrice: 10,
               gridPercent: 5,
               initTargetNum: 10000,
-              mode: "SameLeftRate",
+              mode: "SameCurrency",
             }}
           >
             <Row gutter={24}>
@@ -373,8 +500,8 @@ export default function Grid() {
                   rules={[{ required: true }]}
                 >
                   <Select>
-                    <Select.Option value="SameLeftRate">
-                      每次等比例卖出剩余标的
+                    <Select.Option value="SameCurrency">
+                      每次卖出等额标的
                     </Select.Option>
                   </Select>
                 </Form.Item>
@@ -388,7 +515,12 @@ export default function Grid() {
               </Col>
             </Row>
           </Form>
-          <Table columns={shortColumns} dataSource={shortRecords} />
+          <Table
+            columns={shortColumns}
+            dataSource={shortRecords}
+            pagination={{ hideOnSinglePage: true, pageSize: 100 }}
+            size="small"
+          />
         </Tabs.TabPane>
       </Tabs>
     </div>
