@@ -19,7 +19,7 @@ const keyTitleMap: { [key: string]: string } = {
   "stock-trades": "A股交易工具",
   "futures-trades": "期货交易工具",
   "eos-accounts": "EOS 多账号统计",
-  tools: "网格交易工具",
+  "tools-grids": "网格交易工具",
   "futures-arbitrages": "期货套利工具",
 };
 
@@ -66,7 +66,7 @@ function SiderComp(props: Props) {
         </Menu.ItemGroup>
 
         <Menu.ItemGroup key="tools" title="工具箱">
-          {["tools"].map((key) => (
+          {["tools-grids"].map((key) => (
             <Menu.Item key={key}>{keyTitleMap[key]}</Menu.Item>
           ))}
         </Menu.ItemGroup>

@@ -6,4 +6,5 @@ export enum GroupType {
   StockAccount = 5,
   FuturesTrade = 6,
   FuturesArbitrage = 7,
+  GridTrade = 8,
 }

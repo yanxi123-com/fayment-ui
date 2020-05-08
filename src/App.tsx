@@ -12,7 +12,7 @@ import EosAccounts from "pages/eosAccounts/EosAccounts";
 import FuturesTrades from "pages/futuresTrades/Trades";
 import FuturesArbitrages from "pages/futuresArbitrages/Trades";
 import Home from "pages/home/Home";
-import Tools from "pages/tools/Tools";
+import Tools from "pages/tools/Grids/Grids";
 import Login from "pages/login/Login";
 import Stocks from "pages/stocks/Stocks";
 import StockTrades from "pages/stockTrades/Trades";
@@ -51,7 +51,7 @@ const App: React.FC = () => {
                 component={FuturesArbitrages}
               />
               <Route exact path="/eos-accounts/" component={EosAccounts} />
-              <Route path="/tools/" component={Tools} />
+              <Route path="/tools-grids/" component={Tools} />
               <Route exact path="/" component={Home} />
               <Route exact path="/login" component={Login} />
 
