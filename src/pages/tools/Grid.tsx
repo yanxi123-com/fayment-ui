@@ -70,7 +70,13 @@ export default function Grid() {
   const [shortRecords, setShortRecords] = useState<ShortRecord[]>([]);
 
   function listLongResult(values: { [name: string]: any }) {
-    const opts: LongOpts = values as LongOpts;
+    const opts: LongOpts = {
+      startPrice: Number(values.startPrice),
+      endPrice: Number(values.endPrice),
+      gridPercent: Number(values.gridPercent),
+      initCurrency: Number(values.initCurrency),
+      mode: values.mode,
+    };
     const records: LongRecord[] = [];
 
     if (opts.startPrice <= opts.endPrice) {
