@@ -395,10 +395,10 @@ function Component() {
           <Groups {...groupsProps} />
         </Col>
         <Col span={18} className={css.main}>
-          {!showForm && <Loading />}
-          {showForm && (
-            <Tabs defaultActiveKey="long" onChange={() => {}}>
-              <Tabs.TabPane tab="网格做多" key="long">
+          <Tabs defaultActiveKey="long" onChange={() => {}}>
+            <Tabs.TabPane tab="网格做多" key="long">
+              {!showForm && <Loading />}
+              {showForm && (
                 <Form
                   // form={formLong}
                   onFinish={saveLongGridInfo}
@@ -505,131 +505,132 @@ function Component() {
                     </Col>
                   </Row>
                 </Form>
-                <Table
-                  columns={longColumns}
-                  dataSource={longRecords}
-                  pagination={{ hideOnSinglePage: true, pageSize: 100 }}
-                  size="small"
-                />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab="网格做空" key="short">
-                {showForm && (
-                  <Form
-                    // form={formShort}
-                    onFinish={saveShortGridInfo}
-                    labelCol={{ span: 8 }}
-                    initialValues={gridInfo.shortOpts}
-                  >
-                    <Row gutter={24}>
-                      <Col span={8}>
-                        <Form.Item
-                          name="startPrice"
-                          label="网格起始价格"
-                          rules={[
-                            {
-                              required: true,
-                              type: "number",
-                              message: "起始价格必须为数字",
-                              transform: Number,
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="endPrice"
-                          label="网格结束价格"
-                          rules={[
-                            {
-                              required: true,
-                              type: "number",
-                              message: "结束价格必须为数字",
-                              transform: Number,
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="gridPercent"
-                          label="每格涨幅百分比"
-                          validateFirst
-                          rules={[
-                            {
-                              required: true,
-                              type: "number",
-                              message: "涨跌百分比必须为数字",
-                              transform: Number,
-                            },
-                            {
-                              type: "number",
-                              max: 20,
-                              message: "每格涨跌不能超过 20%",
-                              transform: Number,
-                            },
-                            {
-                              type: "number",
-                              min: 0.1,
-                              message: "每格涨跌不能小于 0.1%",
-                              transform: Number,
-                            },
-                          ]}
-                        >
-                          <Input addonAfter="%" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="initTargetNum"
-                          label="初始总标的数量"
-                          rules={[
-                            {
-                              required: true,
-                              type: "number",
-                              message: "初始标的必须为数字",
-                              transform: Number,
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="mode"
-                          label="卖出模式"
-                          rules={[{ required: true }]}
-                        >
-                          <Select>
-                            <Select.Option value="SameCurrency">
-                              每次卖出等额标的
-                            </Select.Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item wrapperCol={{ offset: 8 }}>
-                          <Button type="primary" htmlType="submit">
-                            查看交易计划
-                          </Button>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                )}
-                <Table
-                  columns={shortColumns}
-                  dataSource={shortRecords}
-                  pagination={{ hideOnSinglePage: true, pageSize: 100 }}
-                  size="small"
-                />
-              </Tabs.TabPane>
-            </Tabs>
-          )}
+              )}
+              <Table
+                columns={longColumns}
+                dataSource={longRecords}
+                pagination={{ hideOnSinglePage: true, pageSize: 100 }}
+                size="small"
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="网格做空" key="short">
+              {!showForm && <Loading />}
+              {showForm && (
+                <Form
+                  // form={formShort}
+                  onFinish={saveShortGridInfo}
+                  labelCol={{ span: 8 }}
+                  initialValues={gridInfo.shortOpts}
+                >
+                  <Row gutter={24}>
+                    <Col span={8}>
+                      <Form.Item
+                        name="startPrice"
+                        label="网格起始价格"
+                        rules={[
+                          {
+                            required: true,
+                            type: "number",
+                            message: "起始价格必须为数字",
+                            transform: Number,
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="endPrice"
+                        label="网格结束价格"
+                        rules={[
+                          {
+                            required: true,
+                            type: "number",
+                            message: "结束价格必须为数字",
+                            transform: Number,
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="gridPercent"
+                        label="每格涨幅百分比"
+                        validateFirst
+                        rules={[
+                          {
+                            required: true,
+                            type: "number",
+                            message: "涨跌百分比必须为数字",
+                            transform: Number,
+                          },
+                          {
+                            type: "number",
+                            max: 20,
+                            message: "每格涨跌不能超过 20%",
+                            transform: Number,
+                          },
+                          {
+                            type: "number",
+                            min: 0.1,
+                            message: "每格涨跌不能小于 0.1%",
+                            transform: Number,
+                          },
+                        ]}
+                      >
+                        <Input addonAfter="%" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="initTargetNum"
+                        label="初始总标的数量"
+                        rules={[
+                          {
+                            required: true,
+                            type: "number",
+                            message: "初始标的必须为数字",
+                            transform: Number,
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="mode"
+                        label="卖出模式"
+                        rules={[{ required: true }]}
+                      >
+                        <Select>
+                          <Select.Option value="SameCurrency">
+                            每次卖出等额标的
+                          </Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item wrapperCol={{ offset: 8 }}>
+                        <Button type="primary" htmlType="submit">
+                          查看交易计划
+                        </Button>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              )}
+              <Table
+                columns={shortColumns}
+                dataSource={shortRecords}
+                pagination={{ hideOnSinglePage: true, pageSize: 100 }}
+                size="small"
+              />
+            </Tabs.TabPane>
+          </Tabs>
         </Col>
       </Row>
     </div>
