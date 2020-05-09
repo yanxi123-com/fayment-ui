@@ -161,7 +161,7 @@ export function TradeForm(props: Props) {
     tradePrice:
       trade == null
         ? undefined
-        : (trade.baseAmount / trade.tradeAmount).toFixed(4),
+        : (trade.baseAmount / trade.tradeAmount).toPrecision(5),
     baseAmount: trade == null ? undefined : trade.baseAmount,
   };
 
