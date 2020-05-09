@@ -299,8 +299,7 @@ function Component() {
                         <th>成交价</th>
                         <th>成交量</th>
                         <th>最新价</th>
-                        <th>盈亏比例</th>
-                        <th>盈亏额度</th>
+                        <th>盈亏</th>
                         <th style={{ textAlign: "center" }}>
                           操作
                           <Button type="link" onClick={refreshPrice}>
@@ -489,8 +488,7 @@ function Component() {
                                       "**可交易**"}
                                   </>
                                 )}
-                              </td>
-                              <td>
+                                <br />
                                 {trade.tradedAt > 0 && (
                                   <span
                                     className={cx(
