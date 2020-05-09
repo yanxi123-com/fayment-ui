@@ -66,24 +66,18 @@ export function formatAmount(amount: number, sym: string) {
 }
 
 // 格式化单价，金额较小
-export function formatPrice(
-  price: number,
-  sym: string,
-  fractionDigits?: number
-) {
+export function formatPrice(price: number, sym: string, precision?: number) {
   if (sym === "CNY") {
-    return removeEndingZero(formatCNY(price, fractionDigits || 5));
+    return "￥" + removeEndingZero(price.toPrecision(precision || 5));
   }
   if (sym === "USD") {
-    return removeEndingZero(
-      formatCNY(price, fractionDigits || 5).replace("¥", "$")
-    );
+    return "$" + removeEndingZero(price.toPrecision(precision || 5));
   }
   if (sym === "BTC") {
-    return "฿" + removeEndingZero(price.toPrecision(fractionDigits || 5));
+    return "฿" + removeEndingZero(price.toPrecision(precision || 5));
   }
 
-  return `${removeEndingZero(price.toPrecision(fractionDigits || 5))} ${sym}`;
+  return `${removeEndingZero(price.toPrecision(precision || 5))} ${sym}`;
 }
 
 export function removeEndingZero(numStr: string) {
