@@ -439,7 +439,7 @@ function Component() {
                                 )}
                               </td>
                               <td>
-                                {formatPrice(tradePrice, trade.baseSym, 3)}
+                                {formatPrice(tradePrice, trade.baseSym, 5)}
                                 {isTradeClosed && (
                                   <>
                                     <br />
@@ -463,7 +463,7 @@ function Component() {
                                 className={cx(trade.tradedAt === 0 && css.gray)}
                               >
                                 {currentPrice &&
-                                  formatPrice(currentPrice, trade.baseSym, 3)}
+                                  formatPrice(currentPrice, trade.baseSym, 5)}
                               </td>
                               <td>
                                 {trade.tradedAt > 0 && (
