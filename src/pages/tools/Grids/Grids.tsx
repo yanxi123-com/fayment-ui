@@ -224,10 +224,6 @@ function Component() {
   }, [gridInfo]);
   // function listLongResult() {}
 
-  function toFixed(num: number) {
-    return num.toFixed(2);
-  }
-
   function toPrecision(num: number) {
     return num.toPrecision(5);
   }
@@ -320,22 +316,22 @@ function Component() {
     {
       title: "买入金额",
       dataIndex: "buyAmount",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "剩余金额",
       dataIndex: "leftAmount",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "买入标的数量",
       dataIndex: "buyTargetNum",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "标的总数量",
       dataIndex: "targetTotal",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "交易价格",
@@ -345,12 +341,12 @@ function Component() {
     {
       title: "市值",
       dataIndex: "marketValue",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "本格盈利",
       dataIndex: "gridProfit",
-      render: toFixed,
+      render: toPrecision,
     },
   ];
 
@@ -358,29 +354,29 @@ function Component() {
     {
       title: "卖出标的数量",
       dataIndex: "sellTargetNum",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "剩余标的数量",
       dataIndex: "leftTargetNum",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "卖出金额",
       dataIndex: "sellAmount",
-      render: toFixed,
+      render: toPrecision,
     },
     {
       title: "卖出总金额",
       dataIndex: "sellTotalAmount",
-      render: toFixed,
+      render: toPrecision,
     },
     { title: "卖出价格", dataIndex: "sellPrice", render: toPrecision },
-    { title: "市值", dataIndex: "marketValue", render: toFixed },
+    { title: "市值", dataIndex: "marketValue", render: toPrecision },
     {
       title: "本格盈利",
       dataIndex: "gridProfit",
-      render: toFixed,
+      render: toPrecision,
     },
   ];
 
