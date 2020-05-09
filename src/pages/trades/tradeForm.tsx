@@ -236,7 +236,7 @@ export function TradeForm(props: Props) {
                 return;
               }
               form.setFieldsValue({
-                baseAmount: (tradeAmount * tradePrice).toFixed(4),
+                baseAmount: (tradeAmount * tradePrice).toFixed(6),
               });
             }}
           />
@@ -254,7 +254,7 @@ export function TradeForm(props: Props) {
                 return;
               }
               form.setFieldsValue({
-                baseAmount: (tradeAmount * tradePrice).toFixed(4),
+                baseAmount: (tradeAmount * tradePrice).toFixed(6),
               });
             }}
           />
@@ -276,7 +276,7 @@ export function TradeForm(props: Props) {
                 return;
               }
               form.setFieldsValue({
-                tradeAmount: (baseAmount / tradePrice).toFixed(4),
+                tradeAmount: (baseAmount / tradePrice).toFixed(6),
               });
             }}
           />
