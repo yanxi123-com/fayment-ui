@@ -418,35 +418,65 @@ function Component() {
                                 {trade.tradeSym}/{trade.baseSym}
                               </td>
                               <td>
-                                {trade.tradedAt > 0
-                                  ? formatDate(trade.tradedAt * 1000)
-                                  : "未成交"}
-                                {isTradeClosed && (
+                                {trade.tradedAt > 0 ? (
+                                  formatDate(trade.tradedAt * 1000)
+                                ) : (
+                                  <span className={css.notTrade}>未成交</span>
+                                )}
+                                {trade.closeBaseAmount > 0 && (
                                   <>
                                     <br />
-                                    {formatDate(trade.closeAt * 1000)}
+                                    {isTradeClosed &&
+                                      formatDate(trade.closeAt * 1000)}
+                                    <span className={css.notTrade}>
+                                      {!isTradeClosed && "未平仓"}
+                                    </span>
                                   </>
                                 )}
                               </td>
                               <td>
-                                {trade.direction === "B" ? "买入" : "卖出"}
-                                {isTradeClosed && (
+                                <span
+                                  className={cx(
+                                    trade.tradedAt === 0 && css.notTrade
+                                  )}
+                                >
+                                  {trade.direction === "B" ? "买入" : "卖出"}
+                                </span>
+                                {trade.closeBaseAmount > 0 && (
                                   <>
                                     <br />
-                                    {trade.direction === "S" ? "买入" : "卖出"}
+                                    <span
+                                      className={cx(
+                                        !isTradeClosed && css.notTrade
+                                      )}
+                                    >
+                                      {trade.direction === "S"
+                                        ? "买入"
+                                        : "卖出"}
+                                    </span>
                                   </>
                                 )}
                               </td>
                               <td>
-                                {formatPrice(tradePrice, trade.baseSym)}
-                                {isTradeClosed && (
-                                  <>
+                                <span
+                                  className={cx(
+                                    trade.tradedAt === 0 && css.notTrade
+                                  )}
+                                >
+                                  {formatPrice(tradePrice, trade.baseSym)}
+                                </span>
+                                {trade.closeBaseAmount > 0 && (
+                                  <span
+                                    className={cx(
+                                      !isTradeClosed && css.notTrade
+                                    )}
+                                  >
                                     <br />
                                     {formatPrice(
                                       trade.closeBaseAmount / trade.tradeAmount,
                                       trade.baseSym
                                     )}
-                                  </>
+                                  </span>
                                 )}
                               </td>
                               <td>
@@ -457,9 +487,7 @@ function Component() {
                                 <br />
                                 {formatAmount(trade.baseAmount, trade.baseSym)}
                               </td>
-                              <td
-                                className={cx(trade.tradedAt === 0 && css.gray)}
-                              >
+                              <td>
                                 {currentPrice &&
                                   formatPrice(currentPrice, trade.baseSym)}
                               </td>

@@ -113,7 +113,6 @@ export function TradeForm(props: Props) {
       tradeAmount,
       baseAmount,
     };
-    console.log("submitTrade", submitTrade);
 
     onSubmit(submitTrade);
   }
