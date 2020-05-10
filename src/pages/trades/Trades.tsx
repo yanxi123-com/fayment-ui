@@ -388,6 +388,19 @@ function Component() {
                             }
                           }
 
+                          // 计算距离平仓的比例
+                          let currentToClosePrice: number | undefined;
+                          if (currentPrice && trade.closeBaseAmount > 0) {
+                            const closePrice =
+                              trade.closeBaseAmount / trade.tradeAmount;
+                            // 平空（买入）
+                            currentToClosePrice =
+                              (currentPrice - closePrice) / closePrice;
+                            if (trade.direction === "B") {
+                              currentToClosePrice = -currentToClosePrice;
+                            }
+                          }
+
                           const menu = (
                             <Menu>
                               {trade.tradedAt > 0 && (
@@ -428,9 +441,19 @@ function Component() {
                                     <br />
                                     {isTradeClosed &&
                                       formatDate(trade.closeAt * 1000)}
-                                    <span className={css.notTrade}>
-                                      {!isTradeClosed && "未平仓"}
-                                    </span>
+                                    {!isTradeClosed && (
+                                      <>
+                                        <span className={css.notTrade}>
+                                          未平仓
+                                          {currentToClosePrice != null &&
+                                            (currentToClosePrice > 0
+                                              ? ` (${(
+                                                  currentToClosePrice * 100
+                                                ).toFixed(2)}%)`
+                                              : " (可交易)")}
+                                        </span>
+                                      </>
+                                    )}
                                   </>
                                 )}
                               </td>
