@@ -73,7 +73,7 @@
     "react": "^16.9.0",
     "react-app-polyfill": "^1.0.3",
     "react-clipboard.js": "^2.0.16",
-    "react-dev-utils": "^9.0.4",
+    "react-dev-utils": "^11.0.4",
     "react-dom": "^16.9.0",
     "react-router": "^5.1.1",
     "react-router-dom": "^5.1.1",
